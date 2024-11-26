@@ -2,20 +2,43 @@
   "name": "conversation-games",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@types/canvas-confetti": "^1.6.4",
+    "autoprefixer": "^10.4.20",
+    "canvas-confetti": "^1.9.3",
+    "force": "^0.0.3",
+    "framer-motion": "^11.11.17",
+    "lucide-react": "^0.461.0",
+    "postcss": "^8.4.49",
     "react": "^18.3.1",
+    "react-confetti": "^6.1.0",
     "react-dom": "^18.3.1",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "react-hot-toast": "^2.4.1",
+    "react-icons": "^5.3.0",
+    "react-router-dom": "^7.0.1",
+    "tailwindcss": "^3.4.15",
+    "use-sound": "^4.0.3",
+    "web-vitals": "^2.1.4",
+    "zustand": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/react-icons": "^2.2.7",
+    "@vitejs/plugin-react": "^4.2.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest"
   },
   "eslintConfig": {
     "extends": [
