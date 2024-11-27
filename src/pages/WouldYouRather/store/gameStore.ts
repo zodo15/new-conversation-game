@@ -1,5 +1,5 @@
-import create from 'zustand';
-import { GameState, GameActions, GameMode, Question, CustomQuestion } from '../types';
+import { create } from 'zustand';
+import { GameMode, GameState, GameActions, CustomQuestion } from '../types';
 
 const initialState: GameState = {
   mode: GameMode.NONE,
@@ -11,34 +11,44 @@ const initialState: GameState = {
   usedQuestionIds: new Set<string>(),
   votes: {},
   showChaosMasterWheel: false,
+  isTimerRunning: false,
+  showAddQuestion: false
 };
 
 export const useGameStore = create<GameState & GameActions>((set) => ({
   ...initialState,
 
-  setMode: (mode) => set({ mode }),
+  setMode: (mode: GameMode) => set({ mode }),
   setCurrentQuestion: (question) => set({ currentQuestion: question }),
-  setPlayers: (players) => set({ players }),
-  setCurrentPlayerIndex: (index) => set({ currentPlayerIndex: index }),
-  setChaosMaster: (player) => set({ chaosMaster: player }),
-  
-  addCustomQuestion: (question) => set((state) => ({
-    customQuestions: [...state.customQuestions, question]
-  })),
+  setPlayers: (players: string[]) => set({ players }),
+  setCurrentPlayerIndex: (index: number) => set({ currentPlayerIndex: index }),
+  setChaosMaster: (player: string | undefined) => set({ chaosMaster: player }),
 
-  addUsedQuestionId: (id) => set((state) => ({
-    usedQuestionIds: new Set([...state.usedQuestionIds, id])
-  })),
+  addCustomQuestion: (question: CustomQuestion) => 
+    set((state) => ({
+      customQuestions: [...state.customQuestions, question]
+    })),
+
+  addUsedQuestionId: (id: string) => 
+    set((state) => ({
+      usedQuestionIds: new Set([...Array.from(state.usedQuestionIds), id])
+    })),
 
   clearUsedQuestionIds: () => set({ usedQuestionIds: new Set() }),
 
-  addVote: (playerId, choice) => set((state) => ({
-    votes: { ...state.votes, [playerId]: choice }
-  })),
+  addVote: (playerId: string, choice: 'option1' | 'option2') => 
+    set((state) => ({
+      votes: {
+        ...state.votes,
+        [playerId]: choice
+      }
+    })),
 
   clearVotes: () => set({ votes: {} }),
 
-  setShowChaosMasterWheel: (show) => set({ showChaosMasterWheel: show }),
+  setShowChaosMasterWheel: (show: boolean) => set({ showChaosMasterWheel: show }),
 
-  resetGame: () => set(initialState),
+  setShowAddQuestion: (show: boolean) => set({ showAddQuestion: show }),
+
+  resetGame: () => set(initialState)
 }));

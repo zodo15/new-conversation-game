@@ -1,103 +1,56 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Timer as TimerIcon, Play as PlayIcon, Pause as PauseIcon } from 'lucide-react';
 
 interface TimerProps {
   duration: number;
-  key?: number;
+  onComplete: () => void;
 }
 
-export const Timer: React.FC<TimerProps> = ({ duration, key }) => {
+export const Timer: React.FC<TimerProps> = ({ duration, onComplete }) => {
   const [timeLeft, setTimeLeft] = useState(duration);
-  const [isRunning, setIsRunning] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    if (isRunning && timeLeft > 0) {
-      timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            if (timerRef.current) {
-              clearInterval(timerRef.current);
-            }
-            setIsRunning(false);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-    };
-  }, [isRunning, timeLeft]);
-
-  const handleClick = () => {
     if (timeLeft === 0) {
-      // Reset timer if it's finished
-      setTimeLeft(duration);
-      setIsRunning(true);
-    } else {
-      // Toggle timer if it's running or paused
-      setIsRunning(!isRunning);
+      onComplete();
+      return;
     }
+
+    if (!isPaused) {
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => Math.max(0, prev - 1));
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [timeLeft, isPaused, onComplete]);
+
+  const togglePause = () => {
+    setIsPaused(!isPaused);
   };
 
-  const progress = (timeLeft / duration) * 100;
-
   return (
-    <motion.button
-      className="absolute top-4 right-4 flex items-center gap-2 group"
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      key={key}
-      onClick={handleClick}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg p-4 flex items-center space-x-4"
     >
-      <div className="relative w-12 h-12">
-        <svg className="w-12 h-12 transform -rotate-90">
-          <circle
-            cx="24"
-            cy="24"
-            r="20"
-            stroke="currentColor"
-            strokeWidth="4"
-            fill="none"
-            className="text-gray-700"
-          />
-          <circle
-            cx="24"
-            cy="24"
-            r="20"
-            stroke="currentColor"
-            strokeWidth="4"
-            fill="none"
-            strokeDasharray={`${2 * Math.PI * 20}`}
-            strokeDashoffset={`${2 * Math.PI * 20 * (1 - progress / 100)}`}
-            className={`
-              transition-all duration-1000 ease-linear
-              ${timeLeft <= 5 ? 'text-red-500' : 'text-purple-500'}
-            `}
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-lg font-bold">{timeLeft}</span>
-        </div>
-        
-        {/* Play/Pause overlay on hover */}
-        <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-          {isRunning ? (
-            <PauseIcon className="w-5 h-5 text-white" />
-          ) : (
-            <PlayIcon className="w-5 h-5 text-white" />
-          )}
-        </div>
-      </div>
-      <TimerIcon className={`w-5 h-5 ${isRunning ? 'text-purple-400' : 'text-gray-400'}`} />
-    </motion.button>
+      <button
+        onClick={togglePause}
+        className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+      >
+        {isPaused ? (
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="6" y="4" width="4" height="16"></rect>
+            <rect x="14" y="4" width="4" height="16"></rect>
+          </svg>
+        )}
+      </button>
+      <div className="text-2xl font-bold">{timeLeft}s</div>
+    </motion.div>
   );
 };

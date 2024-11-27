@@ -1,57 +1,30 @@
-import { motion } from 'framer-motion';
-import { Users, WifiIcon as Wifi, WifiOffIcon as WifiOff } from 'lucide-react';
+import React from 'react';
+import { Users } from 'lucide-react';
 
 interface FriendGameModesProps {
-  onOnlineClick: () => void;
-  onOfflineClick: () => void;
   onBack: () => void;
+  onStartOfflineGame: (players: string[]) => void;
 }
 
-export const FriendGameModes = ({ onOnlineClick, onOfflineClick, onBack }: FriendGameModesProps) => {
+export const FriendGameModes: React.FC<FriendGameModesProps> = ({ onBack, onStartOfflineGame }) => {
   return (
-    <div className="space-y-8">
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+    <div className="flex flex-col items-center space-y-6">
+      <h2 className="text-2xl font-bold text-white">Play with Friends</h2>
+      <div className="grid grid-cols-1 gap-4 w-full max-w-md">
+        <button
+          onClick={() => onStartOfflineGame([])}
+          className="flex items-center justify-center space-x-2 p-4 bg-white rounded-lg shadow-lg hover:bg-gray-50 transition-colors"
+        >
+          <Users className="w-6 h-6" />
+          <span>Play Offline</span>
+        </button>
+      </div>
+      <button
         onClick={onBack}
-        className="px-4 py-2 bg-gray-700 rounded-lg text-white font-semibold"
+        className="text-white hover:text-gray-300 transition-colors"
       >
         Back
-      </motion.button>
-      
-      <div className="grid gap-6">
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600/20 to-cyan-600/20 p-6 cursor-pointer"
-          onClick={onOnlineClick}
-        >
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-500/20 rounded-lg">
-              <Wifi className="w-6 h-6 text-blue-400" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-blue-400">Play Online</h3>
-              <p className="text-gray-300">Challenge friends remotely</p>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-600/20 to-emerald-600/20 p-6 cursor-pointer"
-          onClick={onOfflineClick}
-        >
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-500/20 rounded-lg">
-              <WifiOff className="w-6 h-6 text-green-400" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-green-400">Play Offline</h3>
-              <p className="text-gray-300">Play with friends locally</p>
-            </div>
-          </div>
-        </motion.div>
-      </div>
+      </button>
     </div>
   );
-}; 
+};

@@ -1,4 +1,4 @@
-import { Question, GameMode } from '../types';
+import { Question } from '../types';
 
 // Helper function to shuffle array
 export const shuffleArray = <T>(array: T[]): T[] => {
@@ -13,87 +13,72 @@ export const shuffleArray = <T>(array: T[]): T[] => {
 export const classicQuestions: Question[] = [
   {
     id: '1',
-    option1: 'Be able to fly',
-    option2: 'Be able to read minds',
-    type: 'classic',
+    option1: 'Be able to read minds',
+    option2: 'Be able to turn invisible at will',
+    type: 'classic'
   },
   {
     id: '2',
-    option1: 'Live in a house made of chocolate',
-    option2: 'Live in a house made of cheese',
-    type: 'classic',
+    option1: 'Live in a world without music',
+    option2: 'Live in a world without movies',
+    type: 'classic'
   },
   {
     id: '3',
-    option1: 'Have a pet dragon',
-    option2: 'Have a pet unicorn',
-    type: 'classic',
+    option1: 'Have unlimited money but no friends',
+    option2: 'Have amazing friends but always be poor',
+    type: 'classic'
   },
   {
     id: '4',
-    option1: 'Be able to talk to animals',
-    option2: 'Be able to speak all human languages',
-    type: 'classic',
-  },
-  {
-    id: '5',
-    option1: 'Have super strength',
-    option2: 'Have super speed',
-    type: 'classic',
-  },
+    option1: 'Be able to fly',
+    option2: 'Be able to breathe underwater',
+    type: 'classic'
+  }
 ];
 
 export const spicyQuestions: Question[] = [
   {
+    id: '5',
+    option1: 'Never be able to use social media again',
+    option2: 'Never be able to watch streaming services again',
+    type: 'spicy'
+  },
+  {
     id: '6',
-    option1: 'Always tell the truth',
-    option2: 'Always lie',
-    type: 'spicy',
+    option1: 'Always have to speak your mind',
+    option2: 'Never be able to speak again',
+    type: 'spicy'
   },
   {
     id: '7',
     option1: 'Know how you will die',
     option2: 'Know when you will die',
-    type: 'spicy',
-  },
-  {
-    id: '8',
-    option1: 'Be famous but lonely',
-    option2: 'Be unknown but loved',
-    type: 'spicy',
-  },
-  {
-    id: '9',
-    option1: 'Live one perfect day on repeat',
-    option2: 'Live a normal life forward',
-    type: 'spicy',
-  },
-  {
-    id: '10',
-    option1: 'Know all secrets of the universe',
-    option2: 'Know all secrets of humanity',
-    type: 'spicy',
-  },
+    type: 'spicy'
+  }
 ];
 
 export const allQuestions = [...classicQuestions, ...spicyQuestions];
 
-export const getQuestionsByMode = (mode: GameMode): Question[] => {
+export const getQuestionsByMode = (mode: 'classic' | 'spicy'): Question[] => {
   switch (mode) {
-    case GameMode.CLASSIC:
+    case 'classic':
       return classicQuestions;
-    case GameMode.SPICY:
+    case 'spicy':
       return spicyQuestions;
-    case GameMode.FRIENDS:
-    case GameMode.OFFLINE:
-      return allQuestions;
     default:
       return [];
   }
 };
 
-export const getRandomQuestion = (mode: GameMode, usedIds: Set<string>): Question | undefined => {
-  const questions = getQuestionsByMode(mode);
+export const getRandomQuestion = (type: 'classic' | 'spicy', usedIds: Set<string>): Question | undefined => {
+  const questions = type === 'classic' ? classicQuestions : spicyQuestions;
   const availableQuestions = questions.filter(q => !usedIds.has(q.id));
-  return availableQuestions.length > 0 ? shuffleArray(availableQuestions)[0] : undefined;
+  
+  if (availableQuestions.length === 0) {
+    return undefined;
+  }
+  
+  const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+  return availableQuestions[randomIndex];
 };

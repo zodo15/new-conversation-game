@@ -1,11 +1,10 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { WouldYouRatherApp } from './App';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import WouldYouRatherApp from './App';
 import './index.css';
 
-const root = createRoot(document.getElementById('root') as HTMLElement);
-root.render(
-  <StrictMode>
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
     <WouldYouRatherApp />
-  </StrictMode>
+  </React.StrictMode>
 );
