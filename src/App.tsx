@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { TruthOrDareApp } from './pages/TruthOrDare/App';
 import { WouldYouRatherApp } from './pages/WouldYouRather/App';
-import { Sparkles, Brain, Zap, Heart, Star } from 'lucide-react';
+import { SparklesIcon, HeartIcon, StarIcon, BeakerIcon, BoltIcon } from '@heroicons/react/24/outline';
 import { FeedbackButton } from './components/FeedbackButton';
 
 const FloatingIcon = ({ icon: Icon, className = "", delay = 0 }: { icon: React.ElementType; className?: string; delay?: number }) => (
@@ -58,11 +58,11 @@ const Dashboard = () => {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white p-4 overflow-hidden">
-      <FloatingIcon icon={Sparkles} className="top-20 left-20" delay={0} />
-      <FloatingIcon icon={Brain} className="top-40 right-20" delay={1} />
-      <FloatingIcon icon={Heart} className="bottom-20 left-40" delay={2} />
-      <FloatingIcon icon={Star} className="top-60 left-1/2" delay={1.5} />
-      <FloatingIcon icon={Zap} className="bottom-40 right-40" delay={3} />
+      <FloatingIcon icon={SparklesIcon} className="top-20 left-20" delay={0} />
+      <FloatingIcon icon={BeakerIcon} className="top-40 right-20" delay={1} />
+      <FloatingIcon icon={HeartIcon} className="bottom-20 left-40" delay={2} />
+      <FloatingIcon icon={StarIcon} className="top-60 left-1/2" delay={1.5} />
+      <FloatingIcon icon={BoltIcon} className="bottom-40 right-40" delay={3} />
 
       <div className="relative max-w-2xl mx-auto pt-12 px-4 z-10">
         <motion.div

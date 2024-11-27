@@ -1,37 +1,53 @@
-export type GameMode = 'classic' | 'spicy' | 'friends';
+export enum GameMode {
+  NONE = 'none',
+  CLASSIC = 'classic',
+  SPICY = 'spicy',
+  FRIENDS = 'friends',
+  OFFLINE = 'offline'
+}
 
 export interface Question {
-  id: number;
+  id: string;
   option1: string;
   option2: string;
-  category?: string;
-  plotTwist?: string;
-  votesA?: number;
-  votesB?: number;
-  type?: 'custom' | 'classic' | 'spicy' | 'friends';
+  type: 'classic' | 'spicy' | 'custom';
+  votes?: {
+    option1: number;
+    option2: number;
+  };
+}
+
+export interface CustomQuestion extends Question {
+  createdAt: string;
 }
 
 export interface GameState {
-  currentQuestion: Question | null;
-  usedQuestionIds: Set<number>;
-  votes: Record<number, { option1: number; option2: number }>;
-  chaosMaster: string | null;
+  mode: GameMode;
+  currentQuestion?: Question;
   players: string[];
+  currentPlayerIndex: number;
+  chaosMaster?: string;
+  customQuestions: CustomQuestion[];
+  usedQuestionIds: Set<string>;
+  votes: {
+    [playerId: string]: 'option1' | 'option2';
+  };
   showChaosMasterWheel: boolean;
-}
-
-export interface PlayerState {
-  name: string;
-  score: number;
-  avatar?: string;
+  isTimerRunning: boolean;
+  showAddQuestion: boolean;
 }
 
 export interface GameActions {
-  setCurrentQuestion: (question: Question | null) => void;
-  addUsedQuestionId: (id: number) => void;
-  setVotes: (votes: Record<number, { option1: number; option2: number }>) => void;
-  setChaosMaster: (player: string | null) => void;
+  setMode: (mode: GameMode) => void;
+  setCurrentQuestion: (question: Question | undefined) => void;
   setPlayers: (players: string[]) => void;
+  setCurrentPlayerIndex: (index: number) => void;
+  setChaosMaster: (player: string | undefined) => void;
+  addCustomQuestion: (question: CustomQuestion) => void;
+  addUsedQuestionId: (id: string) => void;
+  clearUsedQuestionIds: () => void;
+  addVote: (playerId: string, choice: 'option1' | 'option2') => void;
+  clearVotes: () => void;
   setShowChaosMasterWheel: (show: boolean) => void;
   resetGame: () => void;
 }
