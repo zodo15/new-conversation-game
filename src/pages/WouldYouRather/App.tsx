@@ -1,27 +1,28 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useGameStore } from './store/gameStore';
-import { type Question, type CustomQuestion } from './types';
-import { Timer } from './components/Timer';
+import { type CustomQuestion } from './types';
 import { AddQuestionModal } from './components/AddQuestionModal';
-import { ChaosMasterWheel } from './components/ChaosMasterWheel';
 import { FriendGameModes } from './components/FriendGameModes';
 import { ChoiceCard } from './components/ChoiceCard';
 import { ShareButton } from './components/ShareButton';
 import { getRandomQuestion } from './data/questions';
 import { toast } from 'react-hot-toast';
-import { ArrowLeft } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
+import { Timer } from './components/Timer';
+import { ChaosMasterWheel } from './components/ChaosMasterWheel';
 
 const WouldYouRatherApp: React.FC = () => {
   const gameState = useGameStore();
   const {
     mode,
+    currentQuestion,
     players,
     currentPlayerIndex,
-    currentQuestion,
     votes,
-    showChaosMasterWheel,
     showAddQuestion,
+    usedQuestionIds,
+    showChaosMasterWheel,
   } = gameState;
 
   const handleVote = (choice: 'option1' | 'option2') => {
@@ -29,7 +30,9 @@ const WouldYouRatherApp: React.FC = () => {
       gameState.addVote(players[currentPlayerIndex], choice);
       gameState.setCurrentPlayerIndex((currentPlayerIndex + 1) % players.length);
       if ((currentPlayerIndex + 1) % players.length === 0) {
-        gameState.setCurrentQuestion(getRandomQuestion(mode));
+        if (mode === 'classic' || mode === 'spicy') {
+          gameState.setCurrentQuestion(getRandomQuestion(mode, gameState.usedQuestionIds));
+        }
         gameState.clearVotes();
       }
     }
@@ -67,7 +70,7 @@ const WouldYouRatherApp: React.FC = () => {
               whileTap={{ scale: 0.95 }}
               onClick={() => {
                 gameState.setMode('classic');
-                gameState.setCurrentQuestion(getRandomQuestion('classic'));
+                gameState.setCurrentQuestion(getRandomQuestion('classic', gameState.usedQuestionIds));
               }}
               className="p-6 bg-white rounded-lg shadow-lg hover:bg-gray-50 transition-colors"
             >
@@ -80,7 +83,7 @@ const WouldYouRatherApp: React.FC = () => {
               whileTap={{ scale: 0.95 }}
               onClick={() => {
                 gameState.setMode('spicy');
-                gameState.setCurrentQuestion(getRandomQuestion('spicy'));
+                gameState.setCurrentQuestion(getRandomQuestion('spicy', gameState.usedQuestionIds));
               }}
               className="p-6 bg-white rounded-lg shadow-lg hover:bg-gray-50 transition-colors"
             >
@@ -111,7 +114,7 @@ const WouldYouRatherApp: React.FC = () => {
             onBack={() => gameState.setMode(undefined)}
             onStartOfflineGame={(players) => {
               gameState.setPlayers(players);
-              gameState.setCurrentQuestion(getRandomQuestion('classic'));
+              gameState.setCurrentQuestion(getRandomQuestion('classic', gameState.usedQuestionIds));
             }}
           />
         </div>
@@ -128,7 +131,7 @@ const WouldYouRatherApp: React.FC = () => {
           onClick={() => gameState.resetGame()}
           className="mb-8 px-4 py-2 bg-white rounded-lg shadow-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ChevronLeft className="w-4 h-4" />
           Back to Menu
         </motion.button>
 
@@ -156,7 +159,10 @@ const WouldYouRatherApp: React.FC = () => {
         )}
 
         {showChaosMasterWheel && (
-          <ChaosMasterWheel onSpin={handleChaosMasterSpin} />
+          <ChaosMasterWheel 
+            onSpin={handleChaosMasterSpin} 
+            onClose={() => gameState.setShowChaosMasterWheel(false)}
+          />
         )}
 
         {showAddQuestion && (
@@ -170,4 +176,4 @@ const WouldYouRatherApp: React.FC = () => {
   );
 };
 
-export default WouldYouRatherApp;
+export { WouldYouRatherApp };

@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { TruthOrDareApp } from './pages/TruthOrDare/App';
-import { WouldYouRatherApp } from './pages/WouldYouRather/App';
+import TruthOrDareApp from './pages/TruthOrDare/App';
+import WouldYouRatherApp from './pages/WouldYouRather/App';
 import { SparklesIcon, HeartIcon, StarIcon, BeakerIcon, BoltIcon } from '@heroicons/react/24/outline';
 import { FeedbackButton } from './components/FeedbackButton';
 

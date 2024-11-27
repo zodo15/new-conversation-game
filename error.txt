@@ -1,90 +1,123 @@
-
-[10:24:42.958] 
-[10:24:47.958] src/App.tsx(6,32): error TS2305: Module '"lucide-react"' has no exported member 'Heart'.
-[10:24:47.960] src/App.tsx(6,39): error TS2305: Module '"lucide-react"' has no exported member 'Star'.
-[10:24:47.960] src/components/FeedbackButton.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
-[10:24:47.962] src/components/FeedbackButton.tsx(3,10): error TS2305: Module '"lucide-react"' has no exported member 'MessageSquarePlus'.
-[10:24:47.963] src/pages/TruthOrDare/App.tsx(5,58): error TS2305: Module '"lucide-react"' has no exported member 'ArrowLeft'.
-[10:24:47.963] src/pages/TruthOrDare/components/AddQuestionModal.tsx(26,13): error TS2339: Property 'error' does not exist on type 'typeof import("react-hot-toast")'.
-[10:24:47.963] src/pages/TruthOrDare/components/AddQuestionModal.tsx(34,7): error TS2561: Object literal may only specify known properties, but 'isCustom' does not exist in type 'Question'. Did you mean to write 'custom'?
-[10:24:47.963] src/pages/TruthOrDare/components/AddQuestionModal.tsx(39,11): error TS2339: Property 'success' does not exist on type 'typeof import("react-hot-toast")'.
-[10:24:47.963] src/pages/TruthOrDare/components/CategorySelect.tsx(53,25): error TS2345: Argument of type '"spicy" | "funny" | "deep" | "social" | "physical" | "creative" | "Party Time" | "Dating Drama" | "Life Regrets" | "Social Chaos"' is not assignable to parameter of type 'QuestionCategory'.
-[10:24:47.963]   Type '"Party Time"' is not assignable to type 'QuestionCategory'.
-[10:24:47.963] src/pages/TruthOrDare/components/GameBoard.tsx(2,75): error TS2305: Module '"lucide-react"' has no exported member 'MessageCircle'.
-[10:24:47.963] src/pages/TruthOrDare/components/GameBoard.tsx(2,75): error TS6133: 'MessageCircle' is declared but its value is never read.
-[10:24:47.964] src/pages/TruthOrDare/components/GameBoard.tsx(2,90): error TS2305: Module '"lucide-react"' has no exported member 'ArrowLeft'.
-[10:24:47.964] src/pages/TruthOrDare/components/GameBoard.tsx(6,18): error TS6133: 'AnimatePresence' is declared but its value is never read.
-[10:24:47.964] src/pages/TruthOrDare/components/GameBoard.tsx(39,13): error TS2339: Property 'error' does not exist on type 'typeof import("react-hot-toast")'.
-[10:24:47.964] src/pages/TruthOrDare/components/GameBoard.tsx(72,11): error TS2339: Property 'success' does not exist on type 'typeof import("react-hot-toast")'.
-[10:24:47.964] src/pages/TruthOrDare/components/GameBoard.tsx(75,9): error TS6133: 'getCategoryIcon' is declared but its value is never read.
-[10:24:47.964] src/pages/TruthOrDare/components/GameModes.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
-[10:24:47.964] src/pages/TruthOrDare/components/GameModes.tsx(8,11): error TS2339: Property 'setChaosMode' does not exist on type 'GameState & GameActions'.
-[10:24:47.964] src/pages/TruthOrDare/components/GameModes.tsx(8,25): error TS2339: Property 'setTimer' does not exist on type 'GameState & GameActions'.
-[10:24:47.964] src/pages/TruthOrDare/components/PlayerProfileModal.tsx(24,10): error TS6133: 'activeField' is declared but its value is never read.
-[10:24:47.964] src/pages/TruthOrDare/components/PlotTwist.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
-[10:24:47.964] src/pages/TruthOrDare/components/Question.tsx(52,39): error TS2339: Property 'option1' does not exist on type 'Question'.
-[10:24:47.964] src/pages/TruthOrDare/components/Question.tsx(53,39): error TS2339: Property 'option2' does not exist on type 'Question'.
-[10:24:47.964] src/pages/TruthOrDare/components/Question.tsx(73,22): error TS2322: Type 'number' is not assignable to type 'string'.
-[10:24:47.964] src/pages/TruthOrDare/components/Question.tsx(75,14): error TS2739: Type '{ twist: string; }' is missing the following properties from type 'PlotTwistProps': isVisible, onClose
-[10:24:47.964] src/pages/TruthOrDare/components/Reactions.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
-[10:24:47.964] src/pages/TruthOrDare/components/Timer.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
-[10:24:47.965] src/pages/TruthOrDare/data/questions.ts(1,10): error TS2440: Import declaration conflicts with local declaration of 'Question'.
-[10:24:47.965] src/pages/TruthOrDare/data/questions.ts(29,5): error TS2322: Type 'string' is not assignable to type 'number'.
-[10:24:47.965] src/pages/TruthOrDare/data/questions.ts(32,5): error TS2322: Type '"Party Time"' is not assignable to type 'QuestionCategory'.
-[10:24:47.965] src/pages/TruthOrDare/data/questions.ts(36,5): error TS2322: Type 'string' is not assignable to type 'number'.
-[10:24:47.965] src/pages/TruthOrDare/data/questions.ts(39,5): error TS2322: Type '"Party Time"' is not assignable to type 'QuestionCategory'.
-[10:24:47.967] src/pages/TruthOrDare/data/questions.ts(44,5): error TS2322: Type 'string' is not assignable to type 'number'.
-[10:24:47.967] src/pages/TruthOrDare/data/questions.ts(47,5): error TS2322: Type '"Dating Drama"' is not assignable to type 'QuestionCategory'.
-[10:24:47.967] src/pages/TruthOrDare/data/questions.ts(52,5): error TS2322: Type 'string' is not assignable to type 'number'.
-[10:24:47.967] src/pages/TruthOrDare/data/questions.ts(55,5): error TS2322: Type '"Life Regrets"' is not assignable to type 'QuestionCategory'.
-[10:24:47.968] src/pages/TruthOrDare/data/questions.ts(60,5): error TS2322: Type 'string' is not assignable to type 'number'.
-[10:24:47.968] src/pages/TruthOrDare/data/questions.ts(63,5): error TS2322: Type '"Social Chaos"' is not assignable to type 'QuestionCategory'.
-[10:24:47.968] src/pages/TruthOrDare/data/questions.ts(69,5): error TS2353: Object literal may only specify known properties, and 'text' does not exist in type 'Question'.
-[10:24:47.968] src/pages/TruthOrDare/data/questions.ts(74,5): error TS2353: Object literal may only specify known properties, and 'text' does not exist in type 'Question'.
-[10:24:47.968] src/pages/TruthOrDare/data/questions.ts(79,5): error TS2353: Object literal may only specify known properties, and 'text' does not exist in type 'Question'.
-[10:24:47.968] src/pages/TruthOrDare/data/questions.ts(85,5): error TS2353: Object literal may only specify known properties, and 'text' does not exist in type 'Question'.
-[10:24:47.969] src/pages/TruthOrDare/data/questions.ts(90,5): error TS2353: Object literal may only specify known properties, and 'text' does not exist in type 'Question'.
-[10:24:47.969] src/pages/TruthOrDare/data/questions.ts(95,5): error TS2353: Object literal may only specify known properties, and 'text' does not exist in type 'Question'.
-[10:24:47.969] src/pages/TruthOrDare/data/questions.ts(100,5): error TS2353: Object literal may only specify known properties, and 'text' does not exist in type 'Question'.
-[10:24:47.969] src/pages/TruthOrDare/data/questions.ts(105,5): error TS2353: Object literal may only specify known properties, and 'text' does not exist in type 'Question'.
-[10:24:47.969] src/pages/TruthOrDare/hooks/useConfetti.tsx(5,11): error TS6196: 'ConfettiComponentProps' is declared but never used.
-[10:24:47.970] src/pages/TruthOrDare/hooks/useGameQuestions.ts(12,90): error TS6133: 'currentPlayer' is declared but its value is never read.
-[10:24:47.970] src/pages/TruthOrDare/hooks/useGameQuestions.ts(14,31): error TS7053: Element implicitly has an 'any' type because expression of type 'QuestionCategory' can't be used to index type '{ spicy: string[]; funny: string[]; deep: string[]; } | { physical: string[]; social: string[]; creative: string[]; }'.
-[10:24:47.970]   Property 'spicy' does not exist on type '{ spicy: string[]; funny: string[]; deep: string[]; } | { physical: string[]; social: string[]; creative: string[]; }'.
-[10:24:47.970] src/pages/TruthOrDare/hooks/useGameQuestions.ts(14,70): error TS7006: Parameter 'content' implicitly has an 'any' type.
-[10:24:47.970] src/pages/TruthOrDare/main.tsx(3,8): error TS1192: Module '"/vercel/path0/src/pages/TruthOrDare/App"' has no default export.
-[10:24:47.971] src/pages/WouldYouRather/App.tsx(3,46): error TS2305: Module '"lucide-react"' has no exported member 'ArrowLeft'.
-[10:24:47.971] src/pages/WouldYouRather/App.tsx(3,79): error TS2305: Module '"lucide-react"' has no exported member 'Heart'.
-[10:24:47.972] src/pages/WouldYouRather/App.tsx(3,86): error TS2305: Module '"lucide-react"' has no exported member 'Flame'.
-[10:24:47.972] src/pages/WouldYouRather/App.tsx(3,93): error TS2305: Module '"lucide-react"' has no exported member 'Star'.
-[10:24:47.972] src/pages/WouldYouRather/App.tsx(8,10): error TS6133: 'allQuestions' is declared but its value is never read.
-[10:24:47.972] src/pages/WouldYouRather/App.tsx(8,62): error TS6133: 'shuffleArray' is declared but its value is never read.
-[10:24:47.972] src/pages/WouldYouRather/App.tsx(107,13): error TS6133: 'currentVotes' is declared but its value is never read.
-[10:24:47.972] src/pages/WouldYouRather/App.tsx(120,30): error TS6133: 'question' is declared but its value is never read.
-[10:24:47.972] src/pages/WouldYouRather/App.tsx(124,9): error TS6133: 'handleOnlineGame' is declared but its value is never read.
-[10:24:47.972] src/pages/WouldYouRather/App.tsx(128,9): error TS6133: 'handleOfflineGame' is declared but its value is never read.
-[10:24:47.972] src/pages/WouldYouRather/App.tsx(316,46): error TS2345: Argument of type '"mixed"' is not assignable to parameter of type 'GameMode | undefined'.
-[10:24:47.972] src/pages/WouldYouRather/components/ChaosButton.tsx(3,23): error TS2305: Module '"lucide-react"' has no exported member 'Dice6'.
-[10:24:47.972] src/pages/WouldYouRather/components/ChaosMasterWheel.tsx(881,31): error TS6133: 'player' is declared but its value is never read.
-[10:24:47.972] src/pages/WouldYouRather/components/ChoiceCard.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
-[10:24:47.972] src/pages/WouldYouRather/components/ChoiceCard.tsx(19,3): error TS6133: 'isAnswer' is declared but its value is never read.
-[10:24:47.972] src/pages/WouldYouRather/components/CustomQuestionForm.tsx(18,9): error TS2561: Object literal may only specify known properties, but 'optionA' does not exist in type 'Question'. Did you mean to write 'option1'?
-[10:24:47.972] src/pages/WouldYouRather/components/FriendGameModes.tsx(2,10): error TS6133: 'Users' is declared but its value is never read.
-[10:24:47.972] src/pages/WouldYouRather/components/FriendGameModes.tsx(2,17): error TS2305: Module '"lucide-react"' has no exported member 'Wifi'.
-[10:24:47.972] src/pages/WouldYouRather/components/FriendGameModes.tsx(2,23): error TS2305: Module '"lucide-react"' has no exported member 'WifiOff'.
-[10:24:47.972] src/pages/WouldYouRather/components/GameCard.tsx(3,10): error TS2305: Module '"lucide-react"' has no exported member 'LucideIcon'.
-[10:24:47.972] src/pages/WouldYouRather/components/GameCard.tsx(20,3): error TS6133: 'questionType' is declared but its value is never read.
-[10:24:47.972] src/pages/WouldYouRather/components/OfflineGameSetup.tsx(3,26): error TS2305: Module '"lucide-react"' has no exported member 'Play'.
-[10:24:47.972] src/pages/WouldYouRather/components/OfflineGameSetup.tsx(3,32): error TS2305: Module '"lucide-react"' has no exported member 'ArrowLeft'.
-[10:24:47.972] src/pages/WouldYouRather/components/OfflineGameSetup.tsx(9,1): error TS6133: 'Question' is declared but its value is never read.
-[10:24:47.973] src/pages/WouldYouRather/components/OfflineGameSetup.tsx(31,13): error TS2339: Property 'error' does not exist on type 'typeof import("react-hot-toast")'.
-[10:24:47.973] src/pages/WouldYouRather/components/OfflineGameSetup.tsx(41,15): error TS2339: Property 'error' does not exist on type 'typeof import("react-hot-toast")'.
-[10:24:47.973] src/pages/WouldYouRather/components/OfflineGameSetup.tsx(67,13): error TS2339: Property 'error' does not exist on type 'typeof import("react-hot-toast")'.
-[10:24:47.973] src/pages/WouldYouRather/components/ShareButton.tsx(1,10): error TS2305: Module '"lucide-react"' has no exported member 'Share2'.
-[10:24:47.973] src/pages/WouldYouRather/components/ShareButton.tsx(23,15): error TS2339: Property 'success' does not exist on type 'typeof import("react-hot-toast")'.
-[10:24:47.973] src/pages/WouldYouRather/components/ShareButton.tsx(26,13): error TS2339: Property 'error' does not exist on type 'typeof import("react-hot-toast")'.
-[10:24:47.973] src/pages/WouldYouRather/components/Timer.tsx(3,10): error TS2305: Module '"lucide-react"' has no exported member 'TimerIcon'.
-[10:24:47.973] src/pages/WouldYouRather/components/Timer.tsx(3,21): error TS2305: Module '"lucide-react"' has no exported member 'PlayIcon'.
-[10:24:47.974] src/pages/WouldYouRather/components/Timer.tsx(3,31): error TS2305: Module '"lucide-react"' has no exported member 'PauseIcon'.
-[10:24:48.005] Error: Command "npm run build" exited with 2
-[10:24:48.206] 
+[16:15:11.566] Running build in Washington, D.C., USA (East) – iad1
+[16:15:11.736] Cloning github.com/zodo15/conversation-game (Branch: main, Commit: 5f8f579)
+[16:15:11.851] Skipping build cache, deployment was triggered without cache.
+[16:15:13.069] Cloning completed: 1.332s
+[16:15:13.406] Running "vercel build"
+[16:15:14.368] Vercel CLI 39.1.1
+[16:15:15.081] Installing dependencies...
+[16:15:18.704] npm warn deprecated har-validator@5.1.5: this library is no longer supported
+[16:15:18.707] npm warn deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+[16:15:19.432] npm warn deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+[16:15:23.084] 
+[16:15:23.087] added 371 packages in 8s
+[16:15:23.087] 
+[16:15:23.087] 81 packages are looking for funding
+[16:15:23.088]   run `npm fund` for details
+[16:15:23.407] 
+[16:15:23.407] > conversation-games@0.1.0 build
+[16:15:23.408] > tsc && vite build
+[16:15:23.408] 
+[16:15:28.514] src/App.tsx(6,32): error TS2305: Module '"lucide-react"' has no exported member 'Heart'.
+[16:15:28.514] src/App.tsx(6,39): error TS2305: Module '"lucide-react"' has no exported member 'Star'.
+[16:15:28.515] src/components/FeedbackButton.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+[16:15:28.515] src/components/FeedbackButton.tsx(3,10): error TS2305: Module '"lucide-react"' has no exported member 'MessageSquarePlus'.
+[16:15:28.515] src/pages/TruthOrDare/App.tsx(5,58): error TS2305: Module '"lucide-react"' has no exported member 'ArrowLeft'.
+[16:15:28.515] src/pages/TruthOrDare/components/AddQuestionModal.tsx(26,7): error TS2349: This expression is not callable.
+[16:15:28.515]   Type 'typeof import("react-hot-toast")' has no call signatures.
+[16:15:28.515] src/pages/TruthOrDare/components/AddQuestionModal.tsx(37,11): error TS2741: Property 'id' is missing in type '{ content: string; type: QuestionType; category: QuestionCategory; custom: true; }' but required in type 'Question'.
+[16:15:28.516] src/pages/TruthOrDare/components/AddQuestionModal.tsx(46,5): error TS2349: This expression is not callable.
+[16:15:28.516]   Type 'typeof import("react-hot-toast")' has no call signatures.
+[16:15:28.516] src/pages/TruthOrDare/components/CategorySelect.tsx(1,17): error TS6133: 'useState' is declared but its value is never read.
+[16:15:28.516] src/pages/TruthOrDare/components/CategorySelect.tsx(7,10): error TS2305: Module '"react-icons/fa"' has no exported member 'FaFire'.
+[16:15:28.516] src/pages/TruthOrDare/components/CategorySelect.tsx(7,27): error TS2305: Module '"react-icons/fa"' has no exported member 'FaBrain'.
+[16:15:28.516] src/pages/TruthOrDare/components/CategorySelect.tsx(7,36): error TS2305: Module '"react-icons/fa"' has no exported member 'FaUsers'.
+[16:15:28.516] src/pages/TruthOrDare/components/CategorySelect.tsx(7,45): error TS2305: Module '"react-icons/fa"' has no exported member 'FaDumbbell'.
+[16:15:28.517] src/pages/TruthOrDare/components/CategorySelect.tsx(7,57): error TS2305: Module '"react-icons/fa"' has no exported member 'FaPalette'.
+[16:15:28.517] src/pages/TruthOrDare/components/GameBoard.tsx(3,75): error TS2305: Module '"lucide-react"' has no exported member 'ArrowLeftCircle'.
+[16:15:28.519] src/pages/TruthOrDare/components/GameBoard.tsx(3,92): error TS2305: Module '"lucide-react"' has no exported member 'MessageCircle'.
+[16:15:28.519] src/pages/TruthOrDare/components/GameBoard.tsx(7,18): error TS6133: 'AnimatePresence' is declared but its value is never read.
+[16:15:28.519] src/pages/TruthOrDare/components/GameBoard.tsx(40,13): error TS2339: Property 'error' does not exist on type 'typeof import("react-hot-toast")'.
+[16:15:28.519] src/pages/TruthOrDare/components/GameBoard.tsx(76,11): error TS2339: Property 'success' does not exist on type 'typeof import("react-hot-toast")'.
+[16:15:28.520] src/pages/TruthOrDare/components/GameBoard.tsx(82,9): error TS6133: 'getCategoryIcon' is declared but its value is never read.
+[16:15:28.520] src/pages/TruthOrDare/components/GameModes.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+[16:15:28.520] src/pages/TruthOrDare/components/GameModes.tsx(8,11): error TS2339: Property 'setChaosMode' does not exist on type 'GameState & GameActions'.
+[16:15:28.520] src/pages/TruthOrDare/components/GameModes.tsx(8,25): error TS2339: Property 'setTimer' does not exist on type 'GameState & GameActions'.
+[16:15:28.520] src/pages/TruthOrDare/components/PlayerProfileModal.tsx(24,10): error TS6133: 'activeField' is declared but its value is never read.
+[16:15:28.520] src/pages/TruthOrDare/components/PlotTwist.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+[16:15:28.520] src/pages/TruthOrDare/components/Question.tsx(52,39): error TS2339: Property 'option1' does not exist on type 'Question'.
+[16:15:28.521] src/pages/TruthOrDare/components/Question.tsx(53,39): error TS2339: Property 'option2' does not exist on type 'Question'.
+[16:15:28.521] src/pages/TruthOrDare/components/Question.tsx(73,22): error TS2322: Type 'number' is not assignable to type 'string'.
+[16:15:28.521] src/pages/TruthOrDare/components/Question.tsx(75,14): error TS2739: Type '{ twist: string; }' is missing the following properties from type 'PlotTwistProps': isVisible, onClose
+[16:15:28.521] src/pages/TruthOrDare/components/Reactions.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+[16:15:28.521] src/pages/TruthOrDare/components/Timer.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+[16:15:28.521] src/pages/TruthOrDare/data/questions.ts(1,10): error TS2440: Import declaration conflicts with local declaration of 'Question'.
+[16:15:28.522] src/pages/TruthOrDare/data/questions.ts(25,5): error TS2322: Type 'string' is not assignable to type 'number'.
+[16:15:28.527] src/pages/TruthOrDare/data/questions.ts(32,5): error TS2322: Type 'string' is not assignable to type 'number'.
+[16:15:28.527] src/pages/TruthOrDare/data/questions.ts(40,5): error TS2322: Type 'string' is not assignable to type 'number'.
+[16:15:28.527] src/pages/TruthOrDare/data/questions.ts(48,5): error TS2322: Type 'string' is not assignable to type 'number'.
+[16:15:28.529] src/pages/TruthOrDare/data/questions.ts(56,5): error TS2322: Type 'string' is not assignable to type 'number'.
+[16:15:28.530] src/pages/TruthOrDare/data/questions.ts(65,5): error TS2353: Object literal may only specify known properties, and 'text' does not exist in type 'Question'.
+[16:15:28.530] src/pages/TruthOrDare/data/questions.ts(70,5): error TS2353: Object literal may only specify known properties, and 'text' does not exist in type 'Question'.
+[16:15:28.530] src/pages/TruthOrDare/data/questions.ts(75,5): error TS2353: Object literal may only specify known properties, and 'text' does not exist in type 'Question'.
+[16:15:28.530] src/pages/TruthOrDare/data/questions.ts(81,5): error TS2353: Object literal may only specify known properties, and 'text' does not exist in type 'Question'.
+[16:15:28.531] src/pages/TruthOrDare/data/questions.ts(86,5): error TS2353: Object literal may only specify known properties, and 'text' does not exist in type 'Question'.
+[16:15:28.531] src/pages/TruthOrDare/data/questions.ts(91,5): error TS2353: Object literal may only specify known properties, and 'text' does not exist in type 'Question'.
+[16:15:28.531] src/pages/TruthOrDare/data/questions.ts(96,5): error TS2353: Object literal may only specify known properties, and 'text' does not exist in type 'Question'.
+[16:15:28.531] src/pages/TruthOrDare/data/questions.ts(101,5): error TS2353: Object literal may only specify known properties, and 'text' does not exist in type 'Question'.
+[16:15:28.531] src/pages/TruthOrDare/hooks/useGameQuestions.ts(12,90): error TS6133: 'currentPlayer' is declared but its value is never read.
+[16:15:28.532] src/pages/TruthOrDare/hooks/useGameQuestions.ts(14,31): error TS7053: Element implicitly has an 'any' type because expression of type 'QuestionCategory' can't be used to index type '{ spicy: string[]; funny: string[]; deep: string[]; } | { physical: string[]; social: string[]; creative: string[]; }'.
+[16:15:28.532]   Property 'spicy' does not exist on type '{ spicy: string[]; funny: string[]; deep: string[]; } | { physical: string[]; social: string[]; creative: string[]; }'.
+[16:15:28.532] src/pages/TruthOrDare/hooks/useGameQuestions.ts(14,70): error TS7006: Parameter 'content' implicitly has an 'any' type.
+[16:15:28.532] src/pages/TruthOrDare/main.tsx(3,8): error TS1192: Module '"/vercel/path0/src/pages/TruthOrDare/App"' has no default export.
+[16:15:28.532] src/pages/WouldYouRather/App.tsx(1,10): error TS6133: 'useEffect' is declared but its value is never read.
+[16:15:28.532] src/pages/WouldYouRather/App.tsx(4,1): error TS6133: 'useGameStore' is declared but its value is never read.
+[16:15:28.532] src/pages/WouldYouRather/App.tsx(123,42): error TS18048: 'prev.currentQuestion.votesA' is possibly 'undefined'.
+[16:15:28.532] src/pages/WouldYouRather/App.tsx(124,42): error TS18048: 'prev.currentQuestion.votesB' is possibly 'undefined'.
+[16:15:28.532] src/pages/WouldYouRather/App.tsx(130,30): error TS6133: 'question' is declared but its value is never read.
+[16:15:28.532] src/pages/WouldYouRather/App.tsx(175,9): error TS2322: Type '{ players: string[]; onSelect: (chaosMaster: any) => void; }' is not assignable to type 'IntrinsicAttributes & ChaosMasterWheelProps'.
+[16:15:28.533]   Property 'onSelect' does not exist on type 'IntrinsicAttributes & ChaosMasterWheelProps'.
+[16:15:28.533] src/pages/WouldYouRather/App.tsx(175,20): error TS7006: Parameter 'chaosMaster' implicitly has an 'any' type.
+[16:15:28.533] src/pages/WouldYouRather/App.tsx(249,14): error TS2741: Property 'questionType' is missing in type '{ title: string; description: string; onClick: () => void; icon: IconType; className: string; }' but required in type 'GameCardProps'.
+[16:15:28.533] src/pages/WouldYouRather/App.tsx(256,14): error TS2741: Property 'questionType' is missing in type '{ title: string; description: string; onClick: () => void; icon: IconType; className: string; }' but required in type 'GameCardProps'.
+[16:15:28.533] src/pages/WouldYouRather/App.tsx(263,14): error TS2741: Property 'questionType' is missing in type '{ title: string; description: string; onClick: () => void; icon: IconType; className: string; }' but required in type 'GameCardProps'.
+[16:15:28.533] src/pages/WouldYouRather/App.tsx(332,17): error TS2322: Type 'string | undefined' is not assignable to type 'number | undefined'.
+[16:15:28.533]   Type 'string' is not assignable to type 'number'.
+[16:15:28.533] src/pages/WouldYouRather/App.tsx(332,47): error TS18048: 'gameState.currentQuestion.votesA' is possibly 'undefined'.
+[16:15:28.533] src/pages/WouldYouRather/App.tsx(332,83): error TS18048: 'gameState.currentQuestion.votesA' is possibly 'undefined'.
+[16:15:28.533] src/pages/WouldYouRather/App.tsx(332,118): error TS18048: 'gameState.currentQuestion.votesB' is possibly 'undefined'.
+[16:15:28.533] src/pages/WouldYouRather/App.tsx(340,17): error TS2322: Type 'string | undefined' is not assignable to type 'number | undefined'.
+[16:15:28.533]   Type 'string' is not assignable to type 'number'.
+[16:15:28.533] src/pages/WouldYouRather/App.tsx(340,47): error TS18048: 'gameState.currentQuestion.votesB' is possibly 'undefined'.
+[16:15:28.533] src/pages/WouldYouRather/App.tsx(340,83): error TS18048: 'gameState.currentQuestion.votesA' is possibly 'undefined'.
+[16:15:28.533] src/pages/WouldYouRather/App.tsx(340,118): error TS18048: 'gameState.currentQuestion.votesB' is possibly 'undefined'.
+[16:15:28.534] src/pages/WouldYouRather/components/AddQuestionModal.tsx(4,15): error TS2459: Module '"../data/questions"' declares 'Question' locally, but it is not exported.
+[16:15:28.534] src/pages/WouldYouRather/components/ChaosMasterWheel.tsx(881,31): error TS6133: 'player' is declared but its value is never read.
+[16:15:28.534] src/pages/WouldYouRather/components/ChoiceCard.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+[16:15:28.534] src/pages/WouldYouRather/components/ChoiceCard.tsx(19,3): error TS6133: 'isAnswer' is declared but its value is never read.
+[16:15:28.534] src/pages/WouldYouRather/components/CustomQuestionForm.tsx(18,13): error TS2339: Property 'error' does not exist on type 'typeof import("react-hot-toast")'.
+[16:15:28.534] src/pages/WouldYouRather/components/CustomQuestionForm.tsx(23,13): error TS2339: Property 'error' does not exist on type 'typeof import("react-hot-toast")'.
+[16:15:28.534] src/pages/WouldYouRather/components/CustomQuestionForm.tsx(37,11): error TS2339: Property 'success' does not exist on type 'typeof import("react-hot-toast")'.
+[16:15:28.534] src/pages/WouldYouRather/components/FriendGameModes.tsx(2,10): error TS6133: 'Users' is declared but its value is never read.
+[16:15:28.534] src/pages/WouldYouRather/components/FriendGameModes.tsx(2,17): error TS2305: Module '"lucide-react"' has no exported member 'WifiIcon'.
+[16:15:28.534] src/pages/WouldYouRather/components/FriendGameModes.tsx(2,35): error TS2305: Module '"lucide-react"' has no exported member 'WifiOffIcon'.
+[16:15:28.534] src/pages/WouldYouRather/components/GameCard.tsx(3,10): error TS2305: Module '"lucide-react"' has no exported member 'LucideIcon'.
+[16:15:28.534] src/pages/WouldYouRather/components/GameCard.tsx(20,3): error TS6133: 'questionType' is declared but its value is never read.
+[16:15:28.535] src/pages/WouldYouRather/components/OfflineGameSetup.tsx(3,10): error TS2305: Module '"lucide-react"' has no exported member 'PlayIcon'.
+[16:15:28.535] src/pages/WouldYouRather/components/OfflineGameSetup.tsx(3,28): error TS2305: Module '"lucide-react"' has no exported member 'ArrowLeftCircle'.
+[16:15:28.535] src/pages/WouldYouRather/components/OfflineGameSetup.tsx(3,58): error TS2305: Module '"lucide-react"' has no exported member 'PlusIcon'.
+[16:15:28.535] src/pages/WouldYouRather/components/OfflineGameSetup.tsx(3,88): error TS2305: Module '"lucide-react"' has no exported member 'UsersIcon'.
+[16:15:28.535] src/pages/WouldYouRather/components/OfflineGameSetup.tsx(6,1): error TS6133: 'Question' is declared but its value is never read.
+[16:15:28.535] src/pages/WouldYouRather/components/OfflineGameSetup.tsx(6,15): error TS2459: Module '"../data/questions"' declares 'Question' locally, but it is not exported.
+[16:15:28.535] src/pages/WouldYouRather/components/OfflineGameSetup.tsx(28,13): error TS2339: Property 'error' does not exist on type 'typeof import("react-hot-toast")'.
+[16:15:28.535] src/pages/WouldYouRather/components/OfflineGameSetup.tsx(38,15): error TS2339: Property 'error' does not exist on type 'typeof import("react-hot-toast")'.
+[16:15:28.535] src/pages/WouldYouRather/components/OfflineGameSetup.tsx(64,13): error TS2339: Property 'error' does not exist on type 'typeof import("react-hot-toast")'.
+[16:15:28.535] src/pages/WouldYouRather/components/ShareButton.tsx(1,10): error TS2305: Module '"lucide-react"' has no exported member 'Share2'.
+[16:15:28.535] src/pages/WouldYouRather/components/ShareButton.tsx(10,38): error TS6133: 'total' is declared but its value is never read.
+[16:15:28.535] src/pages/WouldYouRather/components/ShareButton.tsx(21,15): error TS2339: Property 'success' does not exist on type 'typeof import("react-hot-toast")'.
+[16:15:28.535] src/pages/WouldYouRather/components/ShareButton.tsx(24,15): error TS2339: Property 'success' does not exist on type 'typeof import("react-hot-toast")'.
+[16:15:28.535] src/pages/WouldYouRather/components/ShareButton.tsx(27,13): error TS2339: Property 'error' does not exist on type 'typeof import("react-hot-toast")'.
+[16:15:28.535] src/pages/WouldYouRather/components/Timer.tsx(3,10): error TS2305: Module '"lucide-react"' has no exported member 'Timer'.
+[16:15:28.536] src/pages/WouldYouRather/components/Timer.tsx(3,30): error TS2305: Module '"lucide-react"' has no exported member 'Play'.
+[16:15:28.536] src/pages/WouldYouRather/components/Timer.tsx(3,48): error TS2305: Module '"lucide-react"' has no exported member 'Pause'.
+[16:15:28.573] Error: Command "npm run build" exited with 2
+[16:15:29.182] 

@@ -72,7 +72,10 @@ export const Question: React.FC<QuestionProps> = ({ question }) => {
         <>
           <Reactions questionId={question.id} />
           {showPlotTwist && question.plotTwist && (
-            <PlotTwist twist={question.plotTwist} />
+            <PlotTwist 
+              twist={question.plotTwist} 
+              onClose={() => setShowPlotTwist(false)}
+            />
           )}
         </>
       )}

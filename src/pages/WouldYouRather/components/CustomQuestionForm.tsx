@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import type { Question } from '../types';
 
 interface CustomQuestionFormProps {
@@ -25,7 +25,7 @@ export const CustomQuestionForm = ({ onSubmit }: CustomQuestionFormProps) => {
     }
 
     const newQuestion: Question = {
-      id: Date.now(),
+      id: Date.now().toString(),
       option1: optionA,
       option2: optionB,
       type: 'custom',

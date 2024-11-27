@@ -1,4 +1,4 @@
-import { Question, QuestionCategory } from '../types/game';
+import { type Question as GameQuestion, QuestionCategory } from '../types/game';
 
 export const categories: QuestionCategory[] = [
   'spicy',
@@ -14,15 +14,17 @@ export interface Question {
   option1?: string;
   option2?: string;
   type?: 'truth' | 'dare';
-  text?: string;
+  content?: string;
   category: QuestionCategory;
   plotTwist?: string;
 }
 
-export const questions: Question[] = [
+export const questions: GameQuestion[] = [
   // Party Time
   {
     id: 'party1',
+    content: "Would you rather...",
+    type: 'truth',
     option1: "Dance like nobody's watching at every red light",
     option2: "Sing karaoke in public every time you hear music",
     category: 'spicy',
@@ -30,6 +32,8 @@ export const questions: Question[] = [
   },
   {
     id: 'party2',
+    content: "Would you rather...",
+    type: 'truth',
     option1: "Be the world's greatest DJ but can only play at children's parties",
     option2: "Be a legendary bartender but all drinks taste like fruit punch",
     category: 'funny',
@@ -38,6 +42,8 @@ export const questions: Question[] = [
   // Dating Drama
   {
     id: 'dating1',
+    content: "Would you rather...",
+    type: 'truth',
     option1: "Have all your exes become best friends",
     option2: "Have your parents critique all your dates in real-time",
     category: 'deep',
@@ -46,6 +52,8 @@ export const questions: Question[] = [
   // Life Regrets
   {
     id: 'regret1',
+    content: "Would you rather...",
+    type: 'truth',
     option1: "Relive your most embarrassing moment once a month",
     option2: "Have everyone know your browser history",
     category: 'social',
@@ -54,6 +62,8 @@ export const questions: Question[] = [
   // Social Chaos
   {
     id: 'chaos1',
+    content: "Would you rather...",
+    type: 'truth',
     option1: "Speak only in movie quotes for a year",
     option2: "Laugh uncontrollably at bad news",
     category: 'physical',
@@ -61,44 +71,60 @@ export const questions: Question[] = [
   },
   // Truth Questions
   {
+    id: 'truth1',
+    content: "What's the most embarrassing thing you've ever done in front of a crush?",
     type: 'truth',
-    text: "What's the most embarrassing thing you've ever done in front of a crush?",
+    option1: "Share the story",
+    option2: "Skip this question",
     category: 'spicy'
   },
   {
+    id: 'truth2',
+    content: "What's the biggest lie you've ever told your parents?",
     type: 'truth',
-    text: "What's the biggest lie you've ever told your parents?",
+    option1: "Tell the truth",
+    option2: "Skip this question",
     category: 'deep'
   },
   {
+    id: 'truth3',
+    content: "What's your most ridiculous childhood memory?",
     type: 'truth',
-    text: "What's your most ridiculous childhood memory?",
+    option1: "Share the memory",
+    option2: "Skip this question",
     category: 'funny'
   },
   // Dare Questions
   {
+    id: 'dare1',
+    content: "Do 10 push-ups right now",
     type: 'dare',
-    text: "Do 10 push-ups right now",
+    option1: "Do it",
+    option2: "Skip this dare",
     category: 'physical'
   },
   {
+    id: 'dare2',
+    content: "Dance to a song of the group's choice",
     type: 'dare',
-    text: "Dance to a song of the group's choice",
+    option1: "Dance now",
+    option2: "Skip this dare",
     category: 'physical'
   },
   {
+    id: 'dare3',
+    content: "Do your best impression of another player",
     type: 'dare',
-    text: "Do your best impression of another player",
+    option1: "Do the impression",
+    option2: "Skip this dare",
     category: 'social'
   },
   {
+    id: 'dare4',
+    content: "Create a short rap about the person to your left",
     type: 'dare',
-    text: "Create a short rap about the person to your left",
+    option1: "Rap now",
+    option2: "Skip this dare",
     category: 'creative'
-  },
-  {
-    type: 'dare',
-    text: "Do jumping jacks for 30 seconds",
-    category: 'physical'
   }
 ];

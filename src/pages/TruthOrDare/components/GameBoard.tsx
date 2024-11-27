@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import type { FC } from 'react';
-import { Sparkles, Zap, Brain, Users, Dumbbell, Palette, RefreshCw, Plus, ArrowLeftCircle, MessageCircle } from 'lucide-react';
+import { Sparkles, Zap, Brain, Users, Dumbbell, Palette, RefreshCw, Plus, ArrowLeftIcon, MessageCircle } from 'lucide-react';
 import { useGameQuestions } from '../hooks/useGameQuestions';
-import AddQuestionModal from './AddQuestionModal';
+import { AddQuestionModal } from './AddQuestionModal';
 import { Question, QuestionType, QuestionCategory } from '../types/game';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import useSound from 'use-sound';
-import toast, { Toaster } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 interface GameBoardProps {
   players: string[];
@@ -19,292 +19,253 @@ export const GameBoard: FC<GameBoardProps> = ({ players, onEndGame }) => {
   const [selectedCategory, setSelectedCategory] = useState<QuestionCategory | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
-
-  const { getRandomQuestion, addCustomQuestion } = useGameQuestions();
-
+  const { getRandomQuestion } = useGameQuestions();
   const [playHover] = useSound('/hover.mp3', { volume: 0.5 });
   const [playSelect] = useSound('/select.mp3', { volume: 0.5 });
 
   const currentPlayer = players[currentPlayerIndex];
 
-  const selectType = (type: QuestionType) => {
+  const handleAddQuestion = (question: Question) => {
+    setIsQuestionModalOpen(false);
+  };
+
+  const handleNextQuestion = () => {
+    if (!selectedType || !selectedCategory) return;
+    
+    const question = getRandomQuestion(selectedType, selectedCategory);
+    if (!question) {
+      toast('No questions available for this category!', {
+        duration: 2000,
+        icon: '⚠️',
+        style: {
+          background: '#ef4444',
+          color: '#fff'
+        }
+      });
+      return null;
+    }
+    setCurrentQuestion(question);
+  };
+
+  const handleTypeSelect = (type: QuestionType) => {
     playSelect();
     setSelectedType(type);
     setSelectedCategory(null);
     setCurrentQuestion(null);
   };
 
-  const generateQuestion = (type: QuestionType, category: QuestionCategory) => {
-    const question = getRandomQuestion(type, category, currentPlayer);
-    if (!question) {
-      toast.error('No questions available for this category!', {
-        duration: 2000,
-        icon: <MessageCircle />,
-      });
-      return null;
-    }
-    return question;
-  };
-
-  const handleSelectCategory = (category: QuestionCategory) => {
-    if (!selectedType) return;
-    
+  const handleCategorySelect = (category: QuestionCategory) => {
     playSelect();
     setSelectedCategory(category);
-    const question = generateQuestion(selectedType, category);
-    if (question) {
-      setCurrentQuestion(question);
-    }
+    handleNextQuestion();
   };
 
-  const refreshQuestion = () => {
-    if (!selectedType || !selectedCategory) return;
-    
-    playSelect();
-    const question = generateQuestion(selectedType, selectedCategory);
-    if (question) {
-      setCurrentQuestion(question);
-    }
-  };
-
-  const nextTurn = () => {
+  const handleNextPlayer = () => {
     const nextIndex = (currentPlayerIndex + 1) % players.length;
     setCurrentPlayerIndex(nextIndex);
     setSelectedType(null);
     setSelectedCategory(null);
     setCurrentQuestion(null);
-    toast.success(`${players[nextIndex]}'s turn!`, {
+    toast(`${players[nextIndex]}'s turn!`, {
       duration: 2000,
-      icon: <MessageCircle />,
+      icon: '🎮',
+      style: {
+        background: '#22c55e',
+        color: '#fff'
+      }
     });
-  };
-
-  const getCategoryIcon = (category: QuestionCategory) => {
-    switch (category) {
-      case 'spicy': return <Zap className="w-8 h-8" />;
-      case 'funny': return <Sparkles className="w-8 h-8" />;
-      case 'deep': return <Brain className="w-8 h-8" />;
-      case 'social': return <Users className="w-8 h-8" />;
-      case 'physical': return <Dumbbell className="w-8 h-8" />;
-      case 'creative': return <Palette className="w-8 h-8" />;
-      default: return <RefreshCw className="w-8 h-8" />;
-    }
   };
 
   return (
     <div className="w-full max-w-2xl mx-auto text-center relative">
-      <Toaster />
       <div className="mb-8">
         <div className="flex justify-center items-center mb-4">
           <button
             onClick={() => setIsQuestionModalOpen(true)}
             className="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 transition-colors flex items-center gap-2 text-white"
+            onMouseEnter={() => playHover()}
           >
-            <Plus size={20} />
+            <Plus className="w-5 h-5" />
             Add Question
           </button>
         </div>
-        
+
         <h2 className="text-3xl font-bold text-white mb-2">
           {currentPlayer}'s Turn
         </h2>
-        <p className="text-white/60">Choose your challenge!</p>
-      </div>
 
-      {/* Game Type Selection */}
-      {!selectedType && (
-        <div className="flex justify-center gap-4 mb-8">
-          <GameOption
-            label="Truth"
-            onClick={() => selectType('truth')}
-            onHover={() => playHover()}
-          />
-          <GameOption
-            label="Dare"
-            onClick={() => selectType('dare')}
-            onHover={() => playHover()}
-          />
-        </div>
-      )}
-
-      {/* Category Selection */}
-      {selectedType && !selectedCategory && (
-        <div>
-          <div className="flex justify-center gap-4 mb-6">
-            {selectedType === 'truth' ? (
-              <>
-                <CategoryButton
-                  label="Deep"
-                  onClick={() => handleSelectCategory('deep')}
-                  onHover={playHover}
-                />
-                <CategoryButton
-                  label="Funny"
-                  onClick={() => handleSelectCategory('funny')}
-                  onHover={playHover}
-                />
-                <CategoryButton
-                  label="Spicy"
-                  onClick={() => handleSelectCategory('spicy')}
-                  onHover={playHover}
-                />
-              </>
-            ) : (
-              <>
-                <CategoryButton
-                  label="Social"
-                  onClick={() => handleSelectCategory('social')}
-                  onHover={playHover}
-                />
-                <CategoryButton
-                  label="Physical"
-                  onClick={() => handleSelectCategory('physical')}
-                  onHover={playHover}
-                />
-                <CategoryButton
-                  label="Creative"
-                  onClick={() => handleSelectCategory('creative')}
-                  onHover={playHover}
-                />
-              </>
-            )}
+        {!selectedType ? (
+          <div className="space-y-6">
+            <h3 className="text-xl text-white/80">Choose Type:</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleTypeSelect('truth')}
+                onMouseEnter={() => playHover()}
+                className="px-8 py-6 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl text-white font-bold text-xl shadow-lg hover:shadow-xl transition-shadow"
+              >
+                Truth
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleTypeSelect('dare')}
+                onMouseEnter={() => playHover()}
+                className="px-8 py-6 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl text-white font-bold text-xl shadow-lg hover:shadow-xl transition-shadow"
+              >
+                Dare
+              </motion.button>
+            </div>
           </div>
-
-          <button
-            onClick={() => setSelectedType(null)}
-            className="mt-4 px-6 py-2 text-white/60 hover:text-white transition-colors flex items-center gap-2 justify-center mx-auto"
-          >
-            <RefreshCw size={20} />
-            Change Type
-          </button>
-        </div>
-      )}
-
-      {/* Question Display */}
-      {currentQuestion && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-8 w-full max-w-2xl mx-auto"
-        >
-          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 shadow-lg border border-white/20 relative">
-            <button
-              onClick={refreshQuestion}
-              className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-full transition-colors"
-              title="Get new question"
-            >
-              <RefreshCw className="w-5 h-5 text-white/60 hover:text-white" />
-            </button>
-            <div className="flex items-center justify-center min-h-[120px]">
-              <p className="text-2xl font-medium text-white text-center">
-                {currentQuestion.content}
+        ) : !selectedCategory ? (
+          <div className="space-y-6">
+            <div className="flex justify-center">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelectedType(null)}
+                className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white flex items-center gap-2"
+                onMouseEnter={() => playHover()}
+              >
+                <RefreshCw className="w-4 h-4" />
+                Change Type
+              </motion.button>
+            </div>
+            <h3 className="text-xl text-white/80">Choose Category:</h3>
+            <div className="grid grid-cols-3 gap-4">
+              {selectedType === 'truth' ? (
+                <>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleCategorySelect('deep')}
+                    onMouseEnter={() => playHover()}
+                    className="p-6 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl text-white font-bold shadow-lg hover:shadow-xl transition-shadow"
+                  >
+                    <Brain className="w-8 h-8 mx-auto mb-2" />
+                    Deep
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleCategorySelect('funny')}
+                    onMouseEnter={() => playHover()}
+                    className="p-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl text-white font-bold shadow-lg hover:shadow-xl transition-shadow"
+                  >
+                    <Sparkles className="w-8 h-8 mx-auto mb-2" />
+                    Funny
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleCategorySelect('spicy')}
+                    onMouseEnter={() => playHover()}
+                    className="p-6 bg-gradient-to-br from-red-500 to-red-600 rounded-xl text-white font-bold shadow-lg hover:shadow-xl transition-shadow"
+                  >
+                    <Zap className="w-8 h-8 mx-auto mb-2" />
+                    Spicy
+                  </motion.button>
+                </>
+              ) : (
+                <>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleCategorySelect('social')}
+                    onMouseEnter={() => playHover()}
+                    className="p-6 bg-gradient-to-br from-green-500 to-green-600 rounded-xl text-white font-bold shadow-lg hover:shadow-xl transition-shadow"
+                  >
+                    <Users className="w-8 h-8 mx-auto mb-2" />
+                    Social
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleCategorySelect('physical')}
+                    onMouseEnter={() => playHover()}
+                    className="p-6 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl text-white font-bold shadow-lg hover:shadow-xl transition-shadow"
+                  >
+                    <Dumbbell className="w-8 h-8 mx-auto mb-2" />
+                    Physical
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleCategorySelect('creative')}
+                    onMouseEnter={() => playHover()}
+                    className="p-6 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl text-white font-bold shadow-lg hover:shadow-xl transition-shadow"
+                  >
+                    <Palette className="w-8 h-8 mx-auto mb-2" />
+                    Creative
+                  </motion.button>
+                </>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className="flex justify-center space-x-4 mb-6">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelectedType(null)}
+                className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white flex items-center gap-2"
+                onMouseEnter={() => playHover()}
+              >
+                <RefreshCw className="w-4 h-4" />
+                New Type
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelectedCategory(null)}
+                className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white flex items-center gap-2"
+                onMouseEnter={() => playHover()}
+              >
+                <RefreshCw className="w-4 h-4" />
+                New Category
+              </motion.button>
+            </div>
+            <div className="bg-white/10 p-6 rounded-xl backdrop-blur-sm">
+              <p className="text-2xl text-white mb-4">
+                {currentQuestion?.content}
               </p>
             </div>
           </div>
+        )}
+
+        {currentQuestion && (
           <div className="mt-4 flex justify-center">
             <button
-              onClick={nextTurn}
+              onClick={handleNextPlayer}
               className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
             >
               Next Player
             </button>
           </div>
-        </motion.div>
+        )}
+      </div>
+
+      {isQuestionModalOpen && (
+        <AddQuestionModal
+          isOpen={isQuestionModalOpen}
+          onClose={() => setIsQuestionModalOpen(false)}
+          onAdd={handleAddQuestion}
+        />
       )}
 
-      {/* Add Question Modal */}
-      <AddQuestionModal
-        isOpen={isQuestionModalOpen}
-        onClose={() => setIsQuestionModalOpen(false)}
-        onAdd={(question) => {
-          addCustomQuestion(question);
-          setIsQuestionModalOpen(false);
-        }}
-      />
-
-      {/* Back and End Game Buttons */}
-      <div className="mt-8 flex justify-center gap-4">
+      <div className="flex justify-between">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={onEndGame}
           className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors font-semibold shadow-lg flex items-center gap-2"
         >
-          <ArrowLeftCircle className="w-5 h-5" />
+          <ArrowLeftIcon className="w-5 h-5" />
           Back to Players
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onEndGame}
-          className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-semibold shadow-lg"
-        >
-          End Game
         </motion.button>
       </div>
     </div>
   );
 };
-
-interface CategoryButtonProps {
-  label: string;
-  onClick: () => void;
-  onHover: () => void;
-}
-
-const CategoryButton: FC<CategoryButtonProps> = ({
-  label,
-  onClick,
-  onHover,
-}) => {
-  const getBackgroundColor = () => {
-    switch (label.toLowerCase()) {
-      case 'spicy':
-        return 'bg-purple-700 hover:bg-purple-800';
-      case 'funny':
-        return 'bg-purple-500 hover:bg-purple-600';
-      case 'deep':
-        return 'bg-purple-400 hover:bg-purple-500';
-      default:
-        return 'bg-purple-600 hover:bg-purple-700';
-    }
-  };
-
-  return (
-    <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={onClick}
-      onMouseEnter={onHover}
-      className={`w-[200px] h-[100px] flex items-center justify-center rounded-xl shadow-lg transition-colors ${getBackgroundColor()}`}
-    >
-      <span className="text-2xl font-bold text-white">{label}</span>
-    </motion.button>
-  );
-};
-
-interface GameOptionProps {
-  label: string;
-  onClick: () => void;
-  onHover: () => void;
-}
-
-const GameOption: FC<GameOptionProps> = ({
-  label,
-  onClick,
-  onHover,
-}) => (
-  <motion.button
-    onClick={onClick}
-    onMouseEnter={onHover}
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    className={`w-[300px] h-[100px] flex items-center justify-center rounded-xl shadow-lg transition-colors ${
-      label === 'Truth' 
-        ? 'bg-blue-500 hover:bg-blue-600' 
-        : 'bg-purple-500 hover:bg-purple-600'
-    }`}
-  >
-    <span className="text-3xl font-bold text-white">{label}</span>
-  </motion.button>
-);

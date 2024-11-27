@@ -8,7 +8,7 @@ const initialState: GameState = {
   currentPlayerIndex: 0,
   chaosMaster: undefined,
   customQuestions: [],
-  usedQuestionIds: new Set<string>(),
+  usedQuestionIds: [],
   votes: {},
   showChaosMasterWheel: false,
   isTimerRunning: false,
@@ -31,10 +31,10 @@ export const useGameStore = create<GameState & GameActions>((set) => ({
 
   addUsedQuestionId: (id: string) => 
     set((state) => ({
-      usedQuestionIds: new Set([...Array.from(state.usedQuestionIds), id])
+      usedQuestionIds: [...state.usedQuestionIds, id]
     })),
 
-  clearUsedQuestionIds: () => set({ usedQuestionIds: new Set() }),
+  clearUsedQuestionIds: () => set({ usedQuestionIds: [] }),
 
   addVote: (playerId: string, choice: 'option1' | 'option2') => 
     set((state) => ({

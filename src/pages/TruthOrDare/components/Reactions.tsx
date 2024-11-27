@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { FaLaugh, FaAngry, FaSurprise, FaSadTear, FaHeart } from 'react-icons/fa';
 import { useGameStore } from '../store/gameStore';

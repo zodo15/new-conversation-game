@@ -1,43 +1,20 @@
-import { useState, useCallback } from 'react';
-import { gameContent } from '../data/gameContent';
+import { useCallback } from 'react';
 import { Question, QuestionType, QuestionCategory } from '../types/game';
+import { questions } from '../data/questions';
 
-export function useGameQuestions() {
-  const [customQuestions, setCustomQuestions] = useState<Question[]>([]);
-
-  const addCustomQuestion = useCallback((question: Question) => {
-    setCustomQuestions(prev => [...prev, question]);
-  }, []);
-
-  const getRandomQuestion = useCallback((type: QuestionType, category: QuestionCategory, currentPlayer: string): Question | null => {
-    // Get default questions from gameContent
-    const defaultQuestions = (gameContent[type][category] || []).map(content => ({
-      content,
-      type,
-      category,
-      isCustom: false
-    }));
-
-    // Get custom questions for this type and category
-    const relevantCustomQuestions = customQuestions.filter(q => 
-      q.type === type && 
-      q.category === category
-    );
-
-    // Combine both pools
-    const allQuestions = [...defaultQuestions, ...relevantCustomQuestions];
-
-    if (allQuestions.length === 0) {
+export const useGameQuestions = () => {
+  const getRandomQuestion = useCallback((type: QuestionType, category: QuestionCategory): Question | null => {
+    const filteredQuestions = questions.filter(q => q.type === type && q.category === category);
+    
+    if (filteredQuestions.length === 0) {
       return null;
     }
 
-    const randomIndex = Math.floor(Math.random() * allQuestions.length);
-    return allQuestions[randomIndex];
-  }, [customQuestions]);
+    const randomIndex = Math.floor(Math.random() * filteredQuestions.length);
+    return filteredQuestions[randomIndex];
+  }, []);
 
   return {
-    customQuestions,
-    addCustomQuestion,
     getRandomQuestion
   };
-}
+};

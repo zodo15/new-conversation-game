@@ -1,5 +1,6 @@
 import React from 'react';
-import { Users, ArrowLeft } from 'lucide-react';
+import { Users, ArrowLeftCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface FriendGameModesProps {
   onBack: () => void;
@@ -15,7 +16,7 @@ export const FriendGameModes: React.FC<FriendGameModesProps> = ({ onBack, onStar
         onClick={onBack}
         className="flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-lg text-white font-semibold hover:bg-gray-700 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeftCircle className="w-4 h-4" />
         Back to Menu
       </motion.button>
 

@@ -1,11 +1,10 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
 import useSound from 'use-sound';
 import { FaDice, FaBolt, FaClock, FaSkull } from 'react-icons/fa';
 
 export const GameModes = () => {
-  const { setChaosMode, setTimer } = useGameStore();
+  const { toggleChaosMode, toggleTimerMode } = useGameStore();
   const [playSelect] = useSound('/select.mp3', { volume: 0.5 });
 
   const modes = [
@@ -30,6 +29,12 @@ export const GameModes = () => {
     show: { x: 0, opacity: 1 }
   };
 
+  const handleModeSelect = (chaos: boolean, timer: boolean) => {
+    playSelect();
+    if (chaos) toggleChaosMode();
+    if (timer) toggleTimerMode();
+  };
+
   return (
     <motion.div
       variants={container}
@@ -43,11 +48,7 @@ export const GameModes = () => {
           variants={item}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
-          onClick={() => {
-            playSelect();
-            setChaosMode(mode.chaos);
-            setTimer(mode.timer);
-          }}
+          onClick={() => handleModeSelect(mode.chaos, mode.timer)}
           className={`bg-gradient-to-r ${
             mode.color === 'purple' ? 'from-purple-900/50 to-purple-800/30 hover:from-purple-800/50 hover:to-purple-700/30' :
             mode.color === 'yellow' ? 'from-yellow-900/50 to-yellow-800/30 hover:from-yellow-800/50 hover:to-yellow-700/30' :

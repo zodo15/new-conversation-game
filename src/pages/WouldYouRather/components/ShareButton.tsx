@@ -1,5 +1,5 @@
 import React from 'react';
-import { Share2 } from 'lucide-react';
+import { Share } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 interface ShareButtonProps {
@@ -39,7 +39,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({ votes }) => {
       onClick={handleShare}
       className="flex items-center space-x-2 px-4 py-2 bg-white rounded-lg shadow-lg hover:bg-gray-50 transition-colors"
     >
-      <Share2 className="w-5 h-5" />
+      <Share className="w-5 h-5" />
       <span>Share Results</span>
     </button>
   );

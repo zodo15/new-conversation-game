@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Question, QuestionType, QuestionCategory } from '../types/game';
-import toast from 'react-hot-toast';
+import { toast, Toaster } from 'react-hot-toast';
 
 interface AddQuestionModalProps {
   isOpen: boolean;
@@ -10,14 +10,14 @@ interface AddQuestionModalProps {
   onAdd: (question: Question) => void;
 }
 
-const AddQuestionModal: React.FC<AddQuestionModalProps> = ({
+export const AddQuestionModal: React.FC<AddQuestionModalProps> = ({
   isOpen,
   onClose,
   onAdd,
 }) => {
   const [questionText, setQuestionText] = useState('');
-  const [type, setType] = useState<QuestionType>('truth');
-  const [category, setCategory] = useState<QuestionCategory>('funny');
+  const [selectedType, setSelectedType] = useState<QuestionType>('truth');
+  const [selectedCategory, setSelectedCategory] = useState<QuestionCategory>('funny');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,9 +35,12 @@ const AddQuestionModal: React.FC<AddQuestionModalProps> = ({
     }
 
     const newQuestion: Question = {
-      content: questionText.trim(),
-      type,
-      category,
+      id: Date.now().toString(),
+      content: questionText,
+      type: selectedType,
+      category: selectedCategory,
+      option1: '',
+      option2: '',
       custom: true
     };
 
@@ -84,9 +87,9 @@ const AddQuestionModal: React.FC<AddQuestionModalProps> = ({
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     type="button"
-                    onClick={() => setType('truth')}
+                    onClick={() => setSelectedType('truth')}
                     className={`px-4 py-3 rounded-lg transition-colors ${
-                      type === 'truth'
+                      selectedType === 'truth'
                         ? 'bg-blue-500 text-white'
                         : 'bg-white/10 text-white/60 hover:bg-white/20'
                     }`}
@@ -96,13 +99,13 @@ const AddQuestionModal: React.FC<AddQuestionModalProps> = ({
                   <button
                     type="button"
                     onClick={() => {
-                      setType('dare');
-                      if (['funny', 'deep', 'spicy'].includes(category)) {
-                        setCategory('social');
+                      setSelectedType('dare');
+                      if (['funny', 'deep', 'spicy'].includes(selectedCategory)) {
+                        setSelectedCategory('social');
                       }
                     }}
                     className={`px-4 py-3 rounded-lg transition-colors ${
-                      type === 'dare'
+                      selectedType === 'dare'
                         ? 'bg-purple-500 text-white'
                         : 'bg-white/10 text-white/60 hover:bg-white/20'
                     }`}
@@ -115,15 +118,15 @@ const AddQuestionModal: React.FC<AddQuestionModalProps> = ({
               <div>
                 <label className="block text-white/80 mb-2">Category</label>
                 <div className="grid grid-cols-3 gap-2">
-                  {type === 'truth' ? (
+                  {selectedType === 'truth' ? (
                     <>
                       {['deep', 'funny', 'spicy'].map((cat) => (
                         <button
                           key={cat}
                           type="button"
-                          onClick={() => setCategory(cat as QuestionCategory)}
+                          onClick={() => setSelectedCategory(cat as QuestionCategory)}
                           className={`px-4 py-3 rounded-lg transition-colors ${
-                            category === cat
+                            selectedCategory === cat
                               ? 'bg-purple-500 text-white'
                               : 'bg-white/10 text-white/60 hover:bg-white/20'
                           }`}
@@ -138,9 +141,9 @@ const AddQuestionModal: React.FC<AddQuestionModalProps> = ({
                         <button
                           key={cat}
                           type="button"
-                          onClick={() => setCategory(cat as QuestionCategory)}
+                          onClick={() => setSelectedCategory(cat as QuestionCategory)}
                           className={`px-4 py-3 rounded-lg transition-colors ${
-                            category === cat
+                            selectedCategory === cat
                               ? 'bg-purple-500 text-white'
                               : 'bg-white/10 text-white/60 hover:bg-white/20'
                           }`}
@@ -183,8 +186,7 @@ const AddQuestionModal: React.FC<AddQuestionModalProps> = ({
           </motion.div>
         </motion.div>
       )}
+      <Toaster />
     </AnimatePresence>
   );
 };
-
-export default AddQuestionModal;

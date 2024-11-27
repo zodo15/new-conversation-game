@@ -1,6 +1,5 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquarePlus } from 'lucide-react';
+import { MessageSquareText } from 'lucide-react';
 
 export const FeedbackButton = () => {
   const handleClick = () => {
@@ -17,7 +16,7 @@ export const FeedbackButton = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <MessageSquarePlus className="w-6 h-6 text-white" />
+      <MessageSquareText className="w-6 h-6 text-white" />
     </motion.button>
   );
 };

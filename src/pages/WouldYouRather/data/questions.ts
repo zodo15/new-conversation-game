@@ -71,9 +71,9 @@ export const getQuestionsByMode = (mode: 'classic' | 'spicy'): Question[] => {
   }
 };
 
-export const getRandomQuestion = (type: 'classic' | 'spicy', usedIds: Set<string>): Question | undefined => {
-  const questions = type === 'classic' ? classicQuestions : spicyQuestions;
-  const availableQuestions = questions.filter(q => !usedIds.has(q.id));
+export const getRandomQuestion = (type: 'classic' | 'spicy', usedIds: string[]): Question | undefined => {
+  const questions = { classic: classicQuestions, spicy: spicyQuestions };
+  const availableQuestions = questions[type].filter(q => !usedIds.includes(q.id));
   
   if (availableQuestions.length === 0) {
     return undefined;

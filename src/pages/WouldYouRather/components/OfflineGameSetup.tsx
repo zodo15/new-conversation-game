@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { Play, ArrowLeft, Plus, X, Users } from 'lucide-react';
+import { PlayIcon, ArrowLeft, PlusIcon, XIcon, UsersIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import { type Question } from '../data/questions';
@@ -25,7 +25,13 @@ export const OfflineGameSetup: React.FC<OfflineGameSetupProps> = ({ onStart, onB
 
     if (players.length >= 12) { 
 
-      toast.error('Maximum 12 players allowed'); 
+      toast('Maximum 12 players allowed', {
+        icon: '⚠️',
+        style: {
+          background: '#f87171',
+          color: '#fff'
+        }
+      }); 
 
       return; 
 
@@ -35,7 +41,13 @@ export const OfflineGameSetup: React.FC<OfflineGameSetupProps> = ({ onStart, onB
 
       if (players.includes(newPlayerName.trim())) { 
 
-        toast.error('Player name already exists'); 
+        toast('Player name already exists', {
+          icon: '⚠️',
+          style: {
+            background: '#f87171',
+            color: '#fff'
+          }
+        }); 
 
         return; 
 
@@ -61,7 +73,13 @@ export const OfflineGameSetup: React.FC<OfflineGameSetupProps> = ({ onStart, onB
 
     if (players.length < 2) { 
 
-      toast.error('At least 2 players required'); 
+      toast('At least 2 players required', {
+        icon: '⚠️',
+        style: {
+          background: '#f87171',
+          color: '#fff'
+        }
+      }); 
 
       return; 
 
@@ -101,7 +119,7 @@ export const OfflineGameSetup: React.FC<OfflineGameSetupProps> = ({ onStart, onB
 
           <h2 className="text-2xl font-bold flex items-center gap-3"> 
 
-            <Users className="w-7 h-7 text-blue-400" /> 
+            <UsersIcon className="w-7 h-7 text-blue-400" /> 
 
             <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent"> 
 
@@ -163,7 +181,7 @@ export const OfflineGameSetup: React.FC<OfflineGameSetupProps> = ({ onStart, onB
 
             > 
 
-              <Plus className="w-5 h-5" /> 
+              <PlusIcon className="w-5 h-5" /> 
 
               Add Player 
 
@@ -213,7 +231,7 @@ export const OfflineGameSetup: React.FC<OfflineGameSetupProps> = ({ onStart, onB
 
                 > 
 
-                  <X className="w-5 h-5 text-red-400" /> 
+                  <XIcon className="w-5 h-5 text-red-400" /> 
 
                 </motion.button> 
 
@@ -249,7 +267,7 @@ export const OfflineGameSetup: React.FC<OfflineGameSetupProps> = ({ onStart, onB
 
         > 
 
-          <Play className="w-5 h-5" /> 
+          <PlayIcon className="w-5 h-5" /> 
 
           Start Game 
 
