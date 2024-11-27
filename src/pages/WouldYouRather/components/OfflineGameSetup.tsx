@@ -1,10 +1,7 @@
-import { motion } from 'framer-motion'; 
-
-import { Plus, X, Users, Play, ArrowLeft } from 'lucide-react'; 
-
-import { useState } from 'react'; 
-
-import toast from 'react-hot-toast'; 
+import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { PlayIcon as Play, ArrowLeftCircle as ArrowLeft, PlusIcon as Plus, XIcon as X, UsersIcon as Users } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 import { type Question } from '../data/questions';
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC } from 'react';
 import { motion } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
 
@@ -11,7 +11,7 @@ interface GameCardProps {
   questionType: string;
 }
 
-export const GameCard: React.FC<GameCardProps> = ({
+export const GameCard: FC<GameCardProps> = ({
   title,
   description,
   onClick,

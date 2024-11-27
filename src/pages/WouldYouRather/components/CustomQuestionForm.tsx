@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import type { Question } from '../types';
 
 interface CustomQuestionFormProps {
@@ -12,51 +13,67 @@ export const CustomQuestionForm = ({ onSubmit }: CustomQuestionFormProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (optionA.trim() && optionB.trim()) {
-      onSubmit({
-        id: 0, // Will be set by parent
-        optionA: optionA.trim(),
-        optionB: optionB.trim(),
-      });
-      setOptionA('');
-      setOptionB('');
+
+    if (!optionA || !optionB) {
+      toast.error('Please fill in both options');
+      return;
     }
+
+    if (optionA.length < 3 || optionB.length < 3) {
+      toast.error('Options must be at least 3 characters long');
+      return;
+    }
+
+    const newQuestion: Question = {
+      id: Date.now(),
+      option1: optionA,
+      option2: optionB,
+      type: 'custom',
+      votesA: 0,
+      votesB: 0,
+    };
+
+    onSubmit(newQuestion);
+    toast.success('Question added successfully!');
+    setOptionA('');
+    setOptionB('');
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <label htmlFor="optionA" className="block text-sm font-medium text-gray-300 mb-2">
-          Option A
+          Option 1
         </label>
         <input
-          type="text"
           id="optionA"
+          type="text"
           value={optionA}
           onChange={(e) => setOptionA(e.target.value)}
-          className="w-full px-4 py-2 bg-gray-800 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+          className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
           placeholder="Enter first option..."
+          required
         />
       </div>
       <div>
         <label htmlFor="optionB" className="block text-sm font-medium text-gray-300 mb-2">
-          Option B
+          Option 2
         </label>
         <input
-          type="text"
           id="optionB"
+          type="text"
           value={optionB}
           onChange={(e) => setOptionB(e.target.value)}
-          className="w-full px-4 py-2 bg-gray-800 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+          className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
           placeholder="Enter second option..."
+          required
         />
       </div>
       <motion.button
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         type="submit"
-        className="w-full px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg text-white font-semibold"
-        disabled={!optionA.trim() || !optionB.trim()}
+        className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
       >
         Add Question
       </motion.button>

@@ -23,7 +23,14 @@ const AddQuestionModal: React.FC<AddQuestionModalProps> = ({
     e.preventDefault();
 
     if (!questionText.trim()) {
-      toast.error('Please enter a question!');
+      toast('Please enter a question!', {
+        icon: '⚠️',
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        },
+      });
       return;
     }
 
@@ -31,12 +38,19 @@ const AddQuestionModal: React.FC<AddQuestionModalProps> = ({
       content: questionText.trim(),
       type,
       category,
-      isCustom: true
+      custom: true
     };
 
     onAdd(newQuestion);
     setQuestionText('');
-    toast.success('Question added successfully!');
+    toast('Question added successfully!', {
+      icon: '✅',
+      style: {
+        borderRadius: '10px',
+        background: '#333',
+        color: '#fff',
+      },
+    });
     onClose();
   };
 

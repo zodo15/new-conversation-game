@@ -2,11 +2,6 @@ import { useCallback, useState } from 'react';
 import ReactConfetti from 'react-confetti';
 import { FC, ReactElement } from 'react';
 
-interface ConfettiComponentProps {
-  width: number;
-  height: number;
-}
-
 export default function useConfetti() {
   const [isActive, setIsActive] = useState(false);
 
@@ -38,4 +33,4 @@ export default function useConfetti() {
     stopConfetti,
     ConfettiComponent 
   };
-} 
+}

@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { categories } from '../data/questions';
+import { QuestionCategory } from '../types/game';
 import { useGameStore } from '../store/gameStore';
 import useSound from 'use-sound';
-import { FaGlassCheers, FaHeartBroken, FaHistory, FaBomb } from 'react-icons/fa';
+import { FaFire, FaLaugh, FaBrain, FaUsers, FaDumbbell, FaPalette } from 'react-icons/fa';
 
-const categoryIcons: Record<string, React.ReactNode> = {
-  'Party Time': <FaGlassCheers className="text-3xl mb-2" />,
-  'Dating Drama': <FaHeartBroken className="text-3xl mb-2" />,
-  'Life Regrets': <FaHistory className="text-3xl mb-2" />,
-  'Social Chaos': <FaBomb className="text-3xl mb-2" />
+const categoryIcons: Record<QuestionCategory, React.ReactNode> = {
+  'spicy': <FaFire className="text-3xl mb-2" />,
+  'funny': <FaLaugh className="text-3xl mb-2" />,
+  'deep': <FaBrain className="text-3xl mb-2" />,
+  'social': <FaUsers className="text-3xl mb-2" />,
+  'physical': <FaDumbbell className="text-3xl mb-2" />,
+  'creative': <FaPalette className="text-3xl mb-2" />
 };
 
 export const CategorySelect = () => {

@@ -1,6 +1,6 @@
-import { motion } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
-import { TimerIcon, PlayIcon, PauseIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Timer as TimerIcon, Play as PlayIcon, Pause as PauseIcon } from 'lucide-react';
 
 interface TimerProps {
   duration: number;

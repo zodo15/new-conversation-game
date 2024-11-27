@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
-import { Sparkles, Zap, Brain, Users, Dumbbell, Palette, RefreshCw, Plus, MessageCircle, ArrowLeft } from 'lucide-react';
+import { useState } from 'react';
+import type { FC } from 'react';
+import { Sparkles, Zap, Brain, Users, Dumbbell, Palette, RefreshCw, Plus, ArrowLeftCircle, MessageCircle } from 'lucide-react';
 import { useGameQuestions } from '../hooks/useGameQuestions';
 import AddQuestionModal from './AddQuestionModal';
 import { Question, QuestionType, QuestionCategory } from '../types/game';
 import { motion, AnimatePresence } from 'framer-motion';
 import useSound from 'use-sound';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface GameBoardProps {
   players: string[];
   onEndGame: () => void;
 }
 
-export const GameBoard: React.FC<GameBoardProps> = ({ players, onEndGame }) => {
+export const GameBoard: FC<GameBoardProps> = ({ players, onEndGame }) => {
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [selectedType, setSelectedType] = useState<QuestionType | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<QuestionCategory | null>(null);
@@ -36,7 +37,10 @@ export const GameBoard: React.FC<GameBoardProps> = ({ players, onEndGame }) => {
   const generateQuestion = (type: QuestionType, category: QuestionCategory) => {
     const question = getRandomQuestion(type, category, currentPlayer);
     if (!question) {
-      toast.error('No questions available for this category!');
+      toast.error('No questions available for this category!', {
+        duration: 2000,
+        icon: <MessageCircle />,
+      });
       return null;
     }
     return question;
@@ -69,10 +73,13 @@ export const GameBoard: React.FC<GameBoardProps> = ({ players, onEndGame }) => {
     setSelectedType(null);
     setSelectedCategory(null);
     setCurrentQuestion(null);
-    toast.success(`${players[nextIndex]}'s turn!`);
+    toast.success(`${players[nextIndex]}'s turn!`, {
+      duration: 2000,
+      icon: <MessageCircle />,
+    });
   };
 
-  const getCategoryIcon = (category: string) => {
+  const getCategoryIcon = (category: QuestionCategory) => {
     switch (category) {
       case 'spicy': return <Zap className="w-8 h-8" />;
       case 'funny': return <Sparkles className="w-8 h-8" />;
@@ -80,12 +87,13 @@ export const GameBoard: React.FC<GameBoardProps> = ({ players, onEndGame }) => {
       case 'social': return <Users className="w-8 h-8" />;
       case 'physical': return <Dumbbell className="w-8 h-8" />;
       case 'creative': return <Palette className="w-8 h-8" />;
-      default: return null;
+      default: return <RefreshCw className="w-8 h-8" />;
     }
   };
 
   return (
     <div className="w-full max-w-2xl mx-auto text-center relative">
+      <Toaster />
       <div className="mb-8">
         <div className="flex justify-center items-center mb-4">
           <button
@@ -222,7 +230,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ players, onEndGame }) => {
           onClick={onEndGame}
           className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors font-semibold shadow-lg flex items-center gap-2"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeftCircle className="w-5 h-5" />
           Back to Players
         </motion.button>
         <motion.button
@@ -244,7 +252,7 @@ interface CategoryButtonProps {
   onHover: () => void;
 }
 
-const CategoryButton: React.FC<CategoryButtonProps> = ({
+const CategoryButton: FC<CategoryButtonProps> = ({
   label,
   onClick,
   onHover,
@@ -281,7 +289,7 @@ interface GameOptionProps {
   onHover: () => void;
 }
 
-const GameOption: React.FC<GameOptionProps> = ({
+const GameOption: FC<GameOptionProps> = ({
   label,
   onClick,
   onHover,

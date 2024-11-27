@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
-import { Sparkles, X, Dice6 } from 'lucide-react';
+import { IoSparkles as Sparkles, IoCube as Dice6, IoClose as X } from 'react-icons/io5';
 import { ChaosChallenge, chaosChallenges } from '../data/chaosData';
 
 interface ChaosButtonProps {
@@ -117,4 +117,4 @@ export const ChaosButton = ({ isChaosMaster }: ChaosButtonProps) => {
       </AnimatePresence>
     </>
   );
-}; 
+};

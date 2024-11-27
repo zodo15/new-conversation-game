@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Users, Wifi, WifiOff } from 'lucide-react';
+import { Users, WifiIcon as Wifi, WifiOffIcon as WifiOff } from 'lucide-react';
 
 interface FriendGameModesProps {
   onOnlineClick: () => void;
