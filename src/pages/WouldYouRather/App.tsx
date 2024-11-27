@@ -10,7 +10,7 @@ import { ChoiceCard } from './components/ChoiceCard';
 import { ShareButton } from './components/ShareButton';
 import { getRandomQuestion } from './data/questions';
 import { toast } from 'react-hot-toast';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, HeartIcon, StarIcon } from 'lucide-react';
 
 const WouldYouRatherApp: React.FC = () => {
   const gameState = useGameStore();
