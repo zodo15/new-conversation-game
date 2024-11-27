@@ -1,57 +1,44 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { PlayCircle, PauseCircle } from 'lucide-react';
-
-interface TimerProps {
-  duration: number;
-  onComplete: () => void;
-}
+import { useState, useEffect } from 'react';
+import { Play, Pause } from 'lucide-react';
+import { TimerProps } from '../types';
 
 export const Timer: React.FC<TimerProps> = ({ duration, onComplete }) => {
   const [timeLeft, setTimeLeft] = useState(duration);
-  const [isRunning, setIsRunning] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    if (!isRunning) return;
+    if (timeLeft === 0) {
+      onComplete();
+      return;
+    }
 
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          onComplete();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    if (!isPaused) {
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => Math.max(0, prev - 1));
+      }, 1000);
 
-    return () => clearInterval(timer);
-  }, [isRunning, onComplete]);
+      return () => clearInterval(timer);
+    }
+  }, [timeLeft, isPaused, onComplete]);
 
-  const toggleTimer = () => {
-    setIsRunning(!isRunning);
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  const togglePause = () => {
+    setIsPaused(!isPaused);
   };
 
   return (
     <motion.div
-      whileHover={{ scale: 1.05 }}
-      className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-lg cursor-pointer"
-      onClick={toggleTimer}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg p-4 flex items-center space-x-4"
     >
-      {isRunning ? (
-        <PauseCircle className="w-5 h-5 text-yellow-400" />
-      ) : (
-        <PlayCircle className="w-5 h-5 text-green-400" />
-      )}
-      <span className="font-mono text-lg font-semibold text-white">
-        {formatTime(timeLeft)}
-      </span>
+      <button
+        onClick={togglePause}
+        className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+      >
+        {isPaused ? <Play className="w-6 h-6" /> : <Pause className="w-6 h-6" />}
+      </button>
+      <div className="text-2xl font-bold">{timeLeft}s</div>
     </motion.div>
   );
 };

@@ -1,19 +1,22 @@
 import { motion } from 'framer-motion';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquareText } from 'lucide-react';
 
-interface FeedbackButtonProps {
-  onClick: () => void;
-}
+export const FeedbackButton = () => {
+  const handleClick = () => {
+    window.open('https://forms.gle/1AsTJFBS8CkTLXGx5', '_blank');
+  };
 
-export const FeedbackButton: React.FC<FeedbackButtonProps> = ({ onClick }) => {
   return (
     <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={onClick}
-      className="fixed bottom-4 right-4 p-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-lg text-white"
+      onClick={handleClick}
+      className="fixed bottom-6 right-6 p-3 bg-white/10 hover:bg-white/20 rounded-full shadow-lg backdrop-blur-sm z-50"
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
     >
-      <MessageSquare className="w-6 h-6" />
+      <MessageSquareText className="w-6 h-6 text-white" />
     </motion.button>
   );
 };

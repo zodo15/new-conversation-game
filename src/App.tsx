@@ -1,40 +1,17 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { WouldYouRatherApp } from './pages/WouldYouRather/App';
+import TruthOrDareApp from './pages/TruthOrDare/App';
+import { Toaster } from 'react-hot-toast';
 import './App.css';
-
-const Dashboard = () => {
-  return (
-    <div style={{ 
-      minHeight: '100vh',
-      background: 'linear-gradient(to bottom right, #7c3aed, #2563eb)',
-      padding: '2rem'
-    }}>
-      <div style={{
-        maxWidth: '56rem',
-        margin: '0 auto'
-      }}>
-        <h1 style={{
-          fontSize: '3.75rem',
-          fontWeight: 'bold',
-          color: 'white',
-          textAlign: 'center',
-          marginBottom: '3rem'
-        }}>
-          Conversation Games
-        </h1>
-      </div>
-    </div>
-  );
-};
 
 const App = () => {
   return (
-    <div style={{ 
-      minHeight: '100vh',
-      background: 'linear-gradient(to bottom right, #7c3aed, #2563eb)'
-    }}>
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-blue-600">
+      <Toaster position="top-center" />
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<WouldYouRatherApp />} />
+        <Route path="/truth-or-dare" element={<TruthOrDareApp />} />
       </Routes>
     </div>
   );
