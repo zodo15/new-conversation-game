@@ -4,19 +4,19 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useGameStore } from './store/gameStore';
 import { Question, GameMode, GameState } from './types';
 import { 
-  IoChevronBack as ArrowLeft,
-  IoHeart as Heart,
-  IoFlame as Flame,
-  IoStar as Star,
-  IoAdd as Plus,
-  IoShield as Crown,
-  IoRefresh as RotateCcw,
-  IoChevronForward as ArrowRight,
-  IoSparkles as Sparkles,
-  IoBulb as Brain,
-  IoFlash as Zap,
-  IoPeople as Users
-} from 'react-icons/io5';
+  ChevronLeftIcon as ArrowLeft,
+  HeartIcon as Heart,
+  FireIcon as Flame,
+  StarIcon as Star,
+  PlusIcon as Plus,
+  ShieldCheckIcon as Crown,
+  ArrowPathIcon as RotateCcw,
+  ChevronRightIcon as ArrowRight,
+  SparklesIcon as Sparkles,
+  LightBulbIcon as Brain,
+  BoltIcon as Zap,
+  UserGroupIcon as Users
+} from '@heroicons/react/24/outline';
 import { GameCard } from './components/GameCard';
 import { ChoiceCard } from './components/ChoiceCard';
 import { AddQuestionModal } from './components/AddQuestionModal';
