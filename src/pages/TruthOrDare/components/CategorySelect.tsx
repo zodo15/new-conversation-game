@@ -1,6 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Sparkles, PartyIcon, Brain, Users, Dumbbell, Palette } from 'lucide-react';
+import { Sparkles, Party, Brain, Users2, Dumbbell, Palette } from 'lucide-react';
 import { QuestionCategory } from '../types/game';
 
 interface CategorySelectProps {
@@ -13,11 +12,11 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ category, onSelect, typ
   const categories = type === 'truth' 
     ? [
         { id: 'deep', icon: Brain, label: 'Deep' },
-        { id: 'funny', icon: PartyIcon, label: 'Funny' },
+        { id: 'funny', icon: Party, label: 'Funny' },
         { id: 'spicy', icon: Sparkles, label: 'Spicy' }
       ]
     : [
-        { id: 'social', icon: Users, label: 'Social' },
+        { id: 'social', icon: Users2, label: 'Social' },
         { id: 'physical', icon: Dumbbell, label: 'Physical' },
         { id: 'creative', icon: Palette, label: 'Creative' }
       ];
@@ -27,16 +26,15 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ category, onSelect, typ
       {categories.map(({ id, icon: Icon, label }) => (
         <button
           key={id}
-          type="button"
           onClick={() => onSelect(id as QuestionCategory)}
-          className={`px-4 py-3 rounded-lg flex flex-col items-center gap-2 transition-colors ${
+          className={`px-4 py-3 rounded-lg transition-colors flex flex-col items-center gap-2 ${
             category === id
-              ? 'bg-gradient-to-br from-purple-500 to-pink-500 text-white'
-              : 'bg-white/10 text-white/60 hover:bg-white/20'
+              ? 'bg-white/20 text-white'
+              : 'bg-white/10 text-white/60 hover:bg-white/15'
           }`}
         >
-          <Icon className="w-5 h-5" />
-          <span className="text-sm">{label}</span>
+          <Icon className="w-6 h-6" />
+          <span>{label}</span>
         </button>
       ))}
     </div>
