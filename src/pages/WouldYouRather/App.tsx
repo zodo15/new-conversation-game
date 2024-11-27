@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useGameStore } from './store/gameStore';
 import { type Question, type CustomQuestion } from './types';
-import { GameMode } from './types';
 import { Timer } from './components/Timer';
 import { AddQuestionModal } from './components/AddQuestionModal';
 import { ChaosMasterWheel } from './components/ChaosMasterWheel';
@@ -11,6 +10,7 @@ import { ChoiceCard } from './components/ChoiceCard';
 import { ShareButton } from './components/ShareButton';
 import { getRandomQuestion } from './data/questions';
 import { toast } from 'react-hot-toast';
+import { ArrowLeft } from 'lucide-react';
 
 const WouldYouRatherApp: React.FC = () => {
   const gameState = useGameStore();
@@ -126,8 +126,9 @@ const WouldYouRatherApp: React.FC = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => gameState.resetGame()}
-          className="mb-8 px-4 py-2 bg-white rounded-lg shadow-lg hover:bg-gray-50 transition-colors"
+          className="mb-8 px-4 py-2 bg-white rounded-lg shadow-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
         >
+          <ArrowLeft className="w-4 h-4" />
           Back to Menu
         </motion.button>
 
@@ -154,17 +155,14 @@ const WouldYouRatherApp: React.FC = () => {
           </>
         )}
 
+        {showChaosMasterWheel && (
+          <ChaosMasterWheel onSpin={handleChaosMasterSpin} />
+        )}
+
         {showAddQuestion && (
           <AddQuestionModal
             onClose={() => gameState.setShowAddQuestion(false)}
-            onAdd={handleAddQuestion}
-          />
-        )}
-
-        {showChaosMasterWheel && (
-          <ChaosMasterWheel
-            onClose={() => gameState.setShowChaosMasterWheel(false)}
-            onSpin={handleChaosMasterSpin}
+            onSubmit={handleAddQuestion}
           />
         )}
       </div>

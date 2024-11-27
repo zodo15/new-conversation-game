@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-
-interface TimerProps {
-  duration: number;
-  onComplete: () => void;
-}
+import { useState, useEffect } from 'react';
+import { Play, Pause } from 'lucide-react';
+import { TimerProps } from '../types';
 
 export const Timer: React.FC<TimerProps> = ({ duration, onComplete }) => {
   const [timeLeft, setTimeLeft] = useState(duration);
@@ -39,16 +36,7 @@ export const Timer: React.FC<TimerProps> = ({ duration, onComplete }) => {
         onClick={togglePause}
         className="p-2 rounded-full hover:bg-gray-100 transition-colors"
       >
-        {isPaused ? (
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-          </svg>
-        ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="6" y="4" width="4" height="16"></rect>
-            <rect x="14" y="4" width="4" height="16"></rect>
-          </svg>
-        )}
+        {isPaused ? <Play className="w-6 h-6" /> : <Pause className="w-6 h-6" />}
       </button>
       <div className="text-2xl font-bold">{timeLeft}s</div>
     </motion.div>
