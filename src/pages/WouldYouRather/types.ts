@@ -1,73 +1,69 @@
-export type GameMode = 'classic' | 'spicy' | 'friends' | undefined;
-export type QuestionType = 'classic' | 'spicy' | 'custom';
+export type GameMode = 'classic' | 'spicy' | 'friend' | 'random';
 
 export interface Question {
   id: string;
-  option1: string;
-  option2: string;
-  type: QuestionType;
-  custom?: boolean;
+  optionA: string;
+  optionB: string;
+  mode: GameMode;
 }
 
-export interface CustomQuestion extends Question {
-  custom: true;
+export interface Choice {
+  questionId: string;
+  choice: 'optionA' | 'optionB';
+}
+
+export interface Player {
+  id: string;
+  name: string;
+  score: number;
+  choices: Choice[];
 }
 
 export interface GameState {
   mode: GameMode;
   players: string[];
+  currentQuestion: Question | null;
   currentPlayerIndex: number;
-  currentQuestion: Question | undefined;
-  chaosMaster: string | undefined;
-  votes: Record<string, 'option1' | 'option2'>;
-  usedQuestionIds: string[];
-  showChaosMasterWheel: boolean;
-  showAddQuestion: boolean;
-  customQuestions: CustomQuestion[];
-  isTimerRunning: boolean;
+  gameStarted: boolean;
 }
 
-export interface GameActions {
-  setMode: (mode: GameMode) => void;
-  setCurrentQuestion: (question: Question | undefined) => void;
-  setPlayers: (players: string[]) => void;
-  setCurrentPlayerIndex: (index: number) => void;
-  setChaosMaster: (player: string | undefined) => void;
-  addCustomQuestion: (question: CustomQuestion) => void;
-  addUsedQuestionId: (id: string) => void;
-  clearUsedQuestionIds: () => void;
-  addVote: (playerId: string, choice: 'option1' | 'option2') => void;
-  clearVotes: () => void;
-  setShowChaosMasterWheel: (show: boolean) => void;
-  setShowAddQuestion: (show: boolean) => void;
-  resetGame: () => void;
+export interface Vote {
+  playerId: string;
+  choice: 'optionA' | 'optionB';
+}
+
+export interface Streak {
+  playerId: string;
+  count: number;
+}
+
+export interface ChaosMasterProps {
+  onSpin: (action: string) => void;
+  onClose: () => void;
+}
+
+export interface QuestionDisplayProps {
+  question: Question;
+  currentPlayer: Player;
+  onChoice: (choice: 'optionA' | 'optionB') => void;
+  votes: Vote[];
+}
+
+export interface ChoiceCardProps {
+  option: string;
+  consequence?: string;
+  votes?: number;
+  totalVotes?: number;
+  selected?: boolean;
+  onClick?: () => void;
+  disabled?: boolean;
+}
+
+export interface ShareButtonProps {
+  votes: Vote[];
 }
 
 export interface TimerProps {
   duration: number;
   onComplete: () => void;
-}
-
-export interface AddQuestionProps {
-  onClose: () => void;
-  onAdd: (question: CustomQuestion) => void;
-}
-
-export interface ChaosMasterWheelProps {
-  onClose: () => void;
-  onSpin: (action: string) => void;
-}
-
-export interface FriendGameModesProps {
-  onBack: () => void;
-  onStartOfflineGame: (players: string[]) => void;
-}
-
-export interface ChoiceCardProps {
-  choice: string;
-  isSelected?: boolean;
-  onClick?: () => void;
-  isAnswer?: boolean;
-  votes?: number;
-  totalVotes?: number;
 }

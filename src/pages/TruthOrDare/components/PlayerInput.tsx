@@ -1,82 +1,114 @@
 import React, { useState } from 'react';
-import { Plus, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { toast } from 'react-hot-toast';
+import { UserPlus, Play } from 'lucide-react';
 
-interface PlayerInputProps {
+interface Props {
   players: string[];
   setPlayers: (players: string[]) => void;
-  onStartGame: () => void;
+  onStart: () => void;
 }
 
-const PlayerInput: React.FC<PlayerInputProps> = ({ players, setPlayers, onStartGame }) => {
+const PlayerInput: React.FC<Props> = ({ players, setPlayers, onStart }) => {
   const [newPlayer, setNewPlayer] = useState('');
 
-  const addPlayer = (e: React.FormEvent) => {
+  const handleAddPlayer = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPlayer.trim() && !players.includes(newPlayer.trim()) && players.length < 10) {
-      setPlayers([...players, newPlayer.trim()]);
-      setNewPlayer('');
+    
+    if (!newPlayer.trim()) {
+      toast.error('Please enter a player name', { id: 'empty-name' });
+      return;
     }
+
+    if (players.includes(newPlayer.trim())) {
+      toast.error('Player already exists', { id: 'duplicate-player' });
+      return;
+    }
+
+    if (players.length >= 8) {
+      toast.error('Maximum 8 players allowed', { id: 'max-players' });
+      return;
+    }
+
+    setPlayers([...players, newPlayer.trim()]);
+    setNewPlayer('');
+    toast.success('Player added!', { id: 'player-added' });
   };
 
   const removePlayer = (playerToRemove: string) => {
     setPlayers(players.filter(player => player !== playerToRemove));
+    toast.success('Player removed', { id: 'player-removed' });
   };
 
   return (
-    <div className="w-full max-w-md">
-      <form onSubmit={addPlayer} className="mb-6">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={newPlayer}
-            onChange={(e) => setNewPlayer(e.target.value)}
-            placeholder="Enter player name..."
-            className="flex-1 px-4 py-3 bg-white/10 rounded-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            maxLength={20}
-          />
-          <button
-            type="submit"
-            disabled={players.length >= 10}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Plus className="w-5 h-5" />
-            Add
-          </button>
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="space-y-8"
+    >
+      <h1 className="text-4xl font-bold text-center mb-8">Truth or Dare</h1>
+
+      <form onSubmit={handleAddPlayer} className="flex gap-4">
+        <input
+          type="text"
+          value={newPlayer}
+          onChange={(e) => setNewPlayer(e.target.value)}
+          placeholder="Enter player name..."
+          className="flex-1 px-4 py-2 rounded-lg bg-white/10 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400"
+        />
+        <motion.button
+          type="submit"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="px-6 py-2 bg-purple-500 text-white font-semibold rounded-lg shadow-lg hover:bg-purple-600 transition-colors flex items-center gap-2"
+        >
+          <UserPlus className="w-4 h-4" />
+          Add Player
+        </motion.button>
       </form>
 
-      <div className="space-y-2">
-        <AnimatePresence>
+      {players.length > 0 && (
+        <div className="flex flex-col gap-2">
           {players.map((player) => (
             <motion.div
               key={player}
+              layout
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              className="flex items-center justify-between p-3 bg-white/10 rounded-lg"
+              className="bg-white/10 p-4 rounded-lg flex items-center justify-between"
             >
-              <span className="text-white">{player}</span>
+              <span>{player}</span>
               <button
                 onClick={() => removePlayer(player)}
-                className="text-white/60 hover:text-white transition-colors"
+                className="text-red-400 hover:text-red-300 px-2"
               >
-                <X className="w-4 h-4" />
+                ×
               </button>
             </motion.div>
           ))}
-        </AnimatePresence>
-      </div>
+        </div>
+      )}
 
       {players.length >= 2 && (
-        <button
-          onClick={onStartGame}
-          className="w-full mt-4 px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:from-purple-500 hover:to-pink-500 transition-all"
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex justify-center"
         >
-          Start Game
-        </button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onStart}
+            className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-purple-600 hover:to-pink-600 transition-colors flex items-center gap-2"
+          >
+            <Play className="w-4 h-4" />
+            Start Game
+          </motion.button>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

@@ -2,12 +2,10 @@ export type QuestionType = 'truth' | 'dare';
 export type QuestionCategory = 'spicy' | 'funny' | 'deep' | 'social' | 'physical' | 'creative';
 
 export interface Question {
-  id: string;
+  id: number;
   content: string;
   type: QuestionType;
   category: QuestionCategory;
-  option1: string;
-  option2: string;
   custom?: boolean;
   targetPlayer?: string;
   plotTwist?: string;
@@ -33,7 +31,7 @@ export interface GameState {
   reactions: Record<string, Record<string, number>>;
   roomId: string | null;
   customQuestions: Question[];
-  usedQuestions: Set<string>;
+  usedQuestions: Set<number>;
 }
 
 export const categories: QuestionCategory[] = [

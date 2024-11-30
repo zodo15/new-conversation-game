@@ -1,194 +1,125 @@
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { useState, useEffect } from 'react';
-
-import confetti from 'canvas-confetti';
-
-interface ChaosMasterWheelProps {
+interface ChaosMasterProps {
+  players: string[];
+  onComplete: (selectedPlayer: string) => void;
   onClose: () => void;
-  onSpin: (action: string) => void;
+  onBack: () => void;
 }
 
-export const ChaosMasterWheel: React.FC<ChaosMasterWheelProps> = ({ onClose, onSpin }) => {
+const colors = [
+  'bg-gradient-to-r from-[#FF0000] to-[#FF3333]', // Bright Red
+  'bg-gradient-to-r from-[#00FF00] to-[#33FF33]', // Bright Green
+  'bg-gradient-to-r from-[#0000FF] to-[#3333FF]', // Bright Blue
+  'bg-gradient-to-r from-[#FFFF00] to-[#FFFF33]', // Bright Yellow
+  'bg-gradient-to-r from-[#FF00FF] to-[#FF33FF]', // Bright Magenta
+  'bg-gradient-to-r from-[#00FFFF] to-[#33FFFF]', // Bright Cyan
+  'bg-gradient-to-r from-[#FF8800] to-[#FFAA33]', // Bright Orange
+  'bg-gradient-to-r from-[#AA00FF] to-[#CC33FF]'  // Bright Purple
+];
 
-  const [spinning, setSpinning] = useState(true);
-
-  const [selectedIndex, setSelectedIndex] = useState(0);
-
-  const [showFinalAnimation, setShowFinalAnimation] = useState(false);
-
+export const ChaosMasterWheel: React.FC<ChaosMasterProps> = ({ players, onComplete, onClose }) => {
+  const [spinning, setSpinning] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [rotationAngle, setRotationAngle] = useState(0);
 
-  const colors = [
-    '#FF4B4B',
-    '#4169E1',
-    '#32CD32',
-    '#FFD700',
-    '#FF1493',
-    '#9400D3',
-    '#FF8C00',
-    '#00CED1',
-  ];
-
   useEffect(() => {
-    if (spinning) {
-      const duration = 7000;
-      const startTime = Date.now();
-      const finalRotations = 12;
-      const finalSelectedIndex = Math.floor(Math.random() * 8);
-      const finalAngle = (360 * finalRotations) + ((360 / 8) * finalSelectedIndex);
+    const timer = setTimeout(() => {
+      spinWheel();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
-      const animate = () => {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(elapsed / duration, 1);
+  const spinWheel = useCallback(() => {
+    if (spinning) return;
+    
+    setSpinning(true);
+    const numberOfSpins = 5 + Math.floor(Math.random() * 5);
+    const extraDegrees = Math.floor(Math.random() * 360);
+    const totalRotation = numberOfSpins * 360 + extraDegrees;
+    
+    const finalAngle = extraDegrees;
+    const sectionSize = 360 / players.length;
+    const selectedIndex = Math.floor(((360 - finalAngle) % 360) / sectionSize);
+    
+    setRotationAngle(totalRotation);
+    
+    setTimeout(() => {
+      setSpinning(false);
+      const finalPlayer = players[selectedIndex];
+      setSelectedPlayer(finalPlayer);
+      onComplete(finalPlayer);
+    }, 3000);
+  }, [spinning, players, onComplete]);
 
-        const easeOut = (t: number) => {
-          const c4 = (2 * Math.PI) / 3;
-          return t === 1 ? 1 : 1 - Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4);
-        };
-
-        const currentRotation = finalAngle * easeOut(progress);
-        setRotationAngle(currentRotation);
-
-        const currentIndex = Math.floor((currentRotation % 360) / (360 / 8));
-        setSelectedIndex((8 - currentIndex) % 8);
-
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          setSpinning(false);
-          setSelectedIndex(finalSelectedIndex);
-
-          const shootConfetti = () => {
-            confetti({
-              particleCount: 150,
-              spread: 100,
-              origin: { y: 0.6 },
-              colors: ['#FFD700', '#FFA500', '#FF69B4', '#4169E1'],
-              ticks: 300,
-            });
-          };
-
-          for (let i = 0; i < 3; i++) {
-            setTimeout(shootConfetti, i * 300);
-          }
-
-          setShowFinalAnimation(true);
-          setTimeout(() => {
-            onSpin(`Player ${finalSelectedIndex + 1} is the Chaos Master!`);
-          }, 3000);
-        }
-      };
-
-      requestAnimationFrame(animate);
-    }
-  }, [spinning, onSpin]);
+  const sections = players.map((player, index) => {
+    const angle = (index * 360) / players.length;
+    const sectionAngle = 360 / players.length;
+    const color = colors[index % colors.length];
+    
+    return (
+      <div
+        key={player}
+        className="absolute w-full h-full origin-center"
+        style={{
+          transform: `rotate(${angle}deg)`,
+        }}
+      >
+        <div
+          className={`absolute inset-0 ${color} opacity-90`}
+          style={{
+            clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0% 100%)',
+          }}
+        >
+          <div 
+            className="absolute whitespace-nowrap text-white font-extrabold text-xl"
+            style={{
+              left: '25%',
+              top: '50%',
+              transform: `rotate(${-angle + (180/players.length)}deg)`,
+              transformOrigin: 'left center',
+              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.75)',
+              letterSpacing: '0.05em'
+            }}
+          >
+            {player}
+          </div>
+        </div>
+      </div>
+    );
+  });
 
   return (
-    <AnimatePresence>
-      {!showFinalAnimation ? (
-        <motion.div
-          className="fixed inset-0 flex items-center justify-center bg-black/90 z-50"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <div className="relative w-[500px] h-[500px]">
-            <div className="absolute inset-0 rounded-full border-[16px] border-gray-800 shadow-[0_0_30px_rgba(255,255,255,0.1)]" />
-
-            <motion.div
-              className="absolute inset-0"
-              style={{ rotate: `${rotationAngle}deg` }}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <svg viewBox="-200 -200 400 400" className="w-full h-full">
-                <defs>
-                  <filter id="glow">
-                    <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
-                    <feMerge>
-                      <feMergeNode in="coloredBlur"/>
-                      <feMergeNode in="SourceGraphic"/>
-                    </feMerge>
-                  </filter>
-                </defs>
-
-                {Array.from({ length: 8 }, (_, index) => {
-                  const angle = 360 / 8;
-                  const rotation = index * angle;
-                  const colorIndex = index % colors.length;
-
-                  return (
-                    <g key={index} transform={`rotate(${rotation})`}>
-                      <path
-                        d={`M 0 0 L ${180 * Math.cos(-angle/2 * Math.PI/180)} ${180 * Math.sin(-angle/2 * Math.PI/180)} A 180 180 0 0 1 ${180 * Math.cos(angle/2 * Math.PI/180)} ${180 * Math.sin(angle/2 * Math.PI/180)} Z`}
-                        fill={colors[colorIndex]}
-                        stroke="white"
-                        strokeWidth="2"
-                        filter="url(#glow)"
-                      />
-                    </g>
-                  );
-                })}
-              </svg>
-            </motion.div>
-
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-20 h-20 rounded-full bg-gray-800 border-4 border-white z-20 shadow-[0_0_20px_rgba(255,255,255,0.2)]" />
-            </div>
-
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-20 z-30">
-              <div className="w-0 h-0 
-                border-l-[25px] border-l-transparent 
-                border-r-[25px] border-r-transparent 
-                border-b-[50px] border-red-500
-                filter drop-shadow-[0_0_10px_rgba(255,0,0,0.5)]" 
-              />
-            </div>
-          </div>
-        </motion.div>
-      ) : (
-        <motion.div
-          className="fixed inset-0 flex items-center justify-center bg-black/90 z-50"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
+    <motion.div
+      initial={{ scale: 0 }}
+      animate={{ scale: 1 }}
+      exit={{ scale: 0 }}
+      className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50"
+    >
+      <div className="bg-gradient-to-br from-purple-900 to-indigo-900 p-8 rounded-2xl shadow-2xl max-w-md w-full">
+        <div className="relative w-64 h-64 mx-auto">
           <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", duration: 0.5 }}
-            className="text-center p-8 rounded-2xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm"
+            className="w-full h-full rounded-full relative overflow-hidden border-4 border-white/20"
+            style={{
+              transform: `rotate(${rotationAngle}deg)`,
+              transition: spinning ? 'transform 4s cubic-bezier(0.2, 1, 0.3, 1)' : 'none'
+            }}
           >
-            <motion.h2 
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              className="text-3xl text-purple-400 mb-6"
-            >
-              The Chaos Master is...
-            </motion.h2>
-
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-transparent mb-4"
-            >
-              Player {selectedIndex + 1}
-            </motion.div>
-
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 1 }}
-              className="mt-8 text-2xl bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent font-bold"
-            >
-              Let chaos reign! 
-            </motion.div>
+            {sections}
           </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-2 h-8 bg-white transform -translate-y-1/2" />
+          </div>
+        </div>
+        {selectedPlayer && (
+          <div className="mt-6 text-center">
+            <span className="text-2xl font-bold text-white bg-purple-800/80 px-4 py-2 rounded-lg shadow-lg">
+              {selectedPlayer} is the Chaos Master!
+            </span>
+          </div>
+        )}
+      </div>
+    </motion.div>
   );
 };

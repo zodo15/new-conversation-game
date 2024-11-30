@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaDice, FaQuestion } from 'react-icons/fa';
+import { FeedbackButton } from '../components/FeedbackButton';
 
 interface GameCard {
   title: string;
@@ -27,34 +28,51 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <motion.h1
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-4xl md:text-6xl font-bold text-white text-center mb-12"
-      >
-        Party Games Dashboard
-      </motion.h1>
+    <div className="min-h-screen bg-gradient-to-b from-purple-900 to-black relative">
+      <div className="container mx-auto px-4 py-8">
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-4xl md:text-6xl font-bold text-white text-center mb-16"
+        >
+          Conversation Games
+        </motion.h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-        {games.map((game) => (
-          <Link key={game.path} to={game.path}>
+        <div className="flex flex-col items-center justify-center space-y-8 max-w-md mx-auto">
+          {games.map((game, index) => (
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
+              key={game.path}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.2 }}
+              className="w-full"
             >
-              <div className="flex items-center mb-4 text-purple-600">
-                {game.icon}
-              </div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                {game.title}
-              </h2>
-              <p className="text-gray-600">{game.description}</p>
+              <Link to={game.path} className="block w-full">
+                <motion.div
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-white border-opacity-20"
+                >
+                  <div className="flex flex-col items-center text-center space-y-4">
+                    <div className="text-purple-400">
+                      {game.icon}
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-white mb-2">
+                        {game.title}
+                      </h2>
+                      <p className="text-gray-300">
+                        {game.description}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              </Link>
             </motion.div>
-          </Link>
-        ))}
+          ))}
+        </div>
       </div>
+      <FeedbackButton />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Share } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Share2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 interface ShareButtonProps {
@@ -8,39 +9,39 @@ interface ShareButtonProps {
 
 export const ShareButton: React.FC<ShareButtonProps> = ({ votes }) => {
   const handleShare = async () => {
-    const voteCount = Object.values(votes).reduce(
-      (acc, vote) => {
-        acc[vote]++;
-        return acc;
-      },
-      { option1: 0, option2: 0 }
-    );
+    const option1Votes = Object.values(votes).filter(v => v === 'option1').length;
+    const option2Votes = Object.values(votes).filter(v => v === 'option2').length;
+    const total = option1Votes + option2Votes;
 
-    const shareText = `Would You Rather Results:\nOption 1: ${voteCount.option1} votes\nOption 2: ${voteCount.option2} votes`;
+    const text = `Would You Rather Results:\n` +
+      `Option 1: ${Math.round((option1Votes / total) * 100)}%\n` +
+      `Option 2: ${Math.round((option2Votes / total) * 100)}%\n` +
+      `Total Votes: ${total}`;
 
     try {
       if (navigator.share) {
         await navigator.share({
           title: 'Would You Rather Results',
-          text: shareText,
+          text: text,
         });
-        toast.success('Shared successfully!');
       } else {
-        await navigator.clipboard.writeText(shareText);
+        await navigator.clipboard.writeText(text);
         toast.success('Results copied to clipboard!');
       }
     } catch (error) {
+      console.error('Error sharing:', error);
       toast.error('Failed to share results');
     }
   };
 
   return (
-    <button
+    <motion.button
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
       onClick={handleShare}
-      className="flex items-center space-x-2 px-4 py-2 bg-white rounded-lg shadow-lg hover:bg-gray-50 transition-colors"
+      className="p-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
     >
-      <Share className="w-5 h-5" />
-      <span>Share Results</span>
-    </button>
+      <Share2 className="w-6 h-6" />
+    </motion.button>
   );
 };

@@ -1,22 +1,24 @@
+import React from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquareText } from 'lucide-react';
+import { FaComments } from 'react-icons/fa';
 
 export const FeedbackButton = () => {
   const handleClick = () => {
-    window.open('https://forms.gle/1AsTJFBS8CkTLXGx5', '_blank');
+    window.open('https://forms.gle/xPtpobnbpjTVwUiMA', '_blank');
   };
 
   return (
     <motion.button
       onClick={handleClick}
-      className="fixed bottom-6 right-6 p-3 bg-white/10 hover:bg-white/20 rounded-full shadow-lg backdrop-blur-sm z-50"
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
+      className="fixed bottom-8 right-8 bg-purple-600 hover:bg-purple-700 text-white rounded-full p-4 shadow-lg flex items-center gap-2 transition-colors duration-300 z-50"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <MessageSquareText className="w-6 h-6 text-white" />
+      <FaComments className="w-5 h-5" />
+      <span>Feedback</span>
     </motion.button>
   );
 };

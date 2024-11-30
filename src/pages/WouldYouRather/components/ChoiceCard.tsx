@@ -1,47 +1,85 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { ChoiceCardProps } from '../types';
 
 interface ChoiceCardProps {
-  choice: string;
-  onClick: () => void;
-  votes: number;
-  totalVotes: number;
+  option: string;
+  consequence?: string;
+  votes?: number;
+  totalVotes?: number;
+  selected?: boolean;
+  onClick?: () => void;
   disabled?: boolean;
 }
 
 export const ChoiceCard: React.FC<ChoiceCardProps> = ({
-  choice,
+  option,
+  consequence,
+  votes = 0,
+  totalVotes = 0,
+  selected = false,
   onClick,
-  votes,
-  totalVotes,
   disabled = false,
 }) => {
   const percentage = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
 
   return (
-    <motion.button
-      whileHover={{ scale: disabled ? 1 : 1.02 }}
-      whileTap={{ scale: disabled ? 1 : 0.98 }}
-      className={`relative w-full p-6 rounded-lg shadow-lg text-left mb-4 ${
-        disabled ? 'bg-gray-200' : 'bg-white hover:bg-gray-50'
-      }`}
-      onClick={onClick}
-      disabled={disabled}
+    <motion.div
+      whileHover={!disabled && !selected ? { scale: 1.02 } : {}}
+      whileTap={!disabled && !selected ? { scale: 0.98 } : {}}
+      className={`
+        relative w-full p-6 rounded-xl cursor-pointer
+        ${selected 
+          ? 'bg-purple-600 text-white ring-2 ring-white' 
+          : disabled 
+            ? 'bg-white/10 text-white/60 cursor-not-allowed'
+            : 'bg-white/10 hover:bg-white/20 text-white'
+        }
+      `}
+      onClick={!disabled ? onClick : undefined}
     >
+      {/* Main Content */}
       <div className="relative z-10">
-        <p className="text-lg font-medium mb-2">{choice}</p>
-        {disabled && (
-          <p className="text-sm text-gray-600">
-            {votes} votes ({percentage}%)
+        <h3 className="text-lg font-semibold mb-2">{option}</h3>
+        {consequence && (
+          <p className="text-sm opacity-75 mt-2">
+            Consequence: {consequence}
           </p>
         )}
       </div>
-      {disabled && (
-        <div
-          className="absolute inset-0 bg-blue-100 rounded-lg"
-          style={{ width: `${percentage}%`, transition: 'width 0.5s ease-out' }}
+
+      {/* Vote Stats */}
+      {totalVotes > 0 && (
+        <div className="mt-4 space-y-2">
+          <div className="flex justify-between text-sm">
+            <span>{votes} votes</span>
+            <span>{percentage}%</span>
+          </div>
+          <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${percentage}%` }}
+              transition={{ duration: 0.5 }}
+              className="h-full bg-purple-400"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Selection Indicator */}
+      {selected && (
+        <motion.div
+          layoutId="selection-indicator"
+          className="absolute inset-0 border-2 border-white rounded-xl"
+          initial={false}
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
         />
       )}
-    </motion.button>
+
+      {/* Disabled Overlay */}
+      {disabled && !selected && (
+        <div className="absolute inset-0 bg-black/20 rounded-xl" />
+      )}
+    </motion.div>
   );
 };

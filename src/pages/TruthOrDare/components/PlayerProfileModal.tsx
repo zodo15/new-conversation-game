@@ -21,6 +21,7 @@ const PlayerProfileModal = ({ isOpen, onClose, onSave, player }: PlayerProfileMo
     dares: []
   });
 
+  const [activeField, setActiveField] = useState<ProfileFieldKey | null>(null);
   const [inputValues, setInputValues] = useState<Record<ProfileFieldKey, string>>({
     interests: '',
     hobbies: '',
@@ -37,6 +38,7 @@ const PlayerProfileModal = ({ isOpen, onClose, onSave, player }: PlayerProfileMo
   });
 
   const handleFieldClick = (field: ProfileFieldKey) => {
+    setActiveField(field);
     setShowPrompts(prev => ({ ...prev, [field]: true }));
   };
 

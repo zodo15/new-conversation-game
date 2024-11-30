@@ -30,11 +30,10 @@ export const AddQuestion = ({ onClose, onSubmit, currentPlayer }: AddQuestionPro
     }
 
     const newQuestion: CustomQuestion = {
-      id: Date.now().toString(),
-      type: 'custom',
-      option1,
-      option2,
-      custom: true
+      option1: option1.trim(),
+      option2: option2.trim(),
+      type,
+      createdBy: currentPlayer
     };
 
     onSubmit(newQuestion);

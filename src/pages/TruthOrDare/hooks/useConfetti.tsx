@@ -1,36 +1,46 @@
-import { useCallback, useState } from 'react';
-import ReactConfetti from 'react-confetti';
-import { FC, ReactElement } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import Confetti from 'react-confetti';
 
-export default function useConfetti() {
-  const [isActive, setIsActive] = useState(false);
+const useConfetti = () => {
+  const [isConfettiActive, setIsConfettiActive] = useState(false);
+  const [windowDimensions, setWindowDimensions] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const startConfetti = useCallback(() => {
-    setIsActive(true);
+    setIsConfettiActive(true);
+    setTimeout(() => setIsConfettiActive(false), 5000);
   }, []);
 
-  const stopConfetti = useCallback(() => {
-    setIsActive(false);
-  }, []);
-
-  const ConfettiComponent: FC = (): ReactElement | null => {
-    if (!isActive) return null;
-    
-    return (
-      <ReactConfetti
-        width={window.innerWidth}
-        height={window.innerHeight}
-        numberOfPieces={200}
+  const ConfettiComponent = useCallback(() => (
+    isConfettiActive ? (
+      <Confetti
+        width={windowDimensions.width}
+        height={windowDimensions.height}
         recycle={false}
-        colors={['#ff62b2', '#9f7aea', '#4fd1c5']}
-        onConfettiComplete={() => setIsActive(false)}
+        numberOfPieces={200}
+        gravity={0.3}
       />
-    );
-  };
+    ) : null
+  ), [isConfettiActive, windowDimensions]);
 
-  return { 
-    startConfetti, 
-    stopConfetti,
-    ConfettiComponent 
+  return {
+    startConfetti,
+    ConfettiComponent,
   };
-}
+};
+
+export default useConfetti;
