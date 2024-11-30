@@ -1,137 +1,71 @@
 import React from 'react';
-import { Flame, Heart, Skull } from '@phosphor-icons/react';
-import { QuestionCategory } from '../types/game';
-import { useGameStore } from '../store/gameStore';
 import { motion } from 'framer-motion';
-import useSound from 'use-sound';
+import { QuestionCategory } from '../types/game';
+import {
+  SpicyIcon,
+  FunnyIcon,
+  DeepIcon,
+  PhysicalIcon,
+  SocialIcon,
+  CreativeIcon,
+  CustomIcon
+} from '../../../components/icons';
 
 interface CategorySelectProps {
   onSelect: (category: QuestionCategory) => void;
-  selectedCategory: QuestionCategory | null;
+  selected?: QuestionCategory;
 }
 
-const categories: {
-  type: QuestionCategory;
-  icon: React.ReactNode;
+interface CategoryOption {
+  value: QuestionCategory;
   label: string;
-  description: string;
-}[] = [
-  {
-    type: 'mild',
-    icon: <Heart size={32} weight="fill" />,
-    label: 'Mild',
-    description: 'Light and fun questions',
-  },
-  {
-    type: 'spicy',
-    icon: <Flame size={32} weight="fill" />,
-    label: 'Spicy',
-    description: 'More challenging questions',
-  },
-  {
-    type: 'extreme',
-    icon: <Skull size={32} weight="fill" />,
-    label: 'Extreme',
-    description: 'Most daring questions',
-  },
-  {
-    type: 'deep' as QuestionCategory,
-    icon: <Skull size={32} weight="fill" />,
-    label: 'Deep',
-    description: 'More personal questions',
-  },
-  {
-    type: 'social' as QuestionCategory,
-    icon: <Skull size={32} weight="fill" />,
-    label: 'Social',
-    description: 'Questions about relationships',
-  },
-  {
-    type: 'physical' as QuestionCategory,
-    icon: <Skull size={32} weight="fill" />,
-    label: 'Physical',
-    description: 'Questions about physical challenges',
-  },
-  {
-    type: 'creative' as QuestionCategory,
-    icon: <Skull size={32} weight="fill" />,
-    label: 'Creative',
-    description: 'Questions that challenge your creativity',
-  },
-  {
-    type: 'funny' as QuestionCategory,
-    icon: <Skull size={32} weight="fill" />,
-    label: 'Funny',
-    description: 'Humorous questions',
-  },
-  {
-    type: 'hot' as QuestionCategory,
-    icon: <Skull size={32} weight="fill" />,
-    label: 'Hot',
-    description: 'Questions that will make you blush',
-  }
+  icon: React.ElementType;
+  color: string;
+}
+
+const categories: CategoryOption[] = [
+  { value: 'spicy', label: 'Spicy', icon: SpicyIcon, color: 'text-red-500' },
+  { value: 'funny', label: 'Funny', icon: FunnyIcon, color: 'text-yellow-500' },
+  { value: 'deep', label: 'Deep', icon: DeepIcon, color: 'text-purple-500' },
+  { value: 'physical', label: 'Physical', icon: PhysicalIcon, color: 'text-blue-500' },
+  { value: 'social', label: 'Social', icon: SocialIcon, color: 'text-green-500' },
+  { value: 'creative', label: 'Creative', icon: CreativeIcon, color: 'text-pink-500' },
+  { value: 'custom', label: 'Custom', icon: CustomIcon, color: 'text-gray-500' }
 ];
 
 export const CategorySelect: React.FC<CategorySelectProps> = ({
   onSelect,
-  selectedCategory,
+  selected
 }) => {
-  const setCategory = useGameStore((state: any) => state.setCategory);
-  const [playHover] = useSound('/hover.mp3', { volume: 0.5 });
-  const [playSelect] = useSound('/select.mp3', { volume: 0.5 });
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const item = {
-    hidden: { y: 20, opacity: 0 },
-    show: { y: 0, opacity: 1 }
-  };
-
-  const handleSelect = (category: QuestionCategory) => {
-    playSelect();
-    setCategory(category);
-    onSelect(category);
-  };
-
   return (
-    <motion.div 
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="grid grid-cols-2 gap-6 p-8 max-w-4xl mx-auto"
-    >
-      {categories.map(({ type, icon, label, description }) => (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      {categories.map(({ value, label, icon: Icon, color }) => (
         <motion.button
-          key={type}
-          variants={item}
-          whileHover={{ 
-            scale: 1.05,
-            boxShadow: '0 0 30px rgba(147,51,234,0.5)'
-          }}
+          key={value}
+          whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => handleSelect(type)}
-          onMouseEnter={() => playHover()}
-          className={`p-6 rounded-lg flex flex-col items-center gap-4 transition-colors ${
-            selectedCategory === type
-              ? 'bg-primary text-white'
-              : 'bg-white/10 text-white hover:bg-white/20'
+          onClick={() => onSelect(value)}
+          className={`flex flex-col items-center justify-center p-4 rounded-lg ${
+            selected === value
+              ? 'bg-white shadow-lg'
+              : 'bg-white/5 hover:bg-white/10'
           }`}
         >
-          {icon}
-          <div className="text-center">
-            <h3 className="text-lg font-semibold">{label}</h3>
-            <p className="text-sm opacity-80">{description}</p>
-          </div>
+          <Icon
+            size={32}
+            className={`${color} ${
+              selected === value ? 'opacity-100' : 'opacity-60'
+            }`}
+          />
+          <span
+            className={`mt-2 font-medium ${
+              selected === value ? 'text-gray-900' : 'text-gray-400'
+            }`}
+          >
+            {label}
+          </span>
         </motion.button>
       ))}
-    </motion.div>
+    </div>
   );
 };
