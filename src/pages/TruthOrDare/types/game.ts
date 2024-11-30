@@ -1,14 +1,24 @@
 export type QuestionType = 'truth' | 'dare';
-export type QuestionCategory = 'spicy' | 'funny' | 'deep' | 'social' | 'physical' | 'creative';
+
+export type QuestionCategory =
+  | 'spicy'
+  | 'deep'
+  | 'social'
+  | 'physical'
+  | 'creative'
+  | 'funny';
 
 export interface Question {
-  id: number;
+  id: string;
   content: string;
   type: QuestionType;
   category: QuestionCategory;
-  custom?: boolean;
-  targetPlayer?: string;
-  options: [string, string];  // Array of exactly two options
+  options?: string[];
+}
+
+export interface Player {
+  name: string;
+  score: number;
 }
 
 export interface GameState {
@@ -24,14 +34,14 @@ export interface GameState {
   selectedType: QuestionType | null;
   roomId: string | null;
   customQuestions: Question[];
-  usedQuestions: Set<number>;
+  usedQuestions: Set<string>;
 }
 
 export const categories: QuestionCategory[] = [
   'spicy',
-  'funny',
   'deep',
   'social',
   'physical',
-  'creative'
+  'creative',
+  'funny'
 ];

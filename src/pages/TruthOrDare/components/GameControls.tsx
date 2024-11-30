@@ -1,110 +1,94 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
-import { QuestionType } from '../types';
+import { QuestionType, QuestionCategory } from '../types/game';
+import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 export const GameControls: React.FC = () => {
   const {
-    questionType,
-    setQuestionType,
-    selectCategory,
+    selectedType,
     selectedCategory,
+    setSelectedType,
+    setSelectedCategory,
     currentQuestion,
-    completeChallenge,
-    skipChallenge,
     nextPlayer,
+    setCurrentQuestion,
+    addUsedQuestionId
   } = useGameStore();
 
-  const handleCategorySelect = (category: 'truth' | 'dare') => {
-    selectCategory(category);
+  const handleTypeSelect = (type: QuestionType) => {
+    setSelectedType(type);
   };
 
-  const handleQuestionTypeChange = (type: QuestionType) => {
-    setQuestionType(type);
+  const handleCategorySelect = (category: QuestionCategory) => {
+    setSelectedCategory(category);
+  };
+
+  const handleSkip = () => {
+    if (currentQuestion) {
+      addUsedQuestionId(currentQuestion.id);
+    }
+    nextPlayer();
+    setCurrentQuestion(null);
+    toast('Question skipped', { icon: '⏭️' });
+  };
+
+  const handleComplete = () => {
+    if (currentQuestion) {
+      addUsedQuestionId(currentQuestion.id);
+      nextPlayer();
+      setCurrentQuestion(null);
+      toast('Question completed!', { icon: '✅' });
+    }
   };
 
   return (
-    <div className="space-y-6">
-      {/* Question Type Selector */}
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-gray-700">Question Type</h3>
-        <div className="flex space-x-4">
-          {(['mild', 'spicy', 'extreme'] as QuestionType[]).map((type) => (
-            <motion.button
-              key={type}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleQuestionTypeChange(type)}
-              className={`px-4 py-2 rounded-lg font-medium capitalize ${
-                questionType === type
-                  ? 'bg-purple-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {type}
-            </motion.button>
-          ))}
-        </div>
+    <div className="space-y-4">
+      <div className="flex justify-center space-x-4">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => handleTypeSelect('truth')}
+          className={`px-6 py-3 rounded-lg font-semibold ${
+            selectedType === 'truth'
+              ? 'bg-blue-500 text-white'
+              : 'bg-gray-200 text-gray-700'
+          }`}
+        >
+          Truth
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => handleTypeSelect('dare')}
+          className={`px-6 py-3 rounded-lg font-semibold ${
+            selectedType === 'dare'
+              ? 'bg-red-500 text-white'
+              : 'bg-gray-200 text-gray-700'
+          }`}
+        >
+          Dare
+        </motion.button>
       </div>
 
-      {/* Truth or Dare Buttons */}
-      {!currentQuestion && (
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-gray-700">Choose Your Fate</h3>
-          <div className="flex space-x-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleCategorySelect('truth')}
-              className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-600 transition-colors"
-            >
-              Truth
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleCategorySelect('dare')}
-              className="px-6 py-3 bg-red-500 text-white font-semibold rounded-lg shadow-lg hover:bg-red-600 transition-colors"
-            >
-              Dare
-            </motion.button>
-          </div>
-        </div>
-      )}
-
-      {/* Challenge Controls */}
       {currentQuestion && (
-        <div className="space-y-4">
-          <div className="p-6 bg-white rounded-xl shadow-lg">
-            <h3 className="text-xl font-bold mb-4 text-gray-800">
-              {selectedCategory === 'truth' ? 'Truth' : 'Dare'} Challenge
-            </h3>
-            <p className="text-lg text-gray-700 mb-6">{currentQuestion.text}</p>
-            <div className="flex space-x-4">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  completeChallenge(true);
-                  nextPlayer();
-                }}
-                className="px-6 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-lg hover:bg-green-600 transition-colors"
-              >
-                Complete
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  skipChallenge();
-                  nextPlayer();
-                }}
-                className="px-6 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-lg hover:bg-gray-600 transition-colors"
-              >
-                Skip (-1 point)
-              </motion.button>
-            </div>
-          </div>
+        <div className="flex justify-center space-x-4">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleSkip}
+            className="px-6 py-3 bg-yellow-500 text-white rounded-lg font-semibold"
+          >
+            Skip
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleComplete}
+            className="px-6 py-3 bg-green-500 text-white rounded-lg font-semibold"
+          >
+            Complete
+          </motion.button>
         </div>
       )}
     </div>

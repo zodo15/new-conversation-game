@@ -1,139 +1,108 @@
 import React, { useState } from 'react';
+import { useGameStore } from '../store/gameStore';
+import { Question, QuestionType, QuestionCategory } from '../types/game';
 import { motion } from 'framer-motion';
-import { X } from 'lucide-react';
-import { toast } from 'react-hot-toast';
-import { Question, QuestionType } from '../types';
+import toast from 'react-hot-toast';
 
 interface AddQuestionModalProps {
   onClose: () => void;
-  onAdd: (question: Question) => void;
 }
 
-export const AddQuestionModal: React.FC<AddQuestionModalProps> = ({
-  onClose,
-  onAdd,
-}) => {
-  const [questionText, setQuestionText] = useState('');
-  const [category, setCategory] = useState<'truth' | 'dare'>('truth');
-  const [type, setType] = useState<QuestionType>('mild');
+export const AddQuestionModal: React.FC<AddQuestionModalProps> = ({ onClose }) => {
+  const [content, setContent] = useState('');
+  const [type, setType] = useState<QuestionType>('truth');
+  const [category, setCategory] = useState<QuestionCategory>('social');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!questionText.trim()) {
-      toast.error('Please enter a question');
+    if (!content.trim()) {
+      toast('Please enter a question', { icon: '⚠️' });
       return;
     }
 
     const newQuestion: Question = {
-      id: `custom-${Date.now()}`,
-      text: questionText.trim(),
-      category,
+      id: String(Date.now()),
+      content: content.trim(),
       type,
+      category,
     };
 
-    onAdd(newQuestion);
+    // Add the question to the store
+    useGameStore.setState((state) => ({
+      customQuestions: [...(state.customQuestions || []), newQuestion],
+    }));
+
+    toast('Question added successfully!', { icon: '✅' });
     onClose();
-    toast.success('Question added successfully!');
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="relative bg-white rounded-xl p-8 max-w-lg w-full mx-4"
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <X className="w-6 h-6" />
-        </button>
-
-        <h2 className="text-2xl font-bold text-center mb-6">Add Custom Question</h2>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+    >
+      <div className="bg-white rounded-xl p-6 w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-4">Add Custom Question</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Question Text
-            </label>
+            <label className="block text-sm font-medium mb-1">Question</label>
             <textarea
-              value={questionText}
-              onChange={(e) => setQuestionText(e.target.value)}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="w-full p-2 border rounded-lg"
+              rows={3}
               placeholder="Enter your question..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 min-h-[100px]"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Category
-              </label>
-              <div className="flex space-x-4">
-                <button
-                  type="button"
-                  onClick={() => setCategory('truth')}
-                  className={`px-4 py-2 rounded-lg font-medium ${
-                    category === 'truth'
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Truth
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCategory('dare')}
-                  className={`px-4 py-2 rounded-lg font-medium ${
-                    category === 'dare'
-                      ? 'bg-red-500 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Dare
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Type
-              </label>
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value as QuestionType)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
-              >
-                <option value="mild">Mild</option>
-                <option value="spicy">Spicy</option>
-                <option value="extreme">Extreme</option>
-              </select>
-            </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Type</label>
+            <select
+              value={type}
+              onChange={(e) => setType(e.target.value as QuestionType)}
+              className="w-full p-2 border rounded-lg"
+            >
+              <option value="truth">Truth</option>
+              <option value="dare">Dare</option>
+            </select>
           </div>
 
-          <div className="flex justify-end space-x-4">
-            <motion.button
+          <div>
+            <label className="block text-sm font-medium mb-1">Category</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value as QuestionCategory)}
+              className="w-full p-2 border rounded-lg"
+            >
+              <option value="spicy">Spicy</option>
+              <option value="deep">Deep</option>
+              <option value="social">Social</option>
+              <option value="physical">Physical</option>
+              <option value="creative">Creative</option>
+              <option value="funny">Funny</option>
+            </select>
+          </div>
+
+          <div className="flex space-x-3">
+            <button
               type="button"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
               onClick={onClose}
-              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-medium transition-colors"
+              className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
             >
               Cancel
-            </motion.button>
-            <motion.button
+            </button>
+            <button
               type="submit"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-lg shadow-lg"
+              className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
             >
               Add Question
-            </motion.button>
+            </button>
           </div>
         </form>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   );
 };
