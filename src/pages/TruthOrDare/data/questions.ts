@@ -1,4 +1,4 @@
-import { Question, QuestionCategory } from '../types/game';
+import { QuestionCategory } from '../types/game';
 
 export const categories: QuestionCategory[] = [
   'spicy',
@@ -9,19 +9,12 @@ export const categories: QuestionCategory[] = [
   'creative'
 ];
 
-export interface Question {
-  id?: string;
-  option1?: string;
-  option2?: string;
-  type?: 'truth' | 'dare';
-  text?: string;
-  category: QuestionCategory;
-  plotTwist?: string;
-}
-
 interface CategorizedQuestion {
+  id?: number;
   text: string;
-  category: 'deep' | 'funny' | 'spicy' | 'social' | 'physical' | 'creative';
+  category: QuestionCategory;
+  type?: 'truth' | 'dare';
+  options?: [string, string];
 }
 
 export const truthQuestions: CategorizedQuestion[] = [
@@ -115,7 +108,7 @@ export const dareQuestions: CategorizedQuestion[] = [
   { text: "Make a funny video pretending to be a famous influencer", category: 'creative' }
 ];
 
-export const questions: Question[] = [
+export const questions: CategorizedQuestion[] = [
   // Truth Questions
   ...truthQuestions.map((question, index) => ({
     type: 'truth',

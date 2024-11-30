@@ -3,83 +3,74 @@ import { motion } from 'framer-motion';
 import { ChoiceCardProps } from '../types';
 
 interface ChoiceCardProps {
-  option: string;
-  consequence?: string;
-  votes?: number;
-  totalVotes?: number;
-  selected?: boolean;
+  text: string;
   onClick?: () => void;
+  selected?: boolean;
   disabled?: boolean;
+  votes?: number;
+  total?: number;
 }
 
 export const ChoiceCard: React.FC<ChoiceCardProps> = ({
-  option,
-  consequence,
-  votes = 0,
-  totalVotes = 0,
-  selected = false,
+  text,
   onClick,
+  selected = false,
   disabled = false,
+  votes = 0,
+  total = 0,
 }) => {
-  const percentage = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
+  const percentage = total > 0 ? Math.round((votes / total) * 100) : 0;
 
   return (
-    <motion.div
-      whileHover={!disabled && !selected ? { scale: 1.02 } : {}}
-      whileTap={!disabled && !selected ? { scale: 0.98 } : {}}
+    <motion.button
+      whileHover={!disabled ? { scale: 1.02 } : {}}
+      whileTap={!disabled ? { scale: 0.98 } : {}}
+      onClick={disabled ? undefined : onClick}
       className={`
-        relative w-full p-6 rounded-xl cursor-pointer
-        ${selected 
-          ? 'bg-purple-600 text-white ring-2 ring-white' 
-          : disabled 
-            ? 'bg-white/10 text-white/60 cursor-not-allowed'
-            : 'bg-white/10 hover:bg-white/20 text-white'
+        w-full p-8 rounded-xl transition-all relative overflow-hidden group
+        ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
+        ${
+          selected
+            ? 'bg-gradient-to-r from-[#E4A1FF] to-[#FF9CEE] text-white'
+            : 'bg-white/10 hover:bg-white/20'
         }
       `}
-      onClick={!disabled ? onClick : undefined}
     >
-      {/* Main Content */}
-      <div className="relative z-10">
-        <h3 className="text-lg font-semibold mb-2">{option}</h3>
-        {consequence && (
-          <p className="text-sm opacity-75 mt-2">
-            Consequence: {consequence}
-          </p>
-        )}
-      </div>
+      {/* Background gradient animation */}
+      <div
+        className={`
+          absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
+          opacity-0 group-hover:opacity-100 transform -skew-x-12 group-hover:animate-shine
+          ${disabled ? 'hidden' : ''}
+        `}
+      />
 
-      {/* Vote Stats */}
-      {totalVotes > 0 && (
-        <div className="mt-4 space-y-2">
-          <div className="flex justify-between text-sm">
-            <span>{votes} votes</span>
-            <span>{percentage}%</span>
-          </div>
-          <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${percentage}%` }}
-              transition={{ duration: 0.5 }}
-              className="h-full bg-purple-400"
-            />
-          </div>
+      {/* Vote percentage bar */}
+      {total > 0 && (
+        <div className="absolute inset-0">
+          <div
+            className="h-full bg-white/10 transition-all duration-1000 ease-out"
+            style={{ width: `${percentage}%` }}
+          />
         </div>
       )}
 
-      {/* Selection Indicator */}
-      {selected && (
-        <motion.div
-          layoutId="selection-indicator"
-          className="absolute inset-0 border-2 border-white rounded-xl"
-          initial={false}
-          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        />
-      )}
+      {/* Content */}
+      <div className="relative z-10 flex items-center justify-between">
+        <span className="font-semibold text-xl">{text}</span>
+        {total > 0 && (
+          <span className="ml-4 font-bold text-lg">
+            {percentage}%
+          </span>
+        )}
+      </div>
 
-      {/* Disabled Overlay */}
-      {disabled && !selected && (
-        <div className="absolute inset-0 bg-black/20 rounded-xl" />
+      {/* Vote count */}
+      {total > 0 && (
+        <div className="relative z-10 mt-2 text-sm opacity-75">
+          {votes} votes
+        </div>
       )}
-    </motion.div>
+    </motion.button>
   );
 };

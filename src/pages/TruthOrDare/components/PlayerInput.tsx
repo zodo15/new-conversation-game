@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
-import { UserPlus, Play } from 'lucide-react';
+import { UserPlus2, PlayCircle } from 'lucide-react';
 
 interface Props {
   players: string[];
@@ -16,28 +16,28 @@ const PlayerInput: React.FC<Props> = ({ players, setPlayers, onStart }) => {
     e.preventDefault();
     
     if (!newPlayer.trim()) {
-      toast.error('Please enter a player name', { id: 'empty-name' });
+      toast.error('Please enter a player name');
       return;
     }
 
     if (players.includes(newPlayer.trim())) {
-      toast.error('Player already exists', { id: 'duplicate-player' });
+      toast.error('Player already exists');
       return;
     }
 
     if (players.length >= 8) {
-      toast.error('Maximum 8 players allowed', { id: 'max-players' });
+      toast.error('Maximum 8 players allowed');
       return;
     }
 
     setPlayers([...players, newPlayer.trim()]);
     setNewPlayer('');
-    toast.success('Player added!', { id: 'player-added' });
+    toast.success('Player added!');
   };
 
   const removePlayer = (playerToRemove: string) => {
     setPlayers(players.filter(player => player !== playerToRemove));
-    toast.success('Player removed', { id: 'player-removed' });
+    toast.success('Player removed');
   };
 
   return (
@@ -57,15 +57,12 @@ const PlayerInput: React.FC<Props> = ({ players, setPlayers, onStart }) => {
           placeholder="Enter player name..."
           className="flex-1 px-4 py-2 rounded-lg bg-white/10 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400"
         />
-        <motion.button
+        <button
           type="submit"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="px-6 py-2 bg-purple-500 text-white font-semibold rounded-lg shadow-lg hover:bg-purple-600 transition-colors flex items-center gap-2"
+          className="p-2 bg-purple-500 rounded-lg hover:bg-purple-600 transition-colors"
         >
-          <UserPlus className="w-4 h-4" />
-          Add Player
-        </motion.button>
+          <UserPlus2 className="w-6 h-6" />
+        </button>
       </form>
 
       {players.length > 0 && (
@@ -101,9 +98,9 @@ const PlayerInput: React.FC<Props> = ({ players, setPlayers, onStart }) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onStart}
-            className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-purple-600 hover:to-pink-600 transition-colors flex items-center gap-2"
+            className="px-6 py-3 bg-green-500 rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2"
           >
-            <Play className="w-4 h-4" />
+            <PlayCircle className="w-6 h-6" />
             Start Game
           </motion.button>
         </motion.div>

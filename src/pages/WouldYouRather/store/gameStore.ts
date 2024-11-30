@@ -1,153 +1,147 @@
-import create from 'zustand';
-import { GameState, GameMode, Question, Player } from '../types';
+import { create } from 'zustand';
+import { Question, Player, GameMode } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
-const initialState: GameState = {
-  mode: GameMode.NONE,
-  gameStarted: false,
-  players: [],
-  currentPlayerIndex: 0,
-  currentQuestion: null,
-  votes: [],
-  showChaosMasterWheel: false,
-  showAddQuestion: false,
-  usedQuestionIds: new Set(),
-  customQuestions: [],
-  streak: null,
-};
+interface GameState {
+  players: Player[];
+  currentQuestion: Question | null;
+  currentPlayerIndex: number;
+  votes: Record<string, { playerId: string; choice: 'optionA' | 'optionB' }[]>;
+  showResults: boolean;
+  gameMode: GameMode;
+  isGameStarted: boolean;
+}
 
-export const useGameStore = create<GameState & {
-  setMode: (mode: GameMode) => void;
-  startGame: () => void;
-  resetGame: () => void;
+interface GameStore extends GameState {
+  setGameMode: (mode: GameMode) => void;
   addPlayer: (name: string) => void;
   removePlayer: (id: string) => void;
-  setCurrentQuestion: (question: Question | null) => void;
-  addVote: (playerId: string, choice: 'option1' | 'option2') => void;
-  clearVotes: () => void;
-  updateScore: (playerId: string, points: number) => void;
-  setShowChaosMasterWheel: (show: boolean) => void;
-  setShowAddQuestion: (show: boolean) => void;
-  addCustomQuestion: (question: Question) => void;
-  addUsedQuestionId: (id: string) => void;
-  setCurrentPlayerIndex: (index: number) => void;
-  updateStreak: (playerId: string, choice: 'option1' | 'option2') => void;
-  getRandomQuestion: (mode: GameMode) => Question | null;
-}>((set, get) => ({
+  setCurrentQuestion: (question: Question) => void;
+  submitVote: (playerId: string, choice: 'optionA' | 'optionB') => void;
+  updatePlayerScore: (playerId: string, points: number) => void;
+  setShowResults: (show: boolean) => void;
+  setGameStarted: (show: boolean) => void;
+  nextQuestion: (question: Question) => void;
+  skipPlayer: (id: string) => void;
+  setPlayerTurn: (index: number) => void;
+  resetVotes: () => void;
+}
+
+const initialState: GameState = {
+  players: [],
+  currentQuestion: null,
+  currentPlayerIndex: 0,
+  votes: {},
+  showResults: false,
+  gameMode: 'classic',
+  isGameStarted: false,
+};
+
+export const useGameStore = create<GameStore>((set, get) => ({
   ...initialState,
 
-  setMode: (mode) => set({ mode }),
+  setGameMode: (mode: GameMode) => {
+    set({ gameMode: mode });
+  },
 
-  startGame: () => set({ gameStarted: true }),
+  addPlayer: (name: string) => {
+    set((state: GameState) => ({
+      players: [
+        ...state.players,
+        {
+          id: uuidv4(),
+          name,
+          score: 0,
+        },
+      ],
+    }));
+  },
 
-  resetGame: () => set(initialState),
+  removePlayer: (id: string) => {
+    set((state: GameState) => ({
+      players: state.players.filter((p) => p.id !== id),
+    }));
+  },
 
-  addPlayer: (name) => set((state) => ({
-    players: [
-      ...state.players,
-      {
-        id: uuidv4(),
-        name,
-        score: 0,
-        choices: [],
-        streakCount: 0,
-        lastChoice: null,
-      },
-    ],
-  })),
+  setCurrentQuestion: (question: Question) => {
+    set({ currentQuestion: question });
+  },
 
-  removePlayer: (id) => set((state) => ({
-    players: state.players.filter((p) => p.id !== id),
-  })),
+  submitVote: (playerId: string, choice: 'optionA' | 'optionB') => {
+    set((state: GameState) => {
+      const currentQuestionId = state.currentQuestion?.id;
+      if (!currentQuestionId) return state;
 
-  setCurrentQuestion: (question) => set({ currentQuestion: question }),
+      const currentVotes = state.votes[currentQuestionId] || [];
+      const hasVoted = currentVotes.some((p) => p.playerId === playerId);
 
-  addVote: (playerId, choice) => set((state) => {
-    const newVotes = [...state.votes, { playerId, choice }];
-    const player = state.players.find(p => p.id === playerId);
-    
-    if (player && state.currentQuestion) {
-      const updatedPlayers = state.players.map(p => {
-        if (p.id === playerId) {
-          const newStreakCount = p.lastChoice === choice ? p.streakCount + 1 : 1;
-          return {
-            ...p,
-            choices: [...p.choices, { questionId: state.currentQuestion!.id, choice }],
-            streakCount: newStreakCount,
-            lastChoice: choice,
-          };
-        }
-        return p;
-      });
-
-      const updatedPlayer = updatedPlayers.find(p => p.id === playerId)!;
-      const newStreak = !state.streak || updatedPlayer.streakCount > state.streak.count
-        ? { playerId, count: updatedPlayer.streakCount }
-        : state.streak;
-
-      return {
-        votes: newVotes,
-        players: updatedPlayers,
-        streak: newStreak,
-      };
-    }
-
-    return { votes: newVotes };
-  }),
-
-  clearVotes: () => set({ votes: [] }),
-
-  updateScore: (playerId, points) => set((state) => ({
-    players: state.players.map((p) =>
-      p.id === playerId ? { ...p, score: p.score + points } : p
-    ),
-  })),
-
-  setShowChaosMasterWheel: (show) => set({ showChaosMasterWheel: show }),
-
-  setShowAddQuestion: (show) => set({ showAddQuestion: show }),
-
-  addCustomQuestion: (question) => set((state) => ({
-    customQuestions: [...state.customQuestions, { ...question, id: uuidv4() }],
-  })),
-
-  addUsedQuestionId: (id) => set((state) => ({
-    usedQuestionIds: new Set([...state.usedQuestionIds, id]),
-  })),
-
-  setCurrentPlayerIndex: (index) => set({ currentPlayerIndex: index }),
-
-  updateStreak: (playerId, choice) => set((state) => {
-    const updatedPlayers = state.players.map(p => {
-      if (p.id === playerId) {
-        const newStreakCount = p.lastChoice === choice ? p.streakCount + 1 : 1;
+      if (hasVoted) {
         return {
-          ...p,
-          streakCount: newStreakCount,
-          lastChoice: choice,
+          votes: {
+            ...state.votes,
+            [currentQuestionId]: currentVotes.map((p) =>
+              p.playerId === playerId ? { playerId, choice } : p
+            ),
+          },
         };
       }
-      return p;
+
+      return {
+        votes: {
+          ...state.votes,
+          [currentQuestionId]: [...currentVotes, { playerId, choice }],
+        },
+      };
     });
+  },
 
-    const updatedPlayer = updatedPlayers.find(p => p.id === playerId)!;
-    const newStreak = !state.streak || updatedPlayer.streakCount > state.streak.count
-      ? { playerId, count: updatedPlayer.streakCount }
-      : state.streak;
+  updatePlayerScore: (playerId: string, points: number) => {
+    set((state: GameState) => ({
+      players: state.players.map((p) =>
+        p.id === playerId ? { ...p, score: (p.score || 0) + points } : p
+      ),
+    }));
+  },
 
-    return {
-      players: updatedPlayers,
-      streak: newStreak,
-    };
-  }),
+  setShowResults: (show: boolean) => {
+    set({ showResults: show });
+  },
 
-  getRandomQuestion: (mode) => {
-    const state = get();
-    const questions = [...state.customQuestions];
-    const unusedQuestions = questions.filter(q => !state.usedQuestionIds.has(q.id));
-    if (unusedQuestions.length === 0) return null;
-    
-    const randomIndex = Math.floor(Math.random() * unusedQuestions.length);
-    return unusedQuestions[randomIndex];
+  setGameStarted: (show: boolean) => {
+    set({ isGameStarted: show });
+  },
+
+  nextQuestion: (question: Question) => {
+    set((state: GameState) => ({
+      currentQuestion: question,
+      currentPlayerIndex: (state.currentPlayerIndex + 1) % state.players.length,
+      showResults: false,
+    }));
+  },
+
+  skipPlayer: (id: string) => {
+    set((state: GameState) => {
+      const playerIndex = state.players.findIndex((p) => p.id === id);
+      if (playerIndex === -1) return state;
+      return {
+        currentPlayerIndex: (playerIndex + 1) % state.players.length,
+      };
+    });
+  },
+
+  setPlayerTurn: (index: number) => {
+    set({ currentPlayerIndex: index });
+  },
+
+  resetVotes: () => {
+    set((state: GameState) => {
+      if (!state.currentQuestion) return state;
+      return {
+        votes: {
+          ...state.votes,
+          [state.currentQuestion.id]: [],
+        },
+      };
+    });
   },
 }));

@@ -1,103 +1,79 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Timer as TimerIcon, RotateCw } from 'lucide-react';
-
-interface TimerProps {
-  duration: number;
-  onDurationChange?: (duration: number) => void;
-}
-
-const DURATION_OPTIONS = [5, 10, 15, 20, 25, 30];
+import { TimerProps } from '../types';
 
 export const Timer: React.FC<TimerProps> = ({ duration, onDurationChange }) => {
   const [timeLeft, setTimeLeft] = useState(duration);
-  const [isRunning, setIsRunning] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
+
+  const resetTimer = useCallback(() => {
+    setTimeLeft(duration);
+    setIsPaused(false);
+  }, [duration]);
 
   useEffect(() => {
-    if (!isRunning) return;
+    if (!isPaused && timeLeft > 0) {
+      const timer = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
 
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setIsRunning(false);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [timeLeft, isPaused]);
 
-    return () => clearInterval(timer);
-  }, [isRunning]);
-
-  const resetTimer = () => {
-    setTimeLeft(duration);
-    setIsRunning(true);
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleDurationChange = () => {
-    if (!onDurationChange) return;
-    const currentIndex = DURATION_OPTIONS.indexOf(duration);
-    const nextIndex = (currentIndex + 1) % DURATION_OPTIONS.length;
-    onDurationChange(DURATION_OPTIONS[nextIndex]);
+  const getColor = (time: number): string => {
+    if (time > duration * 0.6) return 'text-green-400';
+    if (time > duration * 0.3) return 'text-yellow-400';
+    return 'text-red-400';
   };
-
-  const progress = (timeLeft / duration) * 100;
 
   return (
-    <motion.div
-      initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      className="relative flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg"
-    >
-      <div className="relative w-12 h-12">
-        <svg className="w-full h-full transform -rotate-90">
-          <circle
-            cx="24"
-            cy="24"
-            r="20"
-            fill="none"
-            stroke="rgba(255, 255, 255, 0.2)"
-            strokeWidth="4"
-          />
-          <circle
-            cx="24"
-            cy="24"
-            r="20"
-            fill="none"
-            stroke="white"
-            strokeWidth="4"
-            strokeDasharray={`${2 * Math.PI * 20}`}
-            strokeDashoffset={`${((100 - progress) / 100) * (2 * Math.PI * 20)}`}
-            className="transition-all duration-1000 ease-linear"
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-lg font-bold">{timeLeft}s</span>
-        </div>
-      </div>
+    <div className="flex items-center gap-4">
+      <motion.div
+        initial={{ scale: 1 }}
+        animate={{ scale: timeLeft <= 5 && timeLeft > 0 ? [1, 1.1, 1] : 1 }}
+        transition={{ duration: 0.5, repeat: timeLeft <= 5 ? Infinity : 0 }}
+        className={`font-mono text-2xl font-bold ${getColor(timeLeft)}`}
+      >
+        {formatTime(timeLeft)}
+      </motion.div>
 
-      <div className="flex items-center gap-2">
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={resetTimer}
-          className="p-2 hover:bg-white/10 rounded-full transition-colors"
+      <div className="flex gap-2">
+        <button
+          onClick={() => setIsPaused(!isPaused)}
+          className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
         >
-          <RotateCw className="w-5 h-5" />
-        </motion.button>
-
-        {onDurationChange && (
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={handleDurationChange}
-            className="text-sm font-medium hover:bg-white/10 px-2 py-1 rounded transition-colors"
-          >
-            {duration}s
-          </motion.button>
-        )}
+          {isPaused ? '▶️' : '⏸️'}
+        </button>
+        <button
+          onClick={resetTimer}
+          className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+        >
+          🔄
+        </button>
+        <select
+          value={duration}
+          onChange={(e) => onDurationChange(Number(e.target.value))}
+          className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+        >
+          <option value={30}>30s</option>
+          <option value={60}>1m</option>
+          <option value={120}>2m</option>
+          <option value={300}>5m</option>
+        </select>
       </div>
-    </motion.div>
+    </div>
   );
 };

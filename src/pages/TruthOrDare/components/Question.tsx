@@ -4,7 +4,6 @@ import { Question as QuestionType } from '../types/game';
 import { useGameStore } from '../store/gameStore';
 import useSound from 'use-sound';
 import { Reactions } from './Reactions';
-import { PlotTwist } from './PlotTwist';
 import { Timer } from './Timer';
 
 interface QuestionProps {
@@ -13,22 +12,14 @@ interface QuestionProps {
 
 export const Question: React.FC<QuestionProps> = ({ question }) => {
   const [hasVoted, setHasVoted] = useState(false);
-  const [showPlotTwist, setShowPlotTwist] = useState(false);
   const { addVote, timerMode } = useGameStore();
   const [playVote] = useSound('/vote.mp3', { volume: 0.5 });
-  const [playPlotTwist] = useSound('/plottwist.mp3', { volume: 0.5 });
 
   const handleVote = (option: 1 | 2) => {
     if (!hasVoted) {
       playVote();
-      addVote(question.id, option);
+      addVote(question.id.toString(), option);
       setHasVoted(true);
-      setTimeout(() => {
-        if (question.plotTwist) {
-          playPlotTwist();
-          setShowPlotTwist(true);
-        }
-      }, 1000);
     }
   };
 
@@ -48,13 +39,10 @@ export const Question: React.FC<QuestionProps> = ({ question }) => {
         animate={shakeAnimation}
         className="flex flex-col md:flex-row gap-6"
       >
-        {[
-          { option: 1, text: question.option1 },
-          { option: 2, text: question.option2 }
-        ].map(({ option, text }) => (
+        {[question.options[0], question.options[1]].map((option, index) => (
           <motion.button
-            key={option}
-            onClick={() => handleVote(option as 1 | 2)}
+            key={index}
+            onClick={() => handleVote(index + 1)}
             whileHover={{ scale: hasVoted ? 1 : 1.05 }}
             whileTap={{ scale: hasVoted ? 1 : 0.95 }}
             className={`flex-1 p-6 rounded-lg border-2 transition-colors ${
@@ -63,19 +51,12 @@ export const Question: React.FC<QuestionProps> = ({ question }) => {
                 : 'border-purple-500 hover:border-purple-600 cursor-pointer'
             }`}
           >
-            <p className="text-lg">{text}</p>
+            <p className="text-lg">{option}</p>
           </motion.button>
         ))}
       </motion.div>
 
-      {hasVoted && (
-        <>
-          <Reactions questionId={question.id} />
-          {showPlotTwist && question.plotTwist && (
-            <PlotTwist twist={question.plotTwist} />
-          )}
-        </>
-      )}
+      {hasVoted && <Reactions questionId={question.id.toString()} />}
     </div>
   );
 };

@@ -1,6 +1,5 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { FaComments } from 'react-icons/fa';
+import { FaComment } from 'react-icons/fa';
 
 export const FeedbackButton = () => {
   const handleClick = () => {
@@ -17,7 +16,7 @@ export const FeedbackButton = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <FaComments className="w-5 h-5" />
+      <FaComment className="w-5 h-5" />
       <span>Feedback</span>
     </motion.button>
   );

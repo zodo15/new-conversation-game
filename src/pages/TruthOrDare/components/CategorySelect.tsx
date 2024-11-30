@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { categories } from '../data/questions';
 import { QuestionCategory } from '../types/game';
 import { useGameStore } from '../store/gameStore';
 import useSound from 'use-sound';
-import { FaFire, FaLaugh, FaBrain, FaUsers, FaDumbbell, FaPalette } from 'react-icons/fa';
+import { FaFireAlt, FaLaugh, FaBrain as FaBrainIcon, FaUserFriends, FaDumbbell as FaDumbbellIcon, FaPalette as FaPaletteIcon } from 'react-icons/fa';
 
 const categoryIcons: Record<QuestionCategory, React.ReactNode> = {
-  'spicy': <FaFire className="text-3xl mb-2" />,
+  'spicy': <FaFireAlt className="text-3xl mb-2" />,
   'funny': <FaLaugh className="text-3xl mb-2" />,
-  'deep': <FaBrain className="text-3xl mb-2" />,
-  'social': <FaUsers className="text-3xl mb-2" />,
-  'physical': <FaDumbbell className="text-3xl mb-2" />,
-  'creative': <FaPalette className="text-3xl mb-2" />
+  'deep': <FaBrainIcon className="text-3xl mb-2" />,
+  'social': <FaUserFriends className="text-3xl mb-2" />,
+  'physical': <FaDumbbellIcon className="text-3xl mb-2" />,
+  'creative': <FaPaletteIcon className="text-3xl mb-2" />
 };
 
 export const CategorySelect = () => {
-  const setCategory = useGameStore((state) => state.setCategory);
+  const setCategory = useGameStore((state: any) => state.setCategory);
   const [playHover] = useSound('/hover.mp3', { volume: 0.5 });
   const [playSelect] = useSound('/select.mp3', { volume: 0.5 });
 

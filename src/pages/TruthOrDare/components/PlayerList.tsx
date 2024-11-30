@@ -1,12 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
-import { Player } from '../types';
 
 export const PlayerList: React.FC = () => {
   const { players, currentPlayerIndex, removePlayer } = useGameStore();
 
-  const getPlayerStatus = (player: Player, index: number) => {
+  const getPlayerStatus = (index: number): string => {
     if (index === currentPlayerIndex) return 'Current';
     if (index === (currentPlayerIndex + 1) % players.length) return 'Next';
     return '';
@@ -16,7 +15,7 @@ export const PlayerList: React.FC = () => {
     <div className="space-y-4">
       <h2 className="text-2xl font-bold text-gray-800">Players</h2>
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {players.map((player, index) => (
+        {players.map((player: string, index: number) => (
           <motion.div
             key={player.id}
             initial={{ opacity: 0, y: 20 }}
@@ -35,9 +34,9 @@ export const PlayerList: React.FC = () => {
                 }`}>
                   {player.name}
                 </h3>
-                {getPlayerStatus(player, index) && (
+                {getPlayerStatus(index) && (
                   <span className="text-sm font-medium text-white bg-green-500 px-2 py-1 rounded-full">
-                    {getPlayerStatus(player, index)}
+                    {getPlayerStatus(index)}
                   </span>
                 )}
               </div>

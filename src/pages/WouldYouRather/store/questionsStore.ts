@@ -1,72 +1,89 @@
-import create from 'zustand';
+import { create } from 'zustand';
 import { Question, GameMode } from '../types';
+import { v4 as uuidv4 } from 'uuid';
 
 interface QuestionsState {
   questions: Question[];
-  addQuestion: (question: Question) => void;
-  getQuestionsByMode: (mode: GameMode) => Question[];
-  removeQuestion: (id: string) => void;
-  editQuestion: (id: string, updatedQuestion: Partial<Question>) => void;
+  currentQuestion: Question | null;
+  usedQuestionIds: Set<string>;
 }
 
-const defaultQuestions: Question[] = [
+interface QuestionsStore extends QuestionsState {
+  addQuestion: (question: Question) => void;
+  getQuestionsByMode: (mode: GameMode) => Question[];
+  getQuestionById: (id: string) => Question | undefined;
+  updateQuestion: (id: string, updatedQuestion: Partial<Question>) => void;
+}
+
+const sampleQuestions: Question[] = [
   {
-    id: '1',
-    option1: 'Have the ability to fly',
-    option2: 'Have the ability to read minds',
+    id: uuidv4(),
+    optionA: 'Have the ability to fly',
+    optionB: 'Have the ability to read minds',
     mode: GameMode.CLASSIC,
     category: 'Superpowers',
   },
   {
-    id: '2',
-    option1: 'Live in a world without music',
-    option2: 'Live in a world without movies',
+    id: uuidv4(),
+    optionA: 'Live in a world without music',
+    optionB: 'Live in a world without movies',
     mode: GameMode.CLASSIC,
     category: 'Lifestyle',
   },
   {
-    id: '3',
-    option1: 'Always speak your mind',
-    option2: 'Never speak again',
+    id: uuidv4(),
+    optionA: 'Always speak your mind',
+    optionB: 'Never speak again',
     mode: GameMode.SPICY,
     category: 'Social',
     consequences: {
-      option1: 'You might hurt people\'s feelings but they\'ll always know where they stand',
-      option2: 'You\'ll have to find new ways to communicate',
+      optionA: 'You might hurt people\'s feelings but they\'ll always know where they stand',
+      optionB: 'You\'ll have to find new ways to communicate',
     },
   },
   {
-    id: '4',
-    option1: 'Fight 100 duck-sized horses',
-    option2: 'Fight 1 horse-sized duck',
+    id: uuidv4(),
+    optionA: 'Fight 100 duck-sized horses',
+    optionB: 'Fight 1 horse-sized duck',
     mode: GameMode.EXTREME,
     category: 'Combat',
     consequences: {
-      option1: 'They\'ll attack in waves but are individually weak',
-      option2: 'One powerful opponent but predictable attacks',
+      optionA: 'They\'ll attack in waves but are individually weak',
+      optionB: 'One powerful opponent but predictable attacks',
     },
   },
 ];
 
-export const useQuestionsStore = create<QuestionsState>((set, get) => ({
-  questions: defaultQuestions,
+const initialState: QuestionsState = {
+  questions: sampleQuestions,
+  currentQuestion: null,
+  usedQuestionIds: new Set(),
+};
 
-  addQuestion: (question) => set((state) => ({
-    questions: [...state.questions, question],
-  })),
+export const useQuestionsStore = create<QuestionsStore>((set, get) => ({
+  ...initialState,
 
-  getQuestionsByMode: (mode) => {
-    const { questions } = get();
-    return questions.filter((q) => q.mode === mode);
+  addQuestion: (question: Question) => {
+    set((state: QuestionsState) => ({
+      questions: [...state.questions, { ...question, id: uuidv4() }],
+    }));
   },
 
-  removeQuestion: (id) => set((state) => ({
-    questions: state.questions.filter((q) => q.id !== id),
-  })),
+  getQuestionsByMode: (mode: GameMode) => {
+    const state = get();
+    return state.questions.filter((q) => q.mode === mode);
+  },
 
-  editQuestion: (id, updatedQuestion) => set((state) => ({
-    questions: state.questions.map((q) =>
-      q.id === id ? { ...q, ...updatedQuestion } : q
-    ),
-  })),
+  getQuestionById: (id: string) => {
+    const state = get();
+    return state.questions.find((q) => q.id === id);
+  },
+
+  updateQuestion: (id: string, updatedQuestion: Partial<Question>) => {
+    set((state: QuestionsState) => ({
+      questions: state.questions.map((q) =>
+        q.id === id ? { ...q, ...updatedQuestion } : q
+      ),
+    }));
+  },
 }));

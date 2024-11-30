@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Home, Shuffle, Info, Sparkles, Wifi, WifiOff, ArrowLeft, X, SkipForward, Zap, Plus } from 'lucide-react';
+import { ArrowLeft, X, SkipForward, Zap, Plus, Shuffle } from '@phosphor-icons/react';
 import { Toaster, toast } from 'react-hot-toast';
 import { Question } from './types';
 import { getQuestionsByMode } from './data/questions';
@@ -19,6 +19,8 @@ interface GameState {
   chaosMode: boolean;
   chaosMaster?: string;
   timer: number;
+  votes?: Record<string, number>;
+  selectedOption?: string;
 }
 
 const App = ({ onBack }: { onBack: () => void }) => {
@@ -30,6 +32,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
     mode: '',
     chaosMode: false,
     timer: 30,
+    votes: {},
   });
 
   const [playerInput, setPlayerInput] = useState('');
@@ -38,105 +41,33 @@ const App = ({ onBack }: { onBack: () => void }) => {
   const [timerDuration, setTimerDuration] = useState(30);
   const [showAddQuestion, setShowAddQuestion] = useState(false);
 
+  const GAME_MODES = ['classic', 'spicy', 'friend', 'random'];
+
   const handleDurationChange = (newDuration: number) => {
     setTimerDuration(newDuration);
   };
 
-  const GAME_MODES = ['classic', 'spicy', 'friend', 'random'];
-
-  const chaosActions = [
-    "Stutter while answering",
-    "Answer in a British accent",
-    "Answer while doing jumping jacks",
-    "Answer in a whisper",
-    "Answer like a robot",
-    "Answer while dancing",
-    "Answer in slow motion",
-    "Answer like a news reporter",
-    "Answer while impersonating another player",
-    "Answer in a singing voice",
-    "Answer while acting shy",
-    "Answer like a superhero",
-    "Answer while being dramatic",
-    "Answer in reverse order",
-    "Answer while being extremely excited"
-  ];
-
-  const handleChaosAction = () => {
-    const randomAction = chaosActions[Math.floor(Math.random() * chaosActions.length)];
-    toast.success(`Chaos Challenge: ${randomAction}`, {
-      duration: 3000,
-      icon: '🎲'
-    });
-  };
-
-  const handleChaosWheelComplete = (action: string) => {
-    const questions = getQuestionsByMode(gameState.mode);
-    if (questions.length === 0) {
-      toast.error('No questions available for this mode');
+  const startGame = () => {
+    if (gameState.players.length < 2) {
+      toast.error('Add at least 2 players to start!');
       return;
     }
 
+    const questions = getQuestionsByMode(gameState.mode);
+    if (!questions.length) {
+      toast.error('No questions available for this mode!');
+      return;
+    }
+
+    const firstQuestion = questions[Math.floor(Math.random() * questions.length)];
     setGameState(prev => ({
       ...prev,
       gameStarted: true,
-      currentQuestion: questions[Math.floor(Math.random() * questions.length)],
-      chaosMode: true
+      currentQuestion: firstQuestion,
+      currentPlayerIndex: 0,
+      votes: {},
+      selectedOption: undefined
     }));
-    
-    setShowChaosWheel(false);
-  };
-
-  const handleChaosEffect = () => {
-    const effects = [
-      {
-        name: 'Dance Break!',
-        action: () => toast('Everyone must dance for 30 seconds! 💃🕺', { icon: '🎵', duration: 5000 })
-      },
-      {
-        name: 'Accent Challenge',
-        action: () => toast('Next player must answer in a funny accent! 🗣️', { icon: '🎭', duration: 5000 })
-      },
-      {
-        name: 'Truth Bomb',
-        action: () => toast('Current player must share an embarrassing story! 😅', { icon: '💣', duration: 5000 })
-      },
-      {
-        name: 'Switch Seats',
-        action: () => toast('Everyone must switch seats clockwise! 🔄', { icon: '💺', duration: 5000 })
-      },
-      {
-        name: 'Silent Mode',
-        action: () => toast('Next round must be played in complete silence! 🤫', { icon: '🤐', duration: 5000 })
-      },
-      {
-        name: 'Impersonation',
-        action: () => toast('Answer as your favorite celebrity! 🌟', { icon: '🎬', duration: 5000 })
-      },
-      {
-        name: 'Speed Round',
-        action: () => toast('Timer is now 5 seconds! ⚡', { icon: '⏰', duration: 5000 })
-      },
-      {
-        name: 'Reverse Psychology',
-        action: () => toast('Must argue for the option you DON\'T choose! 🔄', { icon: '🤔', duration: 5000 })
-      },
-      {
-        name: 'Group Choice',
-        action: () => toast('Everyone votes together on this one! 👥', { icon: '🗳️', duration: 5000 })
-      },
-      {
-        name: 'Dramatic Reading',
-        action: () => toast('Read the options in the most dramatic way possible! 🎭', { icon: '📖', duration: 5000 })
-      }
-    ];
-
-    const effect = effects[Math.floor(Math.random() * effects.length)];
-    effect.action();
-  };
-
-  const startGame = () => {
-    setShowChaosWheel(true);
   };
 
   const handleAddPlayer = () => {
@@ -149,6 +80,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
       return;
     }
     setGameState(prev => ({
+
       ...prev,
       players: [...prev.players, playerInput.trim()]
     }));
@@ -190,7 +122,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
 
   const handleOptionSelect = (option: 'A' | 'B') => {
     if (!gameState.currentQuestion) return;
-    
+
     if (option === 'A') {
       handleChoice('optionA');
     } else {
@@ -199,6 +131,17 @@ const App = ({ onBack }: { onBack: () => void }) => {
   };
 
   const handleChoice = (choice: 'optionA' | 'optionB') => {
+    if (!gameState.currentQuestion) return;
+
+    setGameState(prev => ({
+      ...prev,
+      votes: {
+        ...prev.votes,
+        [choice]: (prev.votes?.[choice] || 0) + 1
+      },
+      selectedOption: choice
+    }));
+
     setTimeout(() => {
       nextQuestion();
     }, 1500);
@@ -212,10 +155,15 @@ const App = ({ onBack }: { onBack: () => void }) => {
     }
 
     const nextIndex = Math.floor(Math.random() * questions.length);
+    const nextPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+    
     setGameState(prev => ({
       ...prev,
       currentQuestion: questions[nextIndex],
-      timer: timerDuration // Reset timer to initial duration
+      currentPlayerIndex: nextPlayerIndex,
+      timer: timerDuration,
+      votes: {},
+      selectedOption: undefined
     }));
   };
 
@@ -232,25 +180,6 @@ const App = ({ onBack }: { onBack: () => void }) => {
       currentQuestion: questions[nextIndex],
       timer: timerDuration // Reset timer when skipping
     }));
-  };
-
-  const startNewRound = () => {
-    setShowChaosWheel(true);
-  };
-
-  const triggerChaosEffect = () => {
-    const effects = [
-      "Everyone must answer in song!",
-      "Switch seats with the person to your right!",
-      "Answer in your best accent!",
-      "Do 5 jumping jacks before answering!",
-      "Answer while standing on one leg!"
-    ];
-    const randomEffect = effects[Math.floor(Math.random() * effects.length)];
-    toast.success(randomEffect, {
-      icon: '⚡',
-      duration: 4000
-    });
   };
 
   const handleAddQuestion = (question: { id: string; option1: string; option2: string; type: 'custom' }) => {
@@ -313,15 +242,18 @@ const App = ({ onBack }: { onBack: () => void }) => {
                 )}
               </div>
               <div className="flex flex-col items-end gap-4">
-                <Timer 
-                  duration={timerDuration} 
+                <Timer
+                  duration={timerDuration}
                   onDurationChange={handleDurationChange}
                 />
                 {gameState.mode === 'friend' && (
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={triggerChaosEffect}
+                    onClick={() => toast.success('Chaos Challenge!', {
+                      icon: '⚡',
+                      duration: 4000
+                    })}
                     className="px-4 py-2 bg-gradient-to-r from-[#E4A1FF] to-[#FF9CEE] rounded-lg hover:from-[#D880FF] hover:to-[#FF80E5] transition-all flex items-center gap-2 text-sm"
                   >
                     <Zap className="w-4 h-4" />
@@ -330,11 +262,11 @@ const App = ({ onBack }: { onBack: () => void }) => {
                 )}
               </div>
             </div>
-            
+
             <div className="text-3xl font-bold text-center bg-gradient-to-r from-[#E4A1FF] to-[#FF9CEE] text-transparent bg-clip-text mb-8">
               Would you rather...
             </div>
-            
+
             <div className="flex flex-col gap-8">
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -376,7 +308,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={startNewRound}
+                  onClick={startGame}
                   className="px-6 py-3 bg-white/10 backdrop-blur-sm rounded-lg hover:bg-white/20 transition-all flex items-center gap-2"
                 >
                   <Shuffle className="w-5 h-5" />

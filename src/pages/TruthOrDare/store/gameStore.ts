@@ -1,76 +1,155 @@
-import create from 'zustand';
-import { GameState, GameActions, Question, Player, QuestionCategory, QuestionType } from '../types';
+import { create } from 'zustand';
+import { Question } from '../types/game';
 import { v4 as uuidv4 } from 'uuid';
+
+interface GameState {
+  players: string[];
+  currentPlayer: string | null;
+  currentQuestion: Question | null;
+  selectedCategory: string | null;
+  selectedType: string | null;
+  votes: Record<string, { option1: number; option2: number }>;
+  reactions: Record<string, Record<string, number>>;
+  lastSkippedQuestion: Question | null;
+  showResults: boolean;
+  chaosMode: boolean;
+  timerMode: boolean;
+  isAgeVerified: boolean;
+  usedQuestions: Set<number>;
+  customQuestions: Question[];
+}
+
+type GameStore = GameState & {
+  setCurrentPlayer: (player: string | null) => void;
+  addReaction: (questionId: string, reaction: string) => void;
+  addPlayer: (name: string) => void;
+  removePlayer: (name: string) => void;
+  setCurrentQuestion: (question: Question | null) => void;
+  setSelectedCategory: (category: string | null) => void;
+  setQuestionType: (type: string | null) => void;
+  addCustomQuestion: (question: Question) => void;
+  addVote: (id: string, option: 1 | 2) => void;
+  setShowResults: (show: boolean) => void;
+  skipQuestion: (question: Question) => void;
+  toggleChaosMode: () => void;
+  toggleTimerMode: () => void;
+  setAgeVerified: (verified: boolean) => void;
+  startGame: () => void;
+  resetGame: () => void;
+  setShowAddQuestion: (show: boolean) => void;
+  incrementCategoryCount: (playerId: string, category: 'truth' | 'dare', completed: boolean) => void;
+  setCurrentPlayerIndex: (index: number) => void;
+  updateScore: (playerId: string, points: number) => void;
+  addUsedQuestionId: (id: string) => void;
+  clearUsedQuestionIds: () => void;
+};
 
 const initialState: GameState = {
   players: [],
-  currentPlayerIndex: 0,
+  currentPlayer: null,
   currentQuestion: null,
   selectedCategory: null,
-  questionType: 'mild',
-  customQuestions: [],
-  usedQuestionIds: new Set(),
-  gameStarted: false,
-  roundCount: 0,
-  showAddQuestion: false,
+  selectedType: null,
+  votes: {},
+  reactions: {},
+  lastSkippedQuestion: null,
+  showResults: false,
+  chaosMode: false,
+  timerMode: false,
+  isAgeVerified: false,
+  usedQuestions: new Set(),
+  customQuestions: []
 };
 
-export const useGameStore = create<GameState & GameActions>((set, get) => ({
+export const useGameStore = create<GameStore>((set, get) => ({
   ...initialState,
 
-  addPlayer: (name) => set((state) => ({
-    players: [
-      ...state.players,
-      {
-        id: uuidv4(),
-        name,
-        score: 0,
-        truthCount: 0,
-        dareCount: 0,
-        skippedCount: 0,
-        completedCount: 0,
-      },
-    ],
+  setCurrentPlayer: (player: string | null) => set({ currentPlayer: player }),
+
+  addReaction: (questionId: string, reaction: string) => 
+    set((state: GameState) => {
+      const currentReactions = state.reactions[questionId] || {};
+      return {
+        reactions: {
+          ...state.reactions,
+          [questionId]: {
+            ...currentReactions,
+            [reaction]: (currentReactions[reaction] || 0) + 1
+          }
+        }
+      };
+    }),
+
+  addPlayer: (name: string) => set((state: GameState) => ({
+    players: [...state.players, name]
   })),
 
-  removePlayer: (id) => set((state) => ({
-    players: state.players.filter((p) => p.id !== id),
+  removePlayer: (name: string) => set((state: GameState) => ({
+    players: state.players.filter(p => p !== name)
   })),
 
-  setCurrentQuestion: (question) => set({ currentQuestion: question }),
+  setCurrentQuestion: (question: Question | null) => set({ currentQuestion: question }),
 
-  setSelectedCategory: (category) => set({ selectedCategory: category }),
+  setSelectedCategory: (category: string | null) => set({ selectedCategory: category }),
 
-  setQuestionType: (type) => set({ questionType: type }),
+  setQuestionType: (type: string | null) => set({ selectedType: type }),
 
-  addCustomQuestion: (question) => set((state) => ({
-    customQuestions: [...state.customQuestions, { ...question, id: uuidv4() }],
+  addCustomQuestion: (question: Question) => set((state: GameState) => ({
+    customQuestions: [...state.customQuestions, { ...question, id: uuidv4() }]
   })),
 
-  addUsedQuestionId: (id) => set((state) => ({
-    usedQuestionIds: new Set([...state.usedQuestionIds, id]),
+  addVote: (id: string, option: 1 | 2) => set((state: GameState) => {
+    const currentVotes = state.votes[id] || { option1: 0, option2: 0 };
+    return {
+      votes: {
+        ...state.votes,
+        [id]: {
+          option1: option === 1 ? currentVotes.option1 + 1 : currentVotes.option1,
+          option2: option === 2 ? currentVotes.option2 + 1 : currentVotes.option2
+        }
+      }
+    };
+  }),
+
+  setShowResults: (show: boolean) => set({ showResults: show }),
+
+  skipQuestion: (question: Question) => set((state: GameState) => ({
+    lastSkippedQuestion: question,
+    players: state.players.map(p => p)
   })),
 
-  clearUsedQuestionIds: () => set({ usedQuestionIds: new Set() }),
+  toggleChaosMode: () => set((state: GameState) => ({ chaosMode: !state.chaosMode })),
 
-  updateScore: (playerId, points) => set((state) => ({
-    players: state.players.map((p) =>
-      p.id === playerId ? { ...p, score: p.score + points } : p
-    ),
-  })),
+  toggleTimerMode: () => set((state: GameState) => ({ timerMode: !state.timerMode })),
 
-  incrementCategoryCount: (playerId, category, completed) => set((state) => ({
+  setAgeVerified: (verified: boolean) => set({ isAgeVerified: verified }),
+
+  startGame: () => set({ 
+    gameStarted: true,
+    roundCount: 0,
+    currentPlayerIndex: 0,
+    usedQuestions: new Set()
+  }),
+
+  resetGame: () => set({
+    ...initialState,
+    customQuestions: get().customQuestions // Preserve custom questions
+  }),
+
+  setShowAddQuestion: (show: boolean) => set({ showAddQuestion: show }),
+
+  incrementCategoryCount: (playerId: string, category: 'truth' | 'dare', completed: boolean) => set((state: GameState) => ({
     players: state.players.map((p) => {
-      if (p.id === playerId) {
-        const updates: Partial<Player> = {
+      if (p === playerId) {
+        const updates: Partial<string> = {
           [category === 'truth' ? 'truthCount' : 'dareCount']: 
-            p[category === 'truth' ? 'truthCount' : 'dareCount'] + 1,
+            (state.players.find(player => player === playerId)?.[category === 'truth' ? 'truthCount' : 'dareCount'] || 0) + 1,
         };
         
         if (completed) {
-          updates.completedCount = p.completedCount + 1;
+          updates.completedCount = (state.players.find(player => player === playerId)?.completedCount || 0) + 1;
         } else {
-          updates.skippedCount = p.skippedCount + 1;
+          updates.skippedCount = (state.players.find(player => player === playerId)?.skippedCount || 0) + 1;
         }
         
         updates.lastCategory = category;
@@ -81,64 +160,17 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     }),
   })),
 
-  setCurrentPlayerIndex: (index) => set({ currentPlayerIndex: index }),
+  setCurrentPlayerIndex: (index: number) => set({ currentPlayerIndex: index }),
 
-  startGame: () => set({ 
-    gameStarted: true,
-    roundCount: 0,
-    currentPlayerIndex: 0,
-    usedQuestionIds: new Set()
-  }),
+  updateScore: (playerId: string, points: number) => set((state: GameState) => ({
+    players: state.players.map((p) =>
+      p === playerId ? { ...p, score: (state.players.find(player => player === playerId)?.score || 0) + points } : p
+    ),
+  })),
 
-  resetGame: () => set({
-    ...initialState,
-    customQuestions: get().customQuestions // Preserve custom questions
-  }),
+  addUsedQuestionId: (id: string) => set((state: GameState) => ({
+    usedQuestions: new Set([...state.usedQuestions, id]),
+  })),
 
-  setShowAddQuestion: (show) => set({ showAddQuestion: show }),
-
-  skipQuestion: (question) => set((state) => {
-    const currentPlayer = state.players[state.currentPlayerIndex];
-    if (!currentPlayer || !question) return state;
-
-    return {
-      lastSkippedQuestion: question,
-      players: state.players.map(p => 
-        p.id === currentPlayer.id
-          ? { ...p, skippedCount: p.skippedCount + 1 }
-          : p
-      )
-    };
-  }),
+  clearUsedQuestionIds: () => set({ usedQuestions: new Set() }),
 }));
-
-// Default questions
-const defaultQuestions: Question[] = [
-  // Mild Truth Questions
-  { id: 't1', text: "What's the most embarrassing song you love to listen to?", type: 'mild', category: 'truth' },
-  { id: 't2', text: "What's the longest you've gone without showering?", type: 'mild', category: 'truth' },
-  { id: 't3', text: "What's your biggest pet peeve?", type: 'mild', category: 'truth' },
-  
-  // Spicy Truth Questions
-  { id: 't4', text: "What's the biggest lie you've ever told?", type: 'spicy', category: 'truth' },
-  { id: 't5', text: "What's your biggest regret?", type: 'spicy', category: 'truth' },
-  { id: 't6', text: "What's the most trouble you've ever been in?", type: 'spicy', category: 'truth' },
-  
-  // Extreme Truth Questions
-  { id: 't7', text: "What's your deepest secret that you've never told anyone?", type: 'extreme', category: 'truth' },
-  { id: 't8', text: "What's the worst thing you've ever done?", type: 'extreme', category: 'truth' },
-  
-  // Mild Dare Questions
-  { id: 'd1', text: "Do your best impression of a celebrity", type: 'mild', category: 'dare' },
-  { id: 'd2', text: "Speak in an accent for the next three rounds", type: 'mild', category: 'dare' },
-  { id: 'd3', text: "Do 10 jumping jacks", type: 'mild', category: 'dare' },
-  
-  // Spicy Dare Questions
-  { id: 'd4', text: "Call a friend and sing them a song", type: 'spicy', category: 'dare' },
-  { id: 'd5', text: "Post an embarrassing selfie on social media", type: 'spicy', category: 'dare' },
-  { id: 'd6', text: "Let another player post anything they want on your social media", type: 'spicy', category: 'dare' },
-  
-  // Extreme Dare Questions
-  { id: 'd7', text: "Let the group give you a makeover with whatever they can find", type: 'extreme', category: 'dare' },
-  { id: 'd8', text: "Eat a spoonful of the spiciest condiment available", type: 'extreme', category: 'dare' }
-];

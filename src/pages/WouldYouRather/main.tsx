@@ -1,10 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import WouldYouRatherApp from './App';
+import { WouldYouRather } from './App';
 import './index.css';
+
+const handleBack = () => {
+  window.history.back();
+};
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <WouldYouRatherApp />
+    <WouldYouRather onBack={handleBack} />
   </React.StrictMode>
 );

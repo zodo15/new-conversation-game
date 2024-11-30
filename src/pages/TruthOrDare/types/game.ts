@@ -8,16 +8,7 @@ export interface Question {
   category: QuestionCategory;
   custom?: boolean;
   targetPlayer?: string;
-  plotTwist?: string;
-}
-
-export interface PlayerProfile {
-  name: string;
-  interests: string[];
-  hobbies: string[];
-  favorites: string[];
-  secrets: string[];
-  dares: string[];
+  options: [string, string];  // Array of exactly two options
 }
 
 export interface GameState {
@@ -26,9 +17,11 @@ export interface GameState {
   chaosMode: boolean;
   timerMode: boolean;
   currentPlayer: string | null;
-  players: PlayerProfile[];
+  players: string[];
   votes: Record<string, { option1: number; option2: number }>;
   reactions: Record<string, Record<string, number>>;
+  currentPlayerIndex: number;
+  selectedType: QuestionType | null;
   roomId: string | null;
   customQuestions: Question[];
   usedQuestions: Set<number>;
