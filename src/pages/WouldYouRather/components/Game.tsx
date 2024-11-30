@@ -10,7 +10,7 @@ import { AddQuestionModal } from './AddQuestionModal';
 import { Timer } from './Timer';
 import { ShareButton } from './ShareButton';
 import { toast, Toaster } from 'react-hot-toast';
-import { ArrowLeft, Plus, Dice, Sparkles, Shuffle } from 'lucide-react';
+import { CaretLeft, DiceFive, Sparkles, Shuffle } from '@phosphor-icons/react';
 import ChoiceCard from './ChoiceCard';
 import ChaosButton from './ChaosButton';
 import FloatingBackground from './FloatingBackground';
@@ -109,7 +109,7 @@ const Game: React.FC = () => {
           }}
           className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-lg text-white backdrop-blur-sm"
         >
-          <ArrowLeft size={20} />
+          <CaretLeft size={20} />
           Back to Modes
         </motion.button>
       </div>
@@ -130,7 +130,7 @@ const Game: React.FC = () => {
           onClick={() => setShowAddQuestion(true)}
           className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-lg text-white backdrop-blur-sm"
         >
-          <Plus size={20} />
+          <DiceFive size={20} />
           Add Question
         </motion.button>
       </div>

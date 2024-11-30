@@ -1,38 +1,54 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useGameStore } from '../store/gameStore';
 import { Player } from '../types/game';
+import { X } from '@phosphor-icons/react';
 
-export const PlayerList: React.FC = () => {
-  const players = useGameStore((state) => state.players);
-  const currentPlayer = useGameStore((state) => state.currentPlayer);
+interface PlayerListProps {
+  players: Player[];
+  currentPlayerId: string;
+  onRemovePlayer: (id: string) => void;
+}
 
+export const PlayerList: React.FC<PlayerListProps> = ({
+  players,
+  currentPlayerId,
+  onRemovePlayer,
+}) => {
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h2 className="text-2xl font-bold text-white mb-4">Players</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {players.map((player) => (
-          <motion.div
-            key={player}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`p-4 rounded-lg ${
-              player === currentPlayer
-                ? 'bg-purple-600 text-white'
-                : 'bg-white/10 text-white'
-            }`}
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      {players.map((player) => (
+        <motion.div
+          key={player.id}
+          className={`relative p-4 rounded-lg ${
+            player.id === currentPlayerId
+              ? 'bg-purple-600'
+              : 'bg-white/10 backdrop-blur-sm'
+          }`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+        >
+          <button
+            onClick={() => onRemovePlayer(player.id)}
+            className="absolute top-2 right-2 p-1 hover:bg-white/10 rounded-full transition-colors"
           >
-            <div className="flex items-center justify-between">
-              <span className="text-lg font-semibold">{player}</span>
-              {player === currentPlayer && (
-                <span className="text-sm bg-white/20 px-2 py-1 rounded">
-                  Current Turn
-                </span>
-              )}
+            <X className="w-4 h-4" />
+          </button>
+
+          <div className="text-center">
+            <h3 className="font-bold truncate">{player.name}</h3>
+            <div className="text-sm opacity-80 space-y-1">
+              <p>Score: {player.score}</p>
+              <p>Streak: {player.streak}</p>
+              <div className="text-xs space-x-2">
+                <span>T: {player.choices.truth}</span>
+                <span>D: {player.choices.dare}</span>
+                <span>W: {player.choices['would-you-rather']}</span>
+              </div>
             </div>
-          </motion.div>
-        ))}
-      </div>
+          </div>
+        </motion.div>
+      ))}
     </div>
   );
 };

@@ -2,61 +2,98 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Question as QuestionType } from '../types/game';
 import { useGameStore } from '../store/gameStore';
-import useSound from 'use-sound';
-import { Reactions } from './Reactions';
 import { Timer } from './Timer';
+import { Reactions } from './Reactions';
 
 interface QuestionProps {
   question: QuestionType;
+  onComplete: () => void;
 }
 
-export const Question: React.FC<QuestionProps> = ({ question }) => {
-  const [hasVoted, setHasVoted] = useState(false);
-  const { addVote, timerMode } = useGameStore();
-  const [playVote] = useSound('/vote.mp3', { volume: 0.5 });
+export const Question: React.FC<QuestionProps> = ({ question, onComplete }) => {
+  const [showTimer, setShowTimer] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const { currentPlayerIndex, players } = useGameStore();
 
-  const handleVote = (option: 1 | 2) => {
-    if (!hasVoted) {
-      playVote();
-      addVote(question.id.toString(), option);
-      setHasVoted(true);
+  const currentPlayer = players[currentPlayerIndex];
+
+  const handleOptionSelect = (option: string) => {
+    setSelectedOption(option);
+    if (question.type === 'would-you-rather') {
+      useGameStore.getState().addVote(currentPlayer.id, option as 'optionA' | 'optionB');
     }
   };
 
-  const shakeAnimation = hasVoted ? {
-    x: [0, -10, 10, -10, 10, 0],
-    transition: {
-      duration: 0.5,
-      repeat: 0,
-      repeatType: "mirror" as const
+  const handleComplete = () => {
+    if (selectedOption) {
+      useGameStore.getState().updateScore(currentPlayer.id, 1);
+      useGameStore.getState().updateStreak(currentPlayer.id);
+      onComplete();
     }
-  } : undefined;
+  };
 
   return (
-    <div className="space-y-6">
-      {timerMode && <Timer onTimeout={() => {}} isActive={!hasVoted} />}
-      <motion.div 
-        animate={shakeAnimation}
-        className="flex flex-col md:flex-row gap-6"
-      >
-        {[question.options[0], question.options[1]].map((option, index) => (
-          <motion.button
-            key={index}
-            onClick={() => handleVote(index + 1)}
-            whileHover={{ scale: hasVoted ? 1 : 1.05 }}
-            whileTap={{ scale: hasVoted ? 1 : 0.95 }}
-            className={`flex-1 p-6 rounded-lg border-2 transition-colors ${
-              hasVoted
-                ? 'border-gray-300 cursor-default'
-                : 'border-purple-500 hover:border-purple-600 cursor-pointer'
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6 p-6 bg-white/10 backdrop-blur-sm rounded-lg"
+    >
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold text-center">
+          {currentPlayer.name}'s Turn
+        </h2>
+        <p className="text-lg text-center">{question.text}</p>
+
+        {question.type === 'would-you-rather' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <button
+              onClick={() => handleOptionSelect('optionA')}
+              className={`p-4 rounded-lg transition-colors ${
+                selectedOption === 'optionA'
+                  ? 'bg-purple-600'
+                  : 'bg-white/10 hover:bg-white/20'
+              }`}
+            >
+              {question.optionA}
+            </button>
+            <button
+              onClick={() => handleOptionSelect('optionB')}
+              className={`p-4 rounded-lg transition-colors ${
+                selectedOption === 'optionB'
+                  ? 'bg-purple-600'
+                  : 'bg-white/10 hover:bg-white/20'
+              }`}
+            >
+              {question.optionB}
+            </button>
+          </div>
+        )}
+
+        <div className="flex justify-center space-x-4">
+          {!showTimer && (
+            <button
+              onClick={() => setShowTimer(true)}
+              className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+            >
+              Start Timer
+            </button>
+          )}
+          {showTimer && <Timer duration={30} />}
+          <button
+            onClick={handleComplete}
+            disabled={!selectedOption}
+            className={`px-4 py-2 rounded-lg transition-colors ${
+              selectedOption
+                ? 'bg-green-600 hover:bg-green-700'
+                : 'bg-white/10 cursor-not-allowed'
             }`}
           >
-            <p className="text-lg">{option}</p>
-          </motion.button>
-        ))}
-      </motion.div>
+            Complete
+          </button>
+        </div>
+      </div>
 
-      {hasVoted && <Reactions questionId={question.id.toString()} />}
-    </div>
+      <Reactions questionId={question.id} />
+    </motion.div>
   );
 };

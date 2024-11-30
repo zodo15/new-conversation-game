@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flame, Brain, Users, Barbell, PaintBrush, Sparkle, Star, Fire, Skull } from '@phosphor-icons/react';
+import { Flame, Heart, Skull } from '@phosphor-icons/react';
 import { QuestionCategory } from '../types/game';
 import { useGameStore } from '../store/gameStore';
 import { motion } from 'framer-motion';
@@ -7,21 +7,75 @@ import useSound from 'use-sound';
 
 interface CategorySelectProps {
   onSelect: (category: QuestionCategory) => void;
+  selectedCategory: QuestionCategory | null;
 }
 
-const categories = [
-  { id: 'spicy' as QuestionCategory, name: 'Spicy', icon: Flame, color: 'text-red-500' },
-  { id: 'deep' as QuestionCategory, name: 'Deep', icon: Brain, color: 'text-purple-500' },
-  { id: 'social' as QuestionCategory, name: 'Social', icon: Users, color: 'text-blue-500' },
-  { id: 'physical' as QuestionCategory, name: 'Physical', icon: Barbell, color: 'text-green-500' },
-  { id: 'creative' as QuestionCategory, name: 'Creative', icon: PaintBrush, color: 'text-yellow-500' },
-  { id: 'funny' as QuestionCategory, name: 'Funny', icon: Sparkle, color: 'text-pink-500' },
-  { id: 'mild' as QuestionCategory, name: 'Mild', icon: Star, color: 'text-orange-500' },
-  { id: 'extreme' as QuestionCategory, name: 'Extreme', icon: Skull, color: 'text-black' },
-  { id: 'hot' as QuestionCategory, name: 'Hot', icon: Fire, color: 'text-red-500' }
+const categories: {
+  type: QuestionCategory;
+  icon: React.ReactNode;
+  label: string;
+  description: string;
+}[] = [
+  {
+    type: 'mild',
+    icon: <Heart size={32} weight="fill" />,
+    label: 'Mild',
+    description: 'Light and fun questions',
+  },
+  {
+    type: 'spicy',
+    icon: <Flame size={32} weight="fill" />,
+    label: 'Spicy',
+    description: 'More challenging questions',
+  },
+  {
+    type: 'extreme',
+    icon: <Skull size={32} weight="fill" />,
+    label: 'Extreme',
+    description: 'Most daring questions',
+  },
+  {
+    type: 'deep' as QuestionCategory,
+    icon: <Skull size={32} weight="fill" />,
+    label: 'Deep',
+    description: 'More personal questions',
+  },
+  {
+    type: 'social' as QuestionCategory,
+    icon: <Skull size={32} weight="fill" />,
+    label: 'Social',
+    description: 'Questions about relationships',
+  },
+  {
+    type: 'physical' as QuestionCategory,
+    icon: <Skull size={32} weight="fill" />,
+    label: 'Physical',
+    description: 'Questions about physical challenges',
+  },
+  {
+    type: 'creative' as QuestionCategory,
+    icon: <Skull size={32} weight="fill" />,
+    label: 'Creative',
+    description: 'Questions that challenge your creativity',
+  },
+  {
+    type: 'funny' as QuestionCategory,
+    icon: <Skull size={32} weight="fill" />,
+    label: 'Funny',
+    description: 'Humorous questions',
+  },
+  {
+    type: 'hot' as QuestionCategory,
+    icon: <Skull size={32} weight="fill" />,
+    label: 'Hot',
+    description: 'Questions that will make you blush',
+  }
 ];
 
-export const CategorySelect: React.FC<CategorySelectProps> = ({ onSelect }) => {
+export const CategorySelect: React.FC<CategorySelectProps> = ({
+  onSelect,
+  selectedCategory,
+}) => {
   const setCategory = useGameStore((state: any) => state.setCategory);
   const [playHover] = useSound('/hover.mp3', { volume: 0.5 });
   const [playSelect] = useSound('/select.mp3', { volume: 0.5 });
@@ -54,29 +108,28 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({ onSelect }) => {
       animate="show"
       className="grid grid-cols-2 gap-6 p-8 max-w-4xl mx-auto"
     >
-      {categories.map(({ id, name, icon: Icon, color }) => (
+      {categories.map(({ type, icon, label, description }) => (
         <motion.button
-          key={id}
+          key={type}
           variants={item}
           whileHover={{ 
             scale: 1.05,
             boxShadow: '0 0 30px rgba(147,51,234,0.5)'
           }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => handleSelect(id)}
+          onClick={() => handleSelect(type)}
           onMouseEnter={() => playHover()}
-          className={`bg-gradient-to-br from-gray-800 to-gray-900 p-8 rounded-xl
-                   border-2 border-purple-500/50 hover:border-purple-500
-                   shadow-[0_0_15px_rgba(147,51,234,0.3)]
-                   transition-all duration-300 flex flex-col items-center justify-center
-                   min-h-[200px] group ${color}`}
+          className={`p-6 rounded-lg flex flex-col items-center gap-4 transition-colors ${
+            selectedCategory === type
+              ? 'bg-primary text-white'
+              : 'bg-white/10 text-white hover:bg-white/20'
+          }`}
         >
-          <div className="text-purple-400 group-hover:text-purple-300 transition-colors">
-            <Icon weight="bold" className="w-6 h-6" />
+          {icon}
+          <div className="text-center">
+            <h3 className="text-lg font-semibold">{label}</h3>
+            <p className="text-sm opacity-80">{description}</p>
           </div>
-          <h3 className="text-2xl text-purple-400 group-hover:text-purple-300 font-bold text-center">
-            {name}
-          </h3>
         </motion.button>
       ))}
     </motion.div>

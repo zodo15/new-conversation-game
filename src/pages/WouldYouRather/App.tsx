@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowLeft, X, SkipForward, Zap, Plus, Shuffle } from '@phosphor-icons/react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Lightning, Barbell } from '@phosphor-icons/react';
 import { Toaster, toast } from 'react-hot-toast';
 import { Question } from './types';
 import { getQuestionsByMode } from './data/questions';
@@ -228,7 +228,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
           onClick={handleBack}
           className="absolute top-4 left-4 p-2 hover:bg-white/20 rounded-full transition-colors bg-white/10"
         >
-          <ArrowLeft className="w-6 h-6 text-white" />
+          <Lightning className="w-6 h-6 text-white" />
         </button>
 
         {gameState.gameStarted && !showChaosWheel && gameState.currentQuestion ? (
@@ -256,7 +256,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
                     })}
                     className="px-4 py-2 bg-gradient-to-r from-[#E4A1FF] to-[#FF9CEE] rounded-lg hover:from-[#D880FF] hover:to-[#FF80E5] transition-all flex items-center gap-2 text-sm"
                   >
-                    <Zap className="w-4 h-4" />
+                    <Barbell className="w-4 h-4" />
                     Chaos!
                   </motion.button>
                 )}
@@ -300,7 +300,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
                 onClick={skipQuestion}
                 className="px-6 py-3 bg-white/10 backdrop-blur-sm rounded-lg hover:bg-white/20 transition-all flex items-center gap-2"
               >
-                <SkipForward className="w-5 h-5" />
+                <Lightning className="w-5 h-5" />
                 Skip
               </motion.button>
 
@@ -311,7 +311,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
                   onClick={startGame}
                   className="px-6 py-3 bg-white/10 backdrop-blur-sm rounded-lg hover:bg-white/20 transition-all flex items-center gap-2"
                 >
-                  <Shuffle className="w-5 h-5" />
+                  <Barbell className="w-5 h-5" />
                   Next Round
                 </motion.button>
               )}
@@ -322,7 +322,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
                 onClick={() => setShowAddQuestion(true)}
                 className="px-6 py-3 bg-white/10 backdrop-blur-sm rounded-lg hover:bg-white/20 transition-all flex items-center gap-2"
               >
-                <Plus className="w-5 h-5" />
+                <Lightning className="w-5 h-5" />
                 Add Question
               </motion.button>
             </div>
@@ -369,7 +369,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
                         onClick={() => handleRemovePlayer(index)}
                         className="p-1 hover:bg-white/10 rounded-full transition-colors"
                       >
-                        <X className="w-5 h-5" />
+                        <Lightning className="w-5 h-5" />
                       </button>
                     </div>
                   ))}

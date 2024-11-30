@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Plus, Minus } from 'lucide-react';
+import { CaretLeft, Plus, Minus } from '@phosphor-icons/react';
 import { toast } from 'react-hot-toast';
 
 interface FriendGameModesProps {
@@ -61,7 +61,7 @@ export const FriendGameModes: React.FC<FriendGameModesProps> = ({
         onClick={onBack}
         className="mb-8 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white flex items-center gap-2 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <CaretLeft className="w-4 h-4" />
         Back
       </motion.button>
 

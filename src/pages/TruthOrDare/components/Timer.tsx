@@ -1,56 +1,60 @@
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import useSound from 'use-sound';
 
 interface TimerProps {
-  onTimeout: () => void;
-  isActive: boolean;
+  duration: number;
 }
 
-export const Timer = ({ onTimeout, isActive }: TimerProps) => {
-  const [timeLeft, setTimeLeft] = useState(30);
-  const [playTick] = useSound('/tick.mp3', { volume: 0.3 });
-  const [playAlarm] = useSound('/alarm.mp3', { volume: 0.5 });
+export const Timer: React.FC<TimerProps> = ({ duration }) => {
+  const [timeLeft, setTimeLeft] = useState(duration);
+  const [isRunning, setIsRunning] = useState(true);
 
   useEffect(() => {
-    if (!isActive) return;
+    if (!isRunning) return;
 
-    const interval = setInterval(() => {
+    const timer = setInterval(() => {
       setTimeLeft((time) => {
         if (time <= 1) {
-          playAlarm();
-          onTimeout();
-          return 30;
+          clearInterval(timer);
+          setIsRunning(false);
+          return 0;
         }
-        if (time <= 5) playTick();
         return time - 1;
       });
     }, 1000);
 
-    return () => clearInterval(interval);
-  }, [isActive, onTimeout, playTick, playAlarm]);
+    return () => clearInterval(timer);
+  }, [isRunning]);
 
-  const color = timeLeft <= 5 ? 'red' : timeLeft <= 10 ? 'yellow' : 'purple';
+  const progress = (timeLeft / duration) * 100;
 
   return (
-    <motion.div
-      animate={{
-        scale: timeLeft <= 5 ? [1, 1.1, 1] : 1,
-      }}
-      transition={{ duration: 0.5 }}
-      className={`fixed top-4 right-4 bg-gradient-to-br
-                ${color === 'red' ? 'from-red-900/80 to-red-800/60 border-red-500' :
-                  color === 'yellow' ? 'from-yellow-900/80 to-yellow-800/60 border-yellow-500' :
-                  'from-purple-900/80 to-purple-800/60 border-purple-500'}
-                p-6 rounded-full border-2 backdrop-blur-sm
-                shadow-[0_0_20px_rgba(147,51,234,0.3)]`}
-    >
-      <span className={`text-3xl font-bold
-                     ${color === 'red' ? 'text-red-400' :
-                       color === 'yellow' ? 'text-yellow-400' :
-                       'text-purple-400'}`}>
-        {timeLeft}
-      </span>
-    </motion.div>
+    <div className="relative w-24 h-24">
+      <svg className="w-full h-full transform -rotate-90">
+        <circle
+          cx="48"
+          cy="48"
+          r="44"
+          stroke="currentColor"
+          strokeWidth="8"
+          fill="transparent"
+          className="text-white/10"
+        />
+        <motion.circle
+          cx="48"
+          cy="48"
+          r="44"
+          stroke="currentColor"
+          strokeWidth="8"
+          fill="transparent"
+          strokeDasharray={276.46}
+          strokeDashoffset={276.46 - (276.46 * progress) / 100}
+          className="text-purple-500"
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-2xl font-bold">{timeLeft}</span>
+      </div>
+    </div>
   );
 };

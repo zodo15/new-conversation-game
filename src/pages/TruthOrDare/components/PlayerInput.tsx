@@ -1,112 +1,93 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { Plus, ArrowLeft } from '@phosphor-icons/react';
+import { useGameStore } from '../store/gameStore';
 import { toast } from 'react-hot-toast';
-import { UserPlus2, PlayCircle } from 'lucide-react';
 
 interface Props {
+  onStartGame: () => void;
+  onBack: () => void;
   players: string[];
-  setPlayers: (players: string[]) => void;
-  onStart: () => void;
 }
 
-const PlayerInput: React.FC<Props> = ({ players, setPlayers, onStart }) => {
-  const [newPlayer, setNewPlayer] = useState('');
+export const PlayerInput: React.FC<Props> = ({ onStartGame, onBack, players }) => {
+  const [playerName, setPlayerName] = useState('');
+  const { addPlayer, startGame } = useGameStore();
 
-  const handleAddPlayer = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!newPlayer.trim()) {
+  const handleAddPlayer = () => {
+    if (!playerName.trim()) {
       toast.error('Please enter a player name');
       return;
     }
 
-    if (players.includes(newPlayer.trim())) {
-      toast.error('Player already exists');
-      return;
-    }
-
-    if (players.length >= 8) {
-      toast.error('Maximum 8 players allowed');
-      return;
-    }
-
-    setPlayers([...players, newPlayer.trim()]);
-    setNewPlayer('');
-    toast.success('Player added!');
+    addPlayer(playerName);
+    setPlayerName('');
   };
 
-  const removePlayer = (playerToRemove: string) => {
-    setPlayers(players.filter(player => player !== playerToRemove));
-    toast.success('Player removed');
+  const handleStartGame = () => {
+    if (players.length < 2) {
+      toast.error('Need at least 2 players to start');
+      return;
+    }
+
+    startGame();
+    onStartGame();
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleAddPlayer();
+    }
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="space-y-8"
-    >
-      <h1 className="text-4xl font-bold text-center mb-8">Truth or Dare</h1>
-
-      <form onSubmit={handleAddPlayer} className="flex gap-4">
-        <input
-          type="text"
-          value={newPlayer}
-          onChange={(e) => setNewPlayer(e.target.value)}
-          placeholder="Enter player name..."
-          className="flex-1 px-4 py-2 rounded-lg bg-white/10 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400"
-        />
+    <div className="max-w-md mx-auto bg-white/10 backdrop-blur-lg rounded-lg p-6">
+      <div className="flex items-center gap-4 mb-6">
         <button
-          type="submit"
-          className="p-2 bg-purple-500 rounded-lg hover:bg-purple-600 transition-colors"
+          onClick={onBack}
+          className="text-white hover:text-gray-200 transition-colors"
         >
-          <UserPlus2 className="w-6 h-6" />
+          <ArrowLeft size={24} />
         </button>
-      </form>
+        <h2 className="text-2xl font-semibold">Add Players</h2>
+      </div>
 
-      {players.length > 0 && (
-        <div className="flex flex-col gap-2">
-          {players.map((player) => (
-            <motion.div
-              key={player}
-              layout
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="bg-white/10 p-4 rounded-lg flex items-center justify-between"
+      <div className="space-y-4">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={playerName}
+            onChange={(e) => setPlayerName(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Enter player name"
+            className="flex-1 px-4 py-2 rounded bg-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+          <button
+            onClick={handleAddPlayer}
+            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
+          >
+            <Plus size={24} />
+          </button>
+        </div>
+
+        <div className="space-y-2">
+          {players.map((name, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between bg-white/20 rounded px-4 py-2"
             >
-              <span>{player}</span>
-              <button
-                onClick={() => removePlayer(player)}
-                className="text-red-400 hover:text-red-300 px-2"
-              >
-                ×
-              </button>
-            </motion.div>
+              <span>{name}</span>
+            </div>
           ))}
         </div>
-      )}
 
-      {players.length >= 2 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex justify-center"
+        <button
+          onClick={handleStartGame}
+          disabled={players.length < 2}
+          className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={onStart}
-            className="px-6 py-3 bg-green-500 rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2"
-          >
-            <PlayCircle className="w-6 h-6" />
-            Start Game
-          </motion.button>
-        </motion.div>
-      )}
-    </motion.div>
+          Start Game
+        </button>
+      </div>
+    </div>
   );
 };
-
-export default PlayerInput;
