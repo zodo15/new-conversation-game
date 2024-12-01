@@ -1,16 +1,31 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useGameStore } from '../store/gameStore';
+import { Player, Question, Vote } from '../types';
 import { ChoiceCard } from './ChoiceCard';
+import { useGameStore } from '../store/gameStore';
 import { Timer } from './Timer';
 import { ShareButton } from './ShareButton';
 
-export const QuestionDisplay: React.FC = () => {
+interface QuestionDisplayProps {
+  question: Question;
+  votes: Vote[];
+  players: Player[];
+  currentPlayerId?: string;
+  onVote: (choice: 'A' | 'B') => void;
+}
+
+export const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
+  question,
+  votes,
+  players,
+  currentPlayerId,
+  onVote,
+}) => {
   const {
     currentQuestion,
     currentPlayerIndex,
-    players,
-    votes,
+    players: gamePlayers,
+    votes: gameVotes,
     mode,
     addVote,
     updateScore,
@@ -21,26 +36,26 @@ export const QuestionDisplay: React.FC = () => {
     addUsedQuestionId,
   } = useGameStore();
 
-  if (!currentQuestion || !players[currentPlayerIndex]) {
-    return null;
-  }
+  const totalVotes = gameVotes.length;
+  const optionAVotes = gameVotes.filter(v => v.choice === 'A').length;
+  const optionBVotes = gameVotes.filter(v => v.choice === 'B').length;
+  const hasVoted = currentPlayerId ? gameVotes.some(v => v.playerId === currentPlayerId) : false;
 
-  const currentPlayer = players[currentPlayerIndex];
-  const totalVotes = votes.length;
-  const option1Votes = votes.filter(v => v.choice === 'option1').length;
-  const option2Votes = votes.filter(v => v.choice === 'option2').length;
-  const hasVoted = votes.some(v => v.playerId === currentPlayer.id);
+  const getVotePercentage = (voteCount: number): number => {
+    if (totalVotes === 0) return 0;
+    return Math.round((voteCount / totalVotes) * 100);
+  };
 
-  const handleVote = (choice: 'option1' | 'option2') => {
+  const handleVote = (choice: 'A' | 'B') => {
     if (hasVoted) return;
 
     // Add vote and update player stats
-    addVote(currentPlayer.id, choice);
-    updateScore(currentPlayer.id, 1);
-    updateStreak(currentPlayer.id, choice);
+    addVote(currentPlayerId, choice);
+    updateScore(currentPlayerId, 1);
+    updateStreak(currentPlayerId, choice);
 
     // Move to next player or reset round
-    const nextIndex = (currentPlayerIndex + 1) % players.length;
+    const nextIndex = (currentPlayerIndex + 1) % gamePlayers.length;
     if (nextIndex === 0) {
       // End of round, clear votes and get new question
       clearVotes();
@@ -54,51 +69,86 @@ export const QuestionDisplay: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="text-center">
-        <motion.h2
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="text-2xl font-bold text-white mb-2"
-        >
-          {currentPlayer.name}'s Turn
-        </motion.h2>
+    <div className="w-full max-w-4xl mx-auto">
+      <h2 className="text-3xl font-bold text-center text-white mb-8">
+        Would You Rather...
+      </h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="text-white/60"
+          whileHover={!hasVoted ? { scale: 1.02 } : {}}
+          className="relative"
         >
-          Choose wisely...
+          <ChoiceCard
+            text={currentQuestion.optionA}
+            onClick={() => !hasVoted && handleVote('A')}
+            isOptionA
+            disabled={hasVoted}
+          />
+          {hasVoted && (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
+              <span className="text-4xl font-bold text-white">
+                {getVotePercentage(optionAVotes)}%
+              </span>
+            </div>
+          )}
+        </motion.div>
+
+        <motion.div
+          whileHover={!hasVoted ? { scale: 1.02 } : {}}
+          className="relative"
+        >
+          <ChoiceCard
+            text={currentQuestion.optionB}
+            onClick={() => !hasVoted && handleVote('B')}
+            isOptionA={false}
+            disabled={hasVoted}
+          />
+          {hasVoted && (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
+              <span className="text-4xl font-bold text-white">
+                {getVotePercentage(optionBVotes)}%
+              </span>
+            </div>
+          )}
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ChoiceCard
-          option={currentQuestion.option1}
-          consequence={currentQuestion.consequences?.option1}
-          votes={option1Votes}
-          totalVotes={totalVotes}
-          selected={votes.some(v => v.playerId === currentPlayer.id && v.choice === 'option1')}
-          onClick={() => handleVote('option1')}
-          disabled={hasVoted}
-        />
-        <ChoiceCard
-          option={currentQuestion.option2}
-          consequence={currentQuestion.consequences?.option2}
-          votes={option2Votes}
-          totalVotes={totalVotes}
-          selected={votes.some(v => v.playerId === currentPlayer.id && v.choice === 'option2')}
-          onClick={() => handleVote('option2')}
-          disabled={hasVoted}
-        />
-      </div>
+      {hasVoted && (
+        <div className="mt-8 text-center">
+          <h3 className="text-xl font-semibold text-white mb-4">
+            Current Votes
+          </h3>
+          <div className="flex justify-center gap-4">
+            {gameVotes.map((vote, index) => {
+              const player = gamePlayers.find(p => p.id === vote.playerId);
+              if (!player) return null;
+              return (
+                <div
+                  key={vote.playerId}
+                  className="flex items-center gap-2 bg-purple-700/30 px-3 py-1 rounded-full"
+                >
+                  <img
+                    src={player.avatar}
+                    alt={player.name}
+                    className="w-6 h-6 rounded-full"
+                  />
+                  <span className="text-white text-sm">
+                    {player.name}: {vote.choice}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {mode === 'friends' && (
         <div className="flex justify-between items-center">
           <Timer duration={30} onComplete={() => {}} />
           <ShareButton 
             question={currentQuestion}
-            playerChoice={votes.find(v => v.playerId === currentPlayer.id)?.choice}
+            playerChoice={gameVotes.find(v => v.playerId === currentPlayerId)?.choice}
           />
         </div>
       )}
