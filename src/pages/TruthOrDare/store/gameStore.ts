@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 import { Question, Player, GameMode } from '../types/game';
 
 interface GameState {
@@ -194,3 +194,5 @@ const useGameStore = create<GameState>((set, get) => ({
     return player.reactions.received;
   },
 }));
+
+export default useGameStore;

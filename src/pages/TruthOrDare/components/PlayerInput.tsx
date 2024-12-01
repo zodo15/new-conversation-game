@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeftIcon, PlusIcon } from '../../../components/icons';
 import toast from 'react-hot-toast';
-import { useGameStore } from '../store/gameStore';
+import useGameStore from '../store/gameStore';
 
 interface PlayerInputProps {
   onBack: () => void;

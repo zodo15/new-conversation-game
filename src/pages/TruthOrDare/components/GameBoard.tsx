@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useGameStore } from '../store/gameStore';
+import useGameStore from '../store/gameStore';
 import { PlayerList } from './PlayerList';
 import { Question } from './Question';
 import { GameControls } from './GameControls';
