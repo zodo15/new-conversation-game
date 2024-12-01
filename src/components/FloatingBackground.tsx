@@ -1,46 +1,56 @@
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Star } from '@phosphor-icons/react';
+import { Sparkles, Zap, Brain, Users, Dumbbell, Palette } from 'lucide-react';
 
-interface FloatingBackgroundProps {
+interface FloatingIconProps {
+  icon: React.ElementType;
   className?: string;
+  delay?: number;
 }
 
-export const FloatingBackground: React.FC<FloatingBackgroundProps> = ({ className = '' }) => {
+const FloatingIcon: React.FC<FloatingIconProps> = ({ icon: Icon, className = "", delay = 0 }) => (
+  <motion.div
+    initial={{ y: 0 }}
+    animate={{ 
+      y: [-10, 10, -10],
+      rotate: [-5, 5, -5]
+    }}
+    transition={{ 
+      duration: 4,
+      repeat: Infinity,
+      delay 
+    }}
+    className={`absolute opacity-20 ${className}`}
+  >
+    <Icon className="w-12 h-12 text-white" />
+  </motion.div>
+);
+
+export const FloatingBackground: React.FC = () => {
   return (
-    <div className={`fixed inset-0 -z-10 overflow-hidden ${className}`}>
-      {Array.from({ length: 20 }).map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute"
-          initial={{
-            x: Math.random() * window.innerWidth,
-            y: Math.random() * window.innerHeight,
-          }}
-          animate={{
-            x: [
-              Math.random() * window.innerWidth,
-              Math.random() * window.innerWidth,
-              Math.random() * window.innerWidth,
-            ],
-            y: [
-              Math.random() * window.innerHeight,
-              Math.random() * window.innerHeight,
-              Math.random() * window.innerHeight,
-            ],
-          }}
-          transition={{
-            duration: 20 + Math.random() * 10,
-            repeat: Infinity,
-            ease: 'linear',
-          }}
-        >
-          <Star
-            size={24}
-            weight="fill"
-            className="text-primary/20"
-          />
-        </motion.div>
-      ))}
+    <div className="fixed inset-0 -z-10 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 animate-gradient-xy" />
+      <div className="absolute inset-0">
+        {Array.from({ length: 50 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute animate-float"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${5 + Math.random() * 10}s`,
+            }}
+          >
+            <div
+              className="w-4 h-4 bg-white bg-opacity-10 rounded-full"
+              style={{
+                filter: 'blur(1px)',
+              }}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

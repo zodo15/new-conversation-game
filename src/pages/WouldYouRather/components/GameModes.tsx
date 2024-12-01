@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shuffle, Fire, Users } from '@phosphor-icons/react';
+import { Sparkles, Users, Shuffle, Flame } from 'lucide-react';
 import FloatingBackground from './FloatingBackground';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../store/gameStore';
@@ -19,7 +19,7 @@ const GameModes = ({ onSelectMode }: GameModesProps) => {
       id: 'classic',
       name: 'Classic Mode',
       description: 'The original Would You Rather experience',
-      icon: <Shuffle className="w-8 h-8 text-blue-400" />,
+      icon: <Sparkles className="w-8 h-8 text-blue-400" />,
       gradient: 'from-blue-500 to-purple-600',
       hoverGradient: 'from-blue-600 to-purple-700'
     },
@@ -27,7 +27,7 @@ const GameModes = ({ onSelectMode }: GameModesProps) => {
       id: 'spicy',
       name: 'Spicy Mode',
       description: 'More challenging and controversial choices',
-      icon: <Fire className="w-8 h-8 text-orange-400" />,
+      icon: <Flame className="w-8 h-8 text-orange-400" />,
       gradient: 'from-orange-500 to-red-600',
       hoverGradient: 'from-orange-600 to-red-700'
     },

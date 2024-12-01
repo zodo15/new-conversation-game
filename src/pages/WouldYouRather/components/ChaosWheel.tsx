@@ -1,105 +1,154 @@
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft } from '@phosphor-icons/react';
-import { toast, Toast } from 'react-hot-toast';
+import { ArrowLeft } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface ChaosWheelProps {
-  onClose: () => void;
-  onSpin: (action: string) => void;
+  players: string[];
+  onComplete: (selectedPlayer: string) => void;
+  onBack: () => void;
 }
 
-const chaosActions = [
-  "Stutter while answering",
-  "Answer in a British accent",
-  "Answer while doing jumping jacks",
-  "Answer in a whisper",
-  "Answer like a robot",
-  "Answer while dancing",
-  "Answer in slow motion",
-  "Answer like a news reporter",
-  "Answer while impersonating another player",
-  "Answer in a singing voice"
+const COLORS = [
+  '#EC4899', // pink-500
+  '#3B82F6', // blue-500
+  '#10B981', // emerald-500
+  '#F97316', // orange-500
+  '#EF4444', // rose-500
+  '#6366F1', // indigo-500
+  '#84CC16', // lime-500
+  '#D946EF'  // fuchsia-500
 ];
 
-export const ChaosWheel: React.FC<ChaosWheelProps> = ({ onClose, onSpin }) => {
-  const [rotation, setRotation] = useState(0);
+export const ChaosWheel: React.FC<ChaosWheelProps> = ({ players, onComplete, onBack }) => {
   const [isSpinning, setIsSpinning] = useState(false);
+  const [rotation, setRotation] = useState(0);
 
-  const handleSpin = () => {
+  useEffect(() => {
+    // Auto-spin on mount
+    spinWheel();
+  }, []);
+
+  const spinWheel = () => {
     if (isSpinning) return;
     
     setIsSpinning(true);
-    const spins = 5; // Number of full rotations
-    const randomDegrees = Math.random() * 360;
-    const totalRotation = spins * 360 + randomDegrees;
+    const spins = 5 + Math.floor(Math.random() * 3); // Random number of spins between 5-7
+    const baseRotation = 360 * spins;
+    const randomOffset = Math.random() * 360;
+    const totalRotation = baseRotation + randomOffset;
     
-    setRotation(totalRotation);
+    setRotation(prev => prev + totalRotation);
 
-    // Calculate which action was landed on
     setTimeout(() => {
-      const finalDegree = randomDegrees;
-      const sectionSize = 360 / chaosActions.length;
-      const actionIndex = Math.floor(finalDegree / sectionSize);
-      const selectedAction = chaosActions[actionIndex];
+      const normalizedRotation = totalRotation % 360;
+      const segmentSize = 360 / players.length;
+      const selectedIndex = Math.floor(normalizedRotation / segmentSize);
+      const selectedPlayer = players[players.length - 1 - selectedIndex];
       
-      toast.success(`Chaos Challenge: ${selectedAction}`, {
-        duration: 3000,
-        icon: '🎲'
-      } as Toast);
-      
-      onSpin(selectedAction);
       setIsSpinning(false);
+      toast.success(`${selectedPlayer} is now the Chaos Master!`, {
+        icon: '👑',
+        duration: 4000
+      });
+      onComplete(selectedPlayer);
     }, 3000);
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 p-8 rounded-2xl shadow-xl max-w-2xl w-full mx-4 relative">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.8 }}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+    >
+      <div className="bg-gradient-to-br from-[#4A1D6A] via-[#2E0F45] to-[#1A0527] p-8 rounded-xl shadow-2xl max-w-md w-full mx-4 relative">
         <button
-          onClick={onClose}
-          className="absolute top-4 left-4 p-2 hover:bg-white/20 rounded-full transition-colors"
+          onClick={onBack}
+          className="absolute top-4 left-4 p-2 hover:bg-white/10 rounded-full transition-colors"
         >
-          <ArrowLeft className="w-6 h-6 text-white" />
+          <ArrowLeft className="w-6 h-6" />
         </button>
 
-        <h2 className="text-3xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-[#E4A1FF] to-[#FF9CEE]">
-          Chaos Wheel
+        <h2 className="text-2xl font-bold text-center mb-6 bg-gradient-to-r from-[#E4A1FF] to-[#FF9CEE] text-transparent bg-clip-text">
+          Selecting Chaos Master...
         </h2>
 
-        <div className="relative w-64 h-64 mx-auto mb-8">
+        <div className="relative aspect-square mb-6">
+          <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-b-[30px] border-b-[#E4A1FF] z-20" />
+          
           <motion.div
-            className="absolute inset-0 rounded-full border-4 border-[#E4A1FF] overflow-hidden"
-            style={{
-              transform: `rotate(${rotation}deg)`,
-              transition: isSpinning ? 'transform 3s cubic-bezier(0.4, 0, 0.2, 1)' : undefined
-            }}
+            className="absolute inset-0"
+            animate={{ rotate: rotation }}
+            transition={{ duration: 3, ease: [0.11, 0.8, 0.33, 1] }}
           >
-            {chaosActions.map((action, index) => {
-              const angle = (360 / chaosActions.length) * index;
-              return (
-                <div
-                  key={index}
-                  className="absolute w-full h-0.5 bg-[#E4A1FF] origin-left"
-                  style={{ transform: `rotate(${angle}deg)` }}
-                />
-              );
-            })}
-          </motion.div>
-          <div className="absolute -right-2 top-1/2 w-4 h-4 bg-[#FF9CEE] transform -translate-y-1/2 rotate-45" />
-        </div>
+            <svg viewBox="0 0 100 100" className="w-full h-full">
+              {players.map((player, index) => {
+                const startAngle = (index * 360) / players.length;
+                const endAngle = ((index + 1) * 360) / players.length;
+                
+                const startRad = (startAngle * Math.PI) / 180;
+                const endRad = (endAngle * Math.PI) / 180;
+                
+                const x1 = 50 + 50 * Math.cos(startRad);
+                const y1 = 50 + 50 * Math.sin(startRad);
+                const x2 = 50 + 50 * Math.cos(endRad);
+                const y2 = 50 + 50 * Math.sin(endRad);
+                
+                const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
+                
+                const path = [
+                  'M', 50, 50,
+                  'L', x1, y1,
+                  'A', 50, 50, 0, largeArc, 1, x2, y2,
+                  'Z'
+                ].join(' ');
 
-        <button
-          onClick={handleSpin}
-          disabled={isSpinning}
-          className={`w-full py-4 rounded-xl font-semibold text-white transition-all ${
-            isSpinning
-              ? 'bg-gray-500 cursor-not-allowed'
-              : 'bg-gradient-to-r from-[#E4A1FF] to-[#FF9CEE] hover:from-[#D880FF] hover:to-[#FF80E5]'
-          }`}
-        >
-          {isSpinning ? 'Spinning...' : 'Spin the Wheel!'}
-        </button>
+                const midAngle = (startAngle + endAngle) / 2;
+                const midRad = (midAngle * Math.PI) / 180;
+                const textX = 50 + 30 * Math.cos(midRad);
+                const textY = 50 + 30 * Math.sin(midRad);
+                
+                return (
+                  <g key={player}>
+                    <path
+                      d={path}
+                      fill={COLORS[index % COLORS.length]}
+                      className="stroke-white/20 stroke-2 transition-all hover:brightness-110"
+                    />
+                    <text
+                      x={textX}
+                      y={textY}
+                      fill="white"
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      style={{
+                        transform: `rotate(${midAngle}deg)`,
+                        transformOrigin: `${textX}px ${textY}px`,
+                        fontSize: '8px',
+                        fontWeight: 'bold',
+                        textShadow: '0 1px 2px rgba(0,0,0,0.5)'
+                      }}
+                    >
+                      {player}
+                    </text>
+                  </g>
+                );
+              })}
+
+              <circle
+                cx="50"
+                cy="50"
+                r="8"
+                fill="#8B5CF6"
+                stroke="white"
+                strokeOpacity="0.3"
+                strokeWidth="2"
+              />
+            </svg>
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

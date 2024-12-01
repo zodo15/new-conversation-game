@@ -1,71 +1,75 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { categories } from '../data/questions';
 import { QuestionCategory } from '../types/game';
-import {
-  SpicyIcon,
-  FunnyIcon,
-  DeepIcon,
-  PhysicalIcon,
-  SocialIcon,
-  CreativeIcon,
-  CustomIcon
-} from '../../../components/icons';
+import { useGameStore } from '../store/gameStore';
+import useSound from 'use-sound';
+import { FaFire, FaLaugh, FaBrain, FaUsers, FaDumbbell, FaPalette } from 'react-icons/fa';
 
-interface CategorySelectProps {
-  onSelect: (category: QuestionCategory) => void;
-  selected?: QuestionCategory;
-}
+const categoryIcons: Record<QuestionCategory, React.ReactNode> = {
+  'spicy': <FaFire className="text-3xl mb-2" />,
+  'funny': <FaLaugh className="text-3xl mb-2" />,
+  'deep': <FaBrain className="text-3xl mb-2" />,
+  'social': <FaUsers className="text-3xl mb-2" />,
+  'physical': <FaDumbbell className="text-3xl mb-2" />,
+  'creative': <FaPalette className="text-3xl mb-2" />
+};
 
-interface CategoryOption {
-  value: QuestionCategory;
-  label: string;
-  icon: React.ElementType;
-  color: string;
-}
+export const CategorySelect = () => {
+  const setCategory = useGameStore((state) => state.setCategory);
+  const [playHover] = useSound('/hover.mp3', { volume: 0.5 });
+  const [playSelect] = useSound('/select.mp3', { volume: 0.5 });
 
-const categories: CategoryOption[] = [
-  { value: 'spicy', label: 'Spicy', icon: SpicyIcon, color: 'text-red-500' },
-  { value: 'funny', label: 'Funny', icon: FunnyIcon, color: 'text-yellow-500' },
-  { value: 'deep', label: 'Deep', icon: DeepIcon, color: 'text-purple-500' },
-  { value: 'physical', label: 'Physical', icon: PhysicalIcon, color: 'text-blue-500' },
-  { value: 'social', label: 'Social', icon: SocialIcon, color: 'text-green-500' },
-  { value: 'creative', label: 'Creative', icon: CreativeIcon, color: 'text-pink-500' },
-  { value: 'custom', label: 'Custom', icon: CustomIcon, color: 'text-gray-500' }
-];
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
 
-export const CategorySelect: React.FC<CategorySelectProps> = ({
-  onSelect,
-  selected
-}) => {
+  const item = {
+    hidden: { y: 20, opacity: 0 },
+    show: { y: 0, opacity: 1 }
+  };
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-      {categories.map(({ value, label, icon: Icon, color }) => (
+    <motion.div 
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="grid grid-cols-2 gap-6 p-8 max-w-4xl mx-auto"
+    >
+      {categories.map((category) => (
         <motion.button
-          key={value}
-          whileHover={{ scale: 1.05 }}
+          key={category}
+          variants={item}
+          whileHover={{ 
+            scale: 1.05,
+            boxShadow: '0 0 30px rgba(147,51,234,0.5)'
+          }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => onSelect(value)}
-          className={`flex flex-col items-center justify-center p-4 rounded-lg ${
-            selected === value
-              ? 'bg-white shadow-lg'
-              : 'bg-white/5 hover:bg-white/10'
-          }`}
+          onClick={() => {
+            playSelect();
+            setCategory(category);
+          }}
+          onMouseEnter={() => playHover()}
+          className="bg-gradient-to-br from-gray-800 to-gray-900 p-8 rounded-xl
+                   border-2 border-purple-500/50 hover:border-purple-500
+                   shadow-[0_0_15px_rgba(147,51,234,0.3)]
+                   transition-all duration-300 flex flex-col items-center justify-center
+                   min-h-[200px] group"
         >
-          <Icon
-            size={32}
-            className={`${color} ${
-              selected === value ? 'opacity-100' : 'opacity-60'
-            }`}
-          />
-          <span
-            className={`mt-2 font-medium ${
-              selected === value ? 'text-gray-900' : 'text-gray-400'
-            }`}
-          >
-            {label}
-          </span>
+          <div className="text-purple-400 group-hover:text-purple-300 transition-colors">
+            {categoryIcons[category]}
+          </div>
+          <h3 className="text-2xl text-purple-400 group-hover:text-purple-300 font-bold text-center">
+            {category}
+          </h3>
         </motion.button>
       ))}
-    </div>
+    </motion.div>
   );
 };

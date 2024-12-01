@@ -1,198 +1,144 @@
-import { create } from 'zustand';
-import { Question, Player, GameMode } from '../types/game';
+import create from 'zustand';
+import { GameState, GameActions, Question, Player, QuestionCategory, QuestionType } from '../types';
+import { v4 as uuidv4 } from 'uuid';
 
-interface GameState {
-  players: Player[];
-  currentPlayerIndex: number;
-  currentQuestion: Question | null;
-  gameStarted: boolean;
-  mode: GameMode;
-  chaosMode: boolean;
-  timer: number;
-  votes: Record<string, Array<{ playerId: string; choice: 'optionA' | 'optionB' }>>;
-  showChaosMasterWheel: boolean;
-  showAddQuestion: boolean;
-  showSettings: boolean;
-  customQuestions: Question[];
-  usedQuestionIds: string[];
-}
-
-const useGameStore = create<GameState>((set, get) => ({
+const initialState: GameState = {
   players: [],
   currentPlayerIndex: 0,
   currentQuestion: null,
-  gameStarted: false,
-  mode: 'normal',
-  chaosMode: false,
-  timer: 30,
-  votes: {},
-  showChaosMasterWheel: false,
-  showAddQuestion: false,
-  showSettings: false,
+  selectedCategory: null,
+  questionType: 'mild',
   customQuestions: [],
-  usedQuestionIds: [],
+  usedQuestionIds: new Set(),
+  gameStarted: false,
+  roundCount: 0,
+  showAddQuestion: false,
+};
 
-  // Player Management
-  addPlayer: (name: string) => {
-    const newPlayer: Player = {
-      id: Math.random().toString(36).substring(7),
-      name,
-      score: 0,
-      streak: 0,
-      reactions: {
-        given: {},
-        received: {},
+export const useGameStore = create<GameState & GameActions>((set, get) => ({
+  ...initialState,
+
+  addPlayer: (name) => set((state) => ({
+    players: [
+      ...state.players,
+      {
+        id: uuidv4(),
+        name,
+        score: 0,
+        truthCount: 0,
+        dareCount: 0,
+        skippedCount: 0,
+        completedCount: 0,
       },
+    ],
+  })),
+
+  removePlayer: (id) => set((state) => ({
+    players: state.players.filter((p) => p.id !== id),
+  })),
+
+  setCurrentQuestion: (question) => set({ currentQuestion: question }),
+
+  setSelectedCategory: (category) => set({ selectedCategory: category }),
+
+  setQuestionType: (type) => set({ questionType: type }),
+
+  addCustomQuestion: (question) => set((state) => ({
+    customQuestions: [...state.customQuestions, { ...question, id: uuidv4() }],
+  })),
+
+  addUsedQuestionId: (id) => set((state) => ({
+    usedQuestionIds: new Set([...state.usedQuestionIds, id]),
+  })),
+
+  clearUsedQuestionIds: () => set({ usedQuestionIds: new Set() }),
+
+  updateScore: (playerId, points) => set((state) => ({
+    players: state.players.map((p) =>
+      p.id === playerId ? { ...p, score: p.score + points } : p
+    ),
+  })),
+
+  incrementCategoryCount: (playerId, category, completed) => set((state) => ({
+    players: state.players.map((p) => {
+      if (p.id === playerId) {
+        const updates: Partial<Player> = {
+          [category === 'truth' ? 'truthCount' : 'dareCount']: 
+            p[category === 'truth' ? 'truthCount' : 'dareCount'] + 1,
+        };
+        
+        if (completed) {
+          updates.completedCount = p.completedCount + 1;
+        } else {
+          updates.skippedCount = p.skippedCount + 1;
+        }
+        
+        updates.lastCategory = category;
+        
+        return { ...p, ...updates };
+      }
+      return p;
+    }),
+  })),
+
+  setCurrentPlayerIndex: (index) => set({ currentPlayerIndex: index }),
+
+  startGame: () => set({ 
+    gameStarted: true,
+    roundCount: 0,
+    currentPlayerIndex: 0,
+    usedQuestionIds: new Set()
+  }),
+
+  resetGame: () => set({
+    ...initialState,
+    customQuestions: get().customQuestions // Preserve custom questions
+  }),
+
+  setShowAddQuestion: (show) => set({ showAddQuestion: show }),
+
+  skipQuestion: (question) => set((state) => {
+    const currentPlayer = state.players[state.currentPlayerIndex];
+    if (!currentPlayer || !question) return state;
+
+    return {
+      lastSkippedQuestion: question,
+      players: state.players.map(p => 
+        p.id === currentPlayer.id
+          ? { ...p, skippedCount: p.skippedCount + 1 }
+          : p
+      )
     };
-
-    set((state) => ({
-      players: [...state.players, newPlayer],
-    }));
-  },
-
-  removePlayer: (id: string) =>
-    set((state) => ({
-      players: state.players.filter((p) => p.id !== id),
-    })),
-
-  setCurrentPlayerIndex: (index: number) =>
-    set({ currentPlayerIndex: index }),
-
-  updateScore: (playerId: string, points: number) =>
-    set((state) => ({
-      players: state.players.map((p) =>
-        p.id === playerId ? { ...p, score: p.score + points } : p
-      ),
-    })),
-
-  updateStreak: (playerId: string) =>
-    set((state) => ({
-      players: state.players.map((p) =>
-        p.id === playerId ? { ...p, streak: (p.streak || 0) + 1 } : p
-      ),
-    })),
-
-  // Question Management
-  setCurrentQuestion: (question: Question | null) =>
-    set({ currentQuestion: question }),
-
-  getRandomQuestion: () => {
-    const state = get();
-    const availableQuestions = state.customQuestions.filter(
-      (q) => !state.usedQuestionIds.includes(q.id)
-    );
-    if (availableQuestions.length === 0) return null;
-    const randomIndex = Math.floor(Math.random() * availableQuestions.length);
-    return availableQuestions[randomIndex];
-  },
-
-  addCustomQuestion: (question: Question) =>
-    set((state) => ({
-      customQuestions: [...state.customQuestions, question],
-    })),
-
-  addUsedQuestionId: (id: string) =>
-    set((state) => ({
-      usedQuestionIds: [...state.usedQuestionIds, id],
-    })),
-
-  // Game State Management
-  startGame: () => set({ gameStarted: true }),
-  resetGame: () => set({ gameStarted: false, currentPlayerIndex: 0, currentQuestion: null }),
-  setMode: (mode: GameMode) => set({ mode }),
-
-  nextPlayer: () =>
-    set((state) => ({
-      currentPlayerIndex:
-        (state.currentPlayerIndex + 1) % state.players.length,
-    })),
-
-  // Voting System
-  addVote: (playerId: string, choice: 'optionA' | 'optionB') => {
-    const state = get();
-    const currentQuestionId = state.currentQuestion?.id;
-
-    if (!currentQuestionId) return;
-
-    const currentVotes = state.votes[currentQuestionId] || [];
-    const hasVoted = currentVotes.some((v) => v.playerId === playerId);
-
-    if (hasVoted) return;
-
-    set((state) => ({
-      votes: {
-        ...state.votes,
-        [currentQuestionId]: [
-          ...(state.votes[currentQuestionId] || []),
-          { playerId, choice },
-        ],
-      },
-    }));
-  },
-
-  clearVotes: () =>
-    set((state) => ({
-      votes: {},
-    })),
-
-  // UI State Management
-  setShowChaosMasterWheel: (show: boolean) =>
-    set({ showChaosMasterWheel: show }),
-
-  setShowAddQuestion: (show: boolean) =>
-    set({ showAddQuestion: show }),
-
-  setShowSettings: (show: boolean) =>
-    set({ showSettings: show }),
-
-  // Reactions System
-  addReaction: (fromPlayerId: string, toPlayerId: string, reaction: string) => {
-    set((state) => {
-      const players = state.players.map((player) => {
-        if (player.id === fromPlayerId) {
-          return {
-            ...player,
-            reactions: {
-              ...player.reactions,
-              given: {
-                ...player.reactions.given,
-                [toPlayerId]: [
-                  ...(player.reactions.given[toPlayerId] || []),
-                  reaction,
-                ],
-              },
-            },
-          };
-        }
-        if (player.id === toPlayerId) {
-          return {
-            ...player,
-            reactions: {
-              ...player.reactions,
-              received: {
-                ...player.reactions.received,
-                [fromPlayerId]: [
-                  ...(player.reactions.received[fromPlayerId] || []),
-                  reaction,
-                ],
-              },
-            },
-          };
-        }
-        return player;
-      });
-
-      return { players };
-    });
-  },
-
-  getReactions: (playerId: string) => {
-    const state = get();
-    const player = state.players.find((p) => p.id === playerId);
-    if (!player) return {};
-
-    return player.reactions.received;
-  },
+  }),
 }));
 
-export default useGameStore;
+// Default questions
+const defaultQuestions: Question[] = [
+  // Mild Truth Questions
+  { id: 't1', text: "What's the most embarrassing song you love to listen to?", type: 'mild', category: 'truth' },
+  { id: 't2', text: "What's the longest you've gone without showering?", type: 'mild', category: 'truth' },
+  { id: 't3', text: "What's your biggest pet peeve?", type: 'mild', category: 'truth' },
+  
+  // Spicy Truth Questions
+  { id: 't4', text: "What's the biggest lie you've ever told?", type: 'spicy', category: 'truth' },
+  { id: 't5', text: "What's your biggest regret?", type: 'spicy', category: 'truth' },
+  { id: 't6', text: "What's the most trouble you've ever been in?", type: 'spicy', category: 'truth' },
+  
+  // Extreme Truth Questions
+  { id: 't7', text: "What's your deepest secret that you've never told anyone?", type: 'extreme', category: 'truth' },
+  { id: 't8', text: "What's the worst thing you've ever done?", type: 'extreme', category: 'truth' },
+  
+  // Mild Dare Questions
+  { id: 'd1', text: "Do your best impression of a celebrity", type: 'mild', category: 'dare' },
+  { id: 'd2', text: "Speak in an accent for the next three rounds", type: 'mild', category: 'dare' },
+  { id: 'd3', text: "Do 10 jumping jacks", type: 'mild', category: 'dare' },
+  
+  // Spicy Dare Questions
+  { id: 'd4', text: "Call a friend and sing them a song", type: 'spicy', category: 'dare' },
+  { id: 'd5', text: "Post an embarrassing selfie on social media", type: 'spicy', category: 'dare' },
+  { id: 'd6', text: "Let another player post anything they want on your social media", type: 'spicy', category: 'dare' },
+  
+  // Extreme Dare Questions
+  { id: 'd7', text: "Let the group give you a makeover with whatever they can find", type: 'extreme', category: 'dare' },
+  { id: 'd8', text: "Eat a spoonful of the spiciest condiment available", type: 'extreme', category: 'dare' }
+];

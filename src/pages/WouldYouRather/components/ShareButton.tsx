@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ShareNetwork } from '@phosphor-icons/react';
+import { Share2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 interface ShareButtonProps {
@@ -41,7 +41,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({ votes }) => {
       onClick={handleShare}
       className="p-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
     >
-      <ShareNetwork className="w-6 h-6" />
+      <Share2 className="w-6 h-6" />
     </motion.button>
   );
 };

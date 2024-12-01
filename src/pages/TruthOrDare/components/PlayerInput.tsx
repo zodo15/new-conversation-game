@@ -1,94 +1,115 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeftIcon, PlusIcon } from '../../../components/icons';
-import toast from 'react-hot-toast';
-import useGameStore from '../store/gameStore';
+import { toast } from 'react-hot-toast';
+import { UserPlus, Play } from 'lucide-react';
 
-interface PlayerInputProps {
-  onBack: () => void;
+interface Props {
+  players: string[];
+  setPlayers: (players: string[]) => void;
+  onStart: () => void;
 }
 
-export const PlayerInput: React.FC<PlayerInputProps> = ({ onBack }) => {
-  const [playerName, setPlayerName] = useState('');
-  const { players, addPlayer } = useGameStore();
+const PlayerInput: React.FC<Props> = ({ players, setPlayers, onStart }) => {
+  const [newPlayer, setNewPlayer] = useState('');
 
-  const handleAddPlayer = () => {
-    const trimmedName = playerName.trim();
+  const handleAddPlayer = (e: React.FormEvent) => {
+    e.preventDefault();
     
-    if (!trimmedName) {
-      toast.error('Please enter a player name');
+    if (!newPlayer.trim()) {
+      toast.error('Please enter a player name', { id: 'empty-name' });
       return;
     }
 
-    if (players.some(p => p.name.toLowerCase() === trimmedName.toLowerCase())) {
-      toast.error('Player name already exists');
+    if (players.includes(newPlayer.trim())) {
+      toast.error('Player already exists', { id: 'duplicate-player' });
       return;
     }
 
-    addPlayer(trimmedName);
-    setPlayerName('');
-    toast.success('Player added successfully!');
+    if (players.length >= 8) {
+      toast.error('Maximum 8 players allowed', { id: 'max-players' });
+      return;
+    }
+
+    setPlayers([...players, newPlayer.trim()]);
+    setNewPlayer('');
+    toast.success('Player added!', { id: 'player-added' });
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleAddPlayer();
-    }
+  const removePlayer = (playerToRemove: string) => {
+    setPlayers(players.filter(player => player !== playerToRemove));
+    toast.success('Player removed', { id: 'player-removed' });
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-4">
-      <div className="flex items-center mb-6">
-        <button
-          onClick={onBack}
-          className="text-gray-600 hover:text-gray-800 transition-colors"
-        >
-          <ArrowLeftIcon size={24} />
-        </button>
-        <h2 className="text-2xl font-bold text-gray-800 ml-4">Add Players</h2>
-      </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="space-y-8"
+    >
+      <h1 className="text-4xl font-bold text-center mb-8">Truth or Dare</h1>
 
-      <div className="flex gap-2">
+      <form onSubmit={handleAddPlayer} className="flex gap-4">
         <input
           type="text"
-          value={playerName}
-          onChange={(e) => setPlayerName(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Enter player name"
-          className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          maxLength={20}
+          value={newPlayer}
+          onChange={(e) => setNewPlayer(e.target.value)}
+          placeholder="Enter player name..."
+          className="flex-1 px-4 py-2 rounded-lg bg-white/10 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400"
         />
         <motion.button
+          type="submit"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={handleAddPlayer}
-          className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition-colors"
+          className="px-6 py-2 bg-purple-500 text-white font-semibold rounded-lg shadow-lg hover:bg-purple-600 transition-colors flex items-center gap-2"
         >
-          <PlusIcon size={24} />
+          <UserPlus className="w-4 h-4" />
+          Add Player
         </motion.button>
-      </div>
+      </form>
 
-      <div className="mt-6">
-        <h3 className="text-lg font-semibold text-gray-700 mb-3">
-          Current Players ({players.length})
-        </h3>
-        <div className="space-y-2">
+      {players.length > 0 && (
+        <div className="flex flex-col gap-2">
           {players.map((player) => (
-            <div
-              key={player.id}
-              className="flex items-center justify-between bg-white p-3 rounded-lg shadow"
+            <motion.div
+              key={player}
+              layout
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="bg-white/10 p-4 rounded-lg flex items-center justify-between"
             >
-              <span className="text-gray-800">{player.name}</span>
+              <span>{player}</span>
               <button
-                onClick={() => useGameStore.getState().removePlayer(player.id)}
-                className="text-red-500 hover:text-red-600 transition-colors"
+                onClick={() => removePlayer(player)}
+                className="text-red-400 hover:text-red-300 px-2"
               >
-                Remove
+                ×
               </button>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </div>
-    </div>
+      )}
+
+      {players.length >= 2 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex justify-center"
+        >
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onStart}
+            className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-purple-600 hover:to-pink-600 transition-colors flex items-center gap-2"
+          >
+            <Play className="w-4 h-4" />
+            Start Game
+          </motion.button>
+        </motion.div>
+      )}
+    </motion.div>
   );
 };
+
+export default PlayerInput;

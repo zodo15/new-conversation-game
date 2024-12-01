@@ -1,18 +1,24 @@
 import React from 'react';
-import { ChatCircleText } from '@phosphor-icons/react';
+import { motion } from 'framer-motion';
+import { FaComments } from 'react-icons/fa';
 
-export interface FeedbackButtonProps {
-  onClick: () => void;
-}
+export const FeedbackButton = () => {
+  const handleClick = () => {
+    window.open('https://forms.gle/xPtpobnbpjTVwUiMA', '_blank');
+  };
 
-export const FeedbackButton: React.FC<FeedbackButtonProps> = ({ onClick }) => {
   return (
-    <button
-      onClick={onClick}
-      className="fixed bottom-4 right-4 bg-white text-gray-800 rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors"
-      title="Send Feedback"
+    <motion.button
+      onClick={handleClick}
+      className="fixed bottom-8 right-8 bg-purple-600 hover:bg-purple-700 text-white rounded-full p-4 shadow-lg flex items-center gap-2 transition-colors duration-300 z-50"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
     >
-      <ChatCircleText size={24} />
-    </button>
+      <FaComments className="w-5 h-5" />
+      <span>Feedback</span>
+    </motion.button>
   );
 };

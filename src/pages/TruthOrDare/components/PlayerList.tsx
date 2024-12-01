@@ -1,76 +1,67 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CloseIcon } from '../../../components/icons';
-import { Player } from '../types/game';
+import { motion } from 'framer-motion';
+import { useGameStore } from '../store/gameStore';
+import { Player } from '../types';
 
-interface PlayerListProps {
-  players: Player[];
-  currentPlayerId: string;
-  onRemovePlayer: (id: string) => void;
-}
+export const PlayerList: React.FC = () => {
+  const { players, currentPlayerIndex, removePlayer } = useGameStore();
 
-export const PlayerList: React.FC<PlayerListProps> = ({ players, currentPlayerId, onRemovePlayer }) => {
-  const renderPlayerStats = (player: Player) => (
-    <div className="flex gap-2 text-sm text-white/80">
-      <span>Score: {player.score}</span>
-      <span>|</span>
-      <span>Truth: {player.truthCount || 0}</span>
-      <span>|</span>
-      <span>Dare: {player.dareCount || 0}</span>
-      <span>|</span>
-      <span>WYR: {player.wouldYouRatherCount || 0}</span>
-    </div>
-  );
+  const getPlayerStatus = (player: Player, index: number) => {
+    if (index === currentPlayerIndex) return 'Current';
+    if (index === (currentPlayerIndex + 1) % players.length) return 'Next';
+    return '';
+  };
 
   return (
     <div className="space-y-4">
-      <h3 className="text-xl font-bold text-white text-center">Players</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <AnimatePresence>
-          {players.map((player) => (
-            <motion.div
-              key={player.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className={`relative p-4 rounded-lg ${
-                player.id === currentPlayerId
-                  ? 'bg-purple-500'
-                  : 'bg-white/10'
-              }`}
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="font-semibold text-white">
-                    {player.name}
-                    {player.id === currentPlayerId && (
-                      <span className="ml-2 text-xs bg-white/20 px-2 py-1 rounded-full">
-                        Current
-                      </span>
-                    )}
-                  </h4>
-                  {renderPlayerStats(player)}
-                </div>
-
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => onRemovePlayer(player.id)}
-                  className="text-white/60 hover:text-white/90 transition-colors"
-                >
-                  <CloseIcon size={16} />
-                </motion.button>
+      <h2 className="text-2xl font-bold text-gray-800">Players</h2>
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {players.map((player, index) => (
+          <motion.div
+            key={player.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`p-4 rounded-xl shadow-lg ${
+              index === currentPlayerIndex
+                ? 'bg-purple-500 text-white'
+                : 'bg-white'
+            }`}
+          >
+            <div className="flex justify-between items-start mb-2">
+              <div>
+                <h3 className={`font-semibold text-lg ${
+                  index === currentPlayerIndex ? 'text-white' : 'text-gray-800'
+                }`}>
+                  {player.name}
+                </h3>
+                {getPlayerStatus(player, index) && (
+                  <span className="text-sm font-medium text-white bg-green-500 px-2 py-1 rounded-full">
+                    {getPlayerStatus(player, index)}
+                  </span>
+                )}
               </div>
-
-              {player.id === currentPlayerId && (
-                <motion.div
-                  className="absolute -bottom-1 left-0 right-0 h-1 bg-white/30"
-                  layoutId="playerIndicator"
-                />
-              )}
-            </motion.div>
-          ))}
-        </AnimatePresence>
+              <button
+                onClick={() => removePlayer(player.id)}
+                className={`p-1 rounded-full hover:bg-red-100 transition-colors ${
+                  index === currentPlayerIndex ? 'text-white' : 'text-red-500'
+                }`}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className={`space-y-1 ${
+              index === currentPlayerIndex ? 'text-white/90' : 'text-gray-600'
+            }`}>
+              <p>Score: {player.score}</p>
+              <div className="flex space-x-4 text-sm">
+                <span>Truths: {player.truthCount}</span>
+                <span>Dares: {player.dareCount}</span>
+              </div>
+            </div>
+          </motion.div>
+        ))}
       </div>
     </div>
   );
