@@ -4,16 +4,22 @@ import { Timer as TimerIcon, RotateCw } from 'lucide-react';
 
 interface TimerProps {
   duration: number;
-  onDurationChange?: (duration: number) => void;
+  onComplete?: () => void;
 }
 
 const DURATION_OPTIONS = [5, 10, 15, 20, 25, 30];
 
-export const Timer: React.FC<TimerProps> = ({ duration, onDurationChange }) => {
+export const Timer: React.FC<TimerProps> = ({ duration, onComplete }) => {
   const [timeLeft, setTimeLeft] = useState(duration);
   const [isRunning, setIsRunning] = useState(true);
 
   useEffect(() => {
+    if (timeLeft <= 0) {
+      onComplete?.();
+      setIsRunning(false);
+      return;
+    }
+
     if (!isRunning) return;
 
     const timer = setInterval(() => {
@@ -28,7 +34,7 @@ export const Timer: React.FC<TimerProps> = ({ duration, onDurationChange }) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isRunning]);
+  }, [timeLeft, isRunning, onComplete]);
 
   const resetTimer = () => {
     setTimeLeft(duration);
@@ -36,11 +42,13 @@ export const Timer: React.FC<TimerProps> = ({ duration, onDurationChange }) => {
   };
 
   const handleDurationChange = () => {
-    if (!onDurationChange) return;
     const currentIndex = DURATION_OPTIONS.indexOf(duration);
     const nextIndex = (currentIndex + 1) % DURATION_OPTIONS.length;
-    onDurationChange(DURATION_OPTIONS[nextIndex]);
+    setTimeLeft(DURATION_OPTIONS[nextIndex]);
   };
+
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
 
   const progress = (timeLeft / duration) * 100;
 
@@ -73,7 +81,9 @@ export const Timer: React.FC<TimerProps> = ({ duration, onDurationChange }) => {
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-lg font-bold">{timeLeft}s</span>
+          <span className="text-lg font-bold">
+            {minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
+          </span>
         </div>
       </div>
 
@@ -87,16 +97,14 @@ export const Timer: React.FC<TimerProps> = ({ duration, onDurationChange }) => {
           <RotateCw className="w-5 h-5" />
         </motion.button>
 
-        {onDurationChange && (
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={handleDurationChange}
-            className="text-sm font-medium hover:bg-white/10 px-2 py-1 rounded transition-colors"
-          >
-            {duration}s
-          </motion.button>
-        )}
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={handleDurationChange}
+          className="text-sm font-medium hover:bg-white/10 px-2 py-1 rounded transition-colors"
+        >
+          {duration}s
+        </motion.button>
       </div>
     </motion.div>
   );
