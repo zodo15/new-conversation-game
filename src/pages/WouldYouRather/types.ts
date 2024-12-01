@@ -1,79 +1,78 @@
-export type GameMode = 'classic' | 'spicy' | 'friend' | 'random';
+export type GameMode = 'classic' | 'spicy' | 'friends' | 'chaos' | '';
 
 export interface Question {
   id: string;
   optionA: string;
   optionB: string;
-  mode?: GameMode;
-  type?: string;
-  question?: string;
+  mode: GameMode;
   consequences?: {
-    option1?: string;
-    option2?: string;
+    optionA: string;
+    optionB: string;
   };
-  votesA?: number;
-  votesB?: number;
-}
-
-export interface Choice {
-  playerId: string;
-  choice: 'A' | 'B';
 }
 
 export interface Vote {
   playerId: string;
-  vote: string;
-}
-
-export interface Streak {
-  playerId: string;
-  count: number;
+  vote: 'A' | 'B';
+  timestamp: number;
 }
 
 export interface Player {
   id: string;
   name: string;
-  points: number;
-  truthCount?: number;
-  dareCount?: number;
-  wouldYouRatherCount?: number;
-  choices?: Choice[];
+  score: number;
+  streak: number;
 }
 
 export interface GameState {
-  mode: GameMode | '';
-  players: string[];
+  players: Player[];
   currentQuestion: Question | null;
   currentPlayerIndex: number;
+  votes: Vote[];
+  mode: GameMode;
   gameStarted: boolean;
-  chaosMode?: boolean;
-  timer?: number;
-  votes?: Vote[];
-  showChaosMasterWheel?: boolean;
-  showAddQuestion?: boolean;
-  usedQuestionIds?: Set<string>;
-  customQuestions?: Question[];
-  streak?: Streak | null;
-  chaosMaster?: string;
-}
-
-export interface ShareButtonProps {
-  onShare: () => void;
+  chaosMode: boolean;
+  timer: number;
 }
 
 export interface TimerProps {
   duration: number;
-  onComplete?: () => void;
+  onComplete: () => void;
+  isPaused?: boolean;
 }
 
-export interface ChaosMasterProps {
-  onClose: () => void;
-  onComplete?: (action: string) => void;
+export interface ShareButtonProps {
+  question: Question;
+  votes: Vote[];
+  players: Player[];
 }
 
 export interface ChoiceCardProps {
-  choice: string;
+  choice: 'A' | 'B';
+  text: string;
   onClick: () => void;
-  selected?: boolean;
   disabled?: boolean;
+  selected?: boolean;
+  consequences?: string;
+}
+
+export interface PlayerInputProps {
+  onAddPlayer: (name: string) => void;
+  maxPlayers?: number;
+}
+
+export interface PlayerListProps {
+  players: Player[];
+  currentPlayerIndex: number;
+  onRemovePlayer?: (id: string) => void;
+}
+
+export interface GameModeProps {
+  onSelectMode: (mode: GameMode) => void;
+  selectedMode: GameMode;
+}
+
+export interface ChaosMasterProps {
+  isActive: boolean;
+  onEvent: (event: string) => void;
 }

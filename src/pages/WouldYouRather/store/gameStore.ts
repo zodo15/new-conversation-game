@@ -1,128 +1,106 @@
 import { create } from 'zustand';
-import { GameState, GameMode, Question, Player, Choice, Vote, Streak } from '../types';
+import { GameState, GameMode, Player, Vote, Question } from '../types';
+import { v4 as uuidv4 } from 'uuid';
+
+interface GameStore extends GameState {
+  addPlayer: (name: string) => void;
+  removePlayer: (id: string) => void;
+  setCurrentQuestion: (question: Question) => void;
+  setMode: (mode: GameMode) => void;
+  setCurrentPlayerIndex: (index: number) => void;
+  addPlayerVote: (playerId: string, vote: 'A' | 'B') => void;
+  updatePlayerScore: (playerId: string, points: number) => void;
+  updatePlayerStreak: (playerId: string) => void;
+  resetGame: () => void;
+  startGame: () => void;
+  toggleChaosMode: () => void;
+  setTimer: (duration: number) => void;
+}
 
 const initialState: GameState = {
-  mode: '',
   players: [],
   currentQuestion: null,
   currentPlayerIndex: 0,
+  votes: [],
+  mode: '',
   gameStarted: false,
   chaosMode: false,
   timer: 30,
-  votes: [],
-  showChaosMasterWheel: false,
-  showAddQuestion: false,
-  usedQuestionIds: new Set<string>(),
-  customQuestions: [],
-  streak: null,
-  chaosMaster: ''
 };
 
-interface GameStore extends GameState {
-  setMode: (mode: GameMode) => void;
-  addPlayer: (name: string, state?: Partial<GameState>) => void;
-  removePlayer: (id: string, state?: Partial<GameState>) => void;
-  setCurrentQuestion: (question: Question) => void;
-  addPlayerChoice: (playerId: string, choice: Choice, state?: Partial<GameState>) => void;
-  addPlayerPoints: (playerId: string, points: number, state?: Partial<GameState>) => void;
-  setShowChaosMasterWheel: (show: boolean) => void;
-  setShowAddQuestion: (show: boolean) => void;
-  addCustomQuestion: (question: Question, state?: Partial<GameState>) => void;
-  removeCustomQuestion: (id: string, state?: Partial<GameState>) => void;
-  setCurrentPlayerIndex: (index: number) => void;
-  addPlayerVote: (playerId: string, choice: string, state?: Partial<GameState>) => void;
-}
-
-export const useGameStore = create<GameStore>((set, get) => ({
+export const useGameStore = create<GameStore>((set) => ({
   ...initialState,
-  
-  setMode: (mode: GameMode) => {
-    set({ mode });
-  },
 
-  addPlayer: (name: string, state = {}) => {
-    set((currentState) => ({
-      ...currentState,
-      ...state,
-      players: [...currentState.players, { id: '', name, score: 0, choices: [], streakCount: 0, lastChoice: null }]
-    }));
-  },
+  addPlayer: (name: string) =>
+    set((state) => ({
+      players: [
+        ...state.players,
+        {
+          id: uuidv4(),
+          name,
+          score: 0,
+          streak: 0,
+        },
+      ],
+    })),
 
-  removePlayer: (id: string, state = {}) => {
-    set((currentState) => ({
-      ...currentState,
-      ...state,
-      players: currentState.players.filter((p) => p.id !== id)
-    }));
-  },
+  removePlayer: (id: string) =>
+    set((state) => ({
+      players: state.players.filter((p) => p.id !== id),
+    })),
 
-  setCurrentQuestion: (question: Question) => {
-    set({ currentQuestion: question });
-  },
+  setCurrentQuestion: (question: Question) =>
+    set(() => ({
+      currentQuestion: question,
+      votes: [],
+    })),
 
-  addPlayerChoice: (playerId: string, choice: Choice, state = {}) => {
-    set((currentState) => {
-      const updatedPlayers = currentState.players.map((p) => {
-        if (p.id === playerId) {
-          return {
-            ...p,
-            choices: [...(p.choices || []), { questionId: currentState.currentQuestion!.id, choice }]
-          };
-        }
-        return p;
-      });
+  setMode: (mode: GameMode) =>
+    set(() => ({
+      mode,
+    })),
 
-      return {
-        ...currentState,
-        ...state,
-        players: updatedPlayers
-      };
-    });
-  },
+  setCurrentPlayerIndex: (index: number) =>
+    set(() => ({
+      currentPlayerIndex: index,
+    })),
 
-  addPlayerPoints: (playerId: string, points: number, state = {}) => {
-    set((currentState) => ({
-      ...currentState,
-      ...state,
-      players: currentState.players.map((p) => 
-        p.id === playerId ? { ...p, score: (p.score || 0) + points } : p
-      )
-    }));
-  },
+  addPlayerVote: (playerId: string, vote: 'A' | 'B') =>
+    set((state) => ({
+      votes: [...state.votes, { playerId, vote, timestamp: Date.now() }],
+    })),
 
-  setShowChaosMasterWheel: (show: boolean) => {
-    set({ showChaosMasterWheel: show });
-  },
+  updatePlayerScore: (playerId: string, points: number) =>
+    set((state) => ({
+      players: state.players.map((p) =>
+        p.id === playerId ? { ...p, score: p.score + points } : p
+      ),
+    })),
 
-  setShowAddQuestion: (show: boolean) => {
-    set({ showAddQuestion: show });
-  },
+  updatePlayerStreak: (playerId: string) =>
+    set((state) => ({
+      players: state.players.map((p) =>
+        p.id === playerId ? { ...p, streak: p.streak + 1 } : { ...p, streak: 0 }
+      ),
+    })),
 
-  addCustomQuestion: (question: Question, state = {}) => {
-    set((currentState) => ({
-      ...currentState,
-      ...state,
-      customQuestions: [...(currentState.customQuestions || []), { ...question, id: '' }]
-    }));
-  },
+  resetGame: () =>
+    set(() => ({
+      ...initialState,
+    })),
 
-  removeCustomQuestion: (id: string, state = {}) => {
-    set((currentState) => ({
-      ...currentState,
-      ...state,
-      customQuestions: (currentState.customQuestions || []).filter(q => q.id !== id)
-    }));
-  },
+  startGame: () =>
+    set(() => ({
+      gameStarted: true,
+    })),
 
-  setCurrentPlayerIndex: (index: number) => {
-    set({ currentPlayerIndex: index });
-  },
+  toggleChaosMode: () =>
+    set((state) => ({
+      chaosMode: !state.chaosMode,
+    })),
 
-  addPlayerVote: (playerId: string, choice: string, state = {}) => {
-    set((currentState) => ({
-      ...currentState,
-      ...state,
-      votes: [...(currentState.votes || []), { playerId, choice }]
-    }));
-  }
+  setTimer: (duration: number) =>
+    set(() => ({
+      timer: duration,
+    })),
 }));
