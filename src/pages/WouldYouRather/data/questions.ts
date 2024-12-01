@@ -1,94 +1,52 @@
-import { Question, GameMode } from '../types';
+import { Question } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
 export const questions: Question[] = [
   {
     id: uuidv4(),
-    optionA: "Be able to read minds",
-    optionB: "Be invisible at will",
-    mode: 'classic',
+    optionA: "Be able to teleport anywhere",
+    optionB: "Be able to read minds",
+    type: "normal",
+    mode: "classic"
   },
   {
     id: uuidv4(),
-    optionA: "Live without music",
-    optionB: "Live without movies",
-    mode: 'classic',
+    optionA: "Live in a world without music",
+    optionB: "Live in a world without movies",
+    type: "normal",
+    mode: "classic"
   },
   {
     id: uuidv4(),
-    optionA: "Have unlimited money",
-    optionB: "Have unlimited knowledge",
-    mode: 'classic',
-  },
-  {
-    id: uuidv4(),
-    optionA: "Never need to sleep",
-    optionB: "Never need to eat",
-    mode: 'classic',
-  },
-  {
-    id: uuidv4(),
-    optionA: "Be famous",
-    optionB: "Be anonymous but rich",
-    mode: 'classic',
-  },
-  // Spicy questions
-  {
-    id: uuidv4(),
-    optionA: "Always tell the truth",
-    optionB: "Always lie",
-    mode: 'spicy',
+    optionA: "Eat your favorite food for every meal",
+    optionB: "Never be able to eat your favorite food again",
+    type: "spicy",
+    mode: "spicy",
     consequences: {
-      optionA: "Everyone will know your secrets",
-      optionB: "Nobody will ever trust you",
-    },
+      A: "But it loses its taste after a month",
+      B: "But you get to try a new amazing food every week"
+    }
   },
   {
     id: uuidv4(),
-    optionA: "Live without social media",
-    optionB: "Live without your phone",
-    mode: 'spicy',
-    consequences: {
-      optionA: "You'll miss out on trends and connections",
-      optionB: "You'll be less accessible to others",
-    },
+    optionA: "Have a personal chef",
+    optionB: "Have a personal masseuse",
+    type: "friends",
+    mode: "friends"
   },
-  // Friend mode questions
   {
     id: uuidv4(),
     optionA: "Switch lives with your best friend",
-    optionB: "Keep your current life",
-    mode: 'friends',
-  },
-  {
-    id: uuidv4(),
-    optionA: "Have all your friends know your thoughts",
-    optionB: "Know all your friends' thoughts",
-    mode: 'friends',
-  },
-  // Chaos mode questions
-  {
-    id: uuidv4(),
-    optionA: "Random superpowers every day",
-    optionB: "One consistent superpower",
-    mode: 'chaos',
+    optionB: "Switch personalities with your best friend",
+    type: "chaos",
+    mode: "chaos",
     consequences: {
-      optionA: "You never know what you'll get",
-      optionB: "You might get stuck with something boring",
-    },
-  },
-  {
-    id: uuidv4(),
-    optionA: "Everything you touch turns random colors",
-    optionB: "Everything you say comes out as a song",
-    mode: 'chaos',
-    consequences: {
-      optionA: "The world becomes your canvas",
-      optionB: "Life becomes a musical",
-    },
-  },
+      A: "But they get to control your social media",
+      B: "But they get to choose your outfits"
+    }
+  }
 ];
 
-export const getQuestionsByMode = (mode: GameMode): Question[] => {
+export const getQuestionsByMode = (mode: string): Question[] => {
   return questions.filter(q => q.mode === mode);
 };

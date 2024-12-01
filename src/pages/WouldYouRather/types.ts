@@ -1,20 +1,22 @@
-export type GameMode = 'classic' | 'spicy' | 'friends' | 'chaos' | 'local' | 'online' | 'party' | '';
+export type GameMode = 'classic' | 'spicy' | 'friends' | 'chaos';
+export type QuestionType = 'normal' | 'custom' | 'spicy' | 'friends' | 'chaos';
+export type QuestionCategory = 'classic' | 'spicy' | 'friends' | 'chaos';
 
 export interface Question {
   id: string;
   optionA: string;
   optionB: string;
+  type: QuestionType;
   mode: GameMode;
-  type: 'normal' | 'custom' | 'spicy';
   consequences?: {
-    A?: string;
-    B?: string;
+    A: string;
+    B: string;
   };
 }
 
 export interface Vote {
   playerId: string;
-  vote: 'A' | 'B';
+  choice: 'A' | 'B';
   timestamp: number;
 }
 
@@ -27,48 +29,70 @@ export interface Player {
 }
 
 export interface GameState {
-  gameStarted: boolean;
-  currentQuestion: Question | null;
-  players: Player[];
-  currentPlayerIndex: number;
   mode: GameMode;
-  chaosMode: boolean;
-  chaosMaster?: string;
-  timer: number;
+  players: Player[];
+  currentQuestion?: Question;
   votes: Vote[];
+  usedQuestionIds: string[];
+  currentPlayerIndex: number;
+  isGameStarted: boolean;
+  timer: number;
 }
 
-export interface ChoiceCardProps {
-  choice: 'A' | 'B';
-  text: string;
-  onClick: () => void;
-  disabled?: boolean;
-  selected?: boolean;
-  consequences?: string;
-  votes?: number;
-  totalVotes?: number;
+export interface QuestionDisplayProps {
+  question: Question;
+  votes: Vote[];
+  players: Player[];
+  onVote: (choice: 'A' | 'B') => void;
+  currentPlayerId?: string;
+}
+
+export interface PlayerInputProps {
+  onAddPlayer: (name: string) => void;
+  currentPlayerCount: number;
+}
+
+export interface PlayerListProps {
+  players: Player[];
+  onRemovePlayer: (id: string) => void;
+  currentPlayerIndex: number;
+}
+
+export interface GameModesProps {
+  onSelectMode: (mode: GameMode) => void;
 }
 
 export interface TimerProps {
   duration: number;
-  onComplete: () => void;
+  onComplete?: () => void;
 }
+
+export interface GameProps {
+  onBack: () => void;
+}
+
+export interface GameStore extends GameState {
+  questions: Question[];
+  chaosMode: boolean;
+  addPlayer: (name: string) => void;
+  removePlayer: (id: string) => void;
+  setMode: (mode: GameMode) => void;
+  setQuestion: (question: Question) => void;
+  addVote: (playerId: string, choice: 'A' | 'B') => void;
+  nextQuestion: () => void;
+  startGame: () => void;
+  resetGame: () => void;
+  setTimer: (duration: number) => void;
+  setCurrentPlayerIndex: (index: number) => void;
+}
+
+export type ChaosEvent = {
+  type: 'swap' | 'skip' | 'reverse' | 'double' | 'timeout';
+  description: string;
+};
 
 export interface ChaosMasterProps {
   isVisible: boolean;
   onClose: () => void;
-  onComplete: (event: string) => void;
-}
-
-export interface ShareButtonProps {
-  text: string;
-  url?: string;
-}
-
-export interface GameModeData {
-  id: GameMode;
-  name: string;
-  description: string;
-  icon: React.ComponentType;
-  color: string;
+  onComplete: (event: ChaosEvent) => void;
 }

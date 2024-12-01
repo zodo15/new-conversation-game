@@ -1,41 +1,25 @@
 import { create } from 'zustand';
-import { GameState, GameMode, Player, Vote, Question } from '../types';
+import { GameStore, Player, Question, GameMode, Vote } from '../types';
+import { useQuestionsStore } from './questionsStore';
 import { v4 as uuidv4 } from 'uuid';
 
-interface GameStore extends GameState {
-  addPlayer: (name: string) => void;
-  removePlayer: (id: string) => void;
-  setCurrentQuestion: (question: Question) => void;
-  setMode: (mode: GameMode) => void;
-  setCurrentPlayerIndex: (index: number) => void;
-  addPlayerVote: (playerId: string, vote: 'A' | 'B') => void;
-  updatePlayerScore: (playerId: string, points: number) => void;
-  updatePlayerStreak: (playerId: string) => void;
-  resetGame: () => void;
-  startGame: () => void;
-  toggleChaosMode: () => void;
-  setTimer: (duration: number) => void;
-  addCustomQuestion: (question: Question) => void;
-  removeCustomQuestion: (id: string) => void;
-}
-
-const initialState: GameState = {
-  players: [],
-  currentQuestion: null,
+const initialState = {
+  mode: 'classic' as GameMode,
+  players: [] as Player[],
+  currentQuestion: undefined,
+  votes: [] as Vote[],
+  usedQuestionIds: [] as string[],
   currentPlayerIndex: 0,
-  votes: [],
-  mode: '',
-  gameStarted: false,
-  chaosMode: false,
+  isGameStarted: false,
   timer: 30,
-  usedQuestionIds: new Set<string>(),
-  customQuestions: [],
+  questions: useQuestionsStore.getState().questions,
+  chaosMode: false
 };
 
-export const useGameStore = create<GameStore>((set) => ({
+export const useGameStore = create<GameStore>((set, get) => ({
   ...initialState,
 
-  addPlayer: (name: string) =>
+  addPlayer: (name: string) => {
     set((state) => ({
       players: [
         ...state.players,
@@ -44,77 +28,74 @@ export const useGameStore = create<GameStore>((set) => ({
           name,
           score: 0,
           streak: 0,
+          avatar: `https://api.dicebear.com/6.x/avataaars/svg?seed=${name}`,
         },
       ],
-    })),
+    }));
+  },
 
-  removePlayer: (id: string) =>
+  removePlayer: (id: string) => {
     set((state) => ({
       players: state.players.filter((p) => p.id !== id),
-    })),
+    }));
+  },
 
-  setCurrentQuestion: (question: Question) =>
-    set(() => ({
+  setMode: (mode: GameMode) => {
+    set({ mode });
+  },
+
+  setQuestion: (question: Question) => {
+    set((state) => ({
       currentQuestion: question,
-      votes: [],
-    })),
+      usedQuestionIds: [...state.usedQuestionIds, question.id]
+    }));
+  },
 
-  setMode: (mode: GameMode) =>
-    set(() => ({
-      mode,
-    })),
-
-  setCurrentPlayerIndex: (index: number) =>
-    set(() => ({
-      currentPlayerIndex: index,
-    })),
-
-  addPlayerVote: (playerId: string, vote: 'A' | 'B') =>
+  addVote: (playerId: string, choice: 'A' | 'B') => {
     set((state) => ({
-      votes: [...state.votes, { playerId, vote, timestamp: Date.now() }],
-    })),
+      votes: [
+        ...state.votes,
+        {
+          playerId,
+          choice,
+          timestamp: Date.now()
+        }
+      ]
+    }));
+  },
 
-  updatePlayerScore: (playerId: string, points: number) =>
-    set((state) => ({
-      players: state.players.map((p) =>
-        p.id === playerId ? { ...p, score: p.score + points } : p
-      ),
-    })),
+  nextQuestion: () => {
+    set((state) => {
+      const availableQuestions = state.questions.filter(
+        (q) => q.mode === state.mode && !state.usedQuestionIds.includes(q.id)
+      );
+      if (availableQuestions.length === 0) {
+        return state;
+      }
+      const nextQuestion =
+        availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
+      return {
+        currentQuestion: nextQuestion,
+        usedQuestionIds: [...state.usedQuestionIds, nextQuestion.id],
+        votes: [],
+        currentPlayerIndex: (state.currentPlayerIndex + 1) % state.players.length,
+      };
+    });
+  },
 
-  updatePlayerStreak: (playerId: string) =>
-    set((state) => ({
-      players: state.players.map((p) =>
-        p.id === playerId ? { ...p, streak: p.streak + 1 } : { ...p, streak: 0 }
-      ),
-    })),
+  startGame: () => {
+    set({ isGameStarted: true });
+  },
 
-  resetGame: () =>
-    set(() => ({
-      ...initialState,
-    })),
+  resetGame: () => {
+    set(initialState);
+  },
 
-  startGame: () =>
-    set(() => ({
-      gameStarted: true,
-    })),
+  setTimer: (duration: number) => {
+    set({ timer: duration });
+  },
 
-  toggleChaosMode: () =>
-    set((state) => ({
-      chaosMode: !state.chaosMode,
-    })),
-
-  setTimer: (duration: number) =>
-    set(() => ({
-      timer: duration,
-    })),
-
-  addCustomQuestion: (question: Question) =>
-    set((state) => ({
-      customQuestions: [...state.customQuestions, question],
-    })),
-
-  removeCustomQuestion: (id: string) =>
-    set((state) => ({
-      customQuestions: state.customQuestions.filter((q) => q.id !== id),
-    })),
+  setCurrentPlayerIndex: (index: number) => {
+    set({ currentPlayerIndex: index });
+  }
 }));

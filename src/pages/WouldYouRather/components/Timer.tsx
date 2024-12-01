@@ -1,59 +1,36 @@
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Timer as TimerIcon, RotateCcw } from 'lucide-react';
-
-export interface TimerProps {
-  duration: number;
-  onComplete: () => void;
-}
+import { Clock } from 'lucide-react';
+import { TimerProps } from '../types';
 
 export const Timer: React.FC<TimerProps> = ({ duration, onComplete }) => {
   const [timeLeft, setTimeLeft] = useState(duration);
-  const [isActive, setIsActive] = useState(true);
 
   useEffect(() => {
-    if (!isActive || timeLeft <= 0) return;
+    if (timeLeft === 0) {
+      onComplete?.();
+      return;
+    }
 
     const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setIsActive(false);
-          onComplete();
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeLeft(prev => Math.max(0, prev - 1));
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isActive, timeLeft, onComplete]);
+  }, [timeLeft, onComplete]);
 
-  const resetTimer = () => {
+  useEffect(() => {
     setTimeLeft(duration);
-    setIsActive(true);
-  };
-
-  const progress = (timeLeft / duration) * 100;
+  }, [duration]);
 
   return (
-    <div className="relative flex items-center gap-2">
-      <motion.div
-        className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white font-bold"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 200, damping: 10 }}
-      >
-        {timeLeft}
-      </motion.div>
-      {!isActive && (
-        <button
-          onClick={resetTimer}
-          className="p-2 hover:bg-white/20 rounded-full transition-colors"
-        >
-          <RotateCcw className="w-5 h-5" />
-        </button>
-      )}
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex items-center justify-center gap-2"
+    >
+      <Clock className="w-5 h-5 text-white/80" />
+      <div className="text-xl font-medium">{timeLeft}s</div>
+    </motion.div>
   );
 };

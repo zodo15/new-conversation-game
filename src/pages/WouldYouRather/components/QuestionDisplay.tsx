@@ -1,16 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { QuestionDisplayProps } from '../types';
 import { ChoiceCard } from './ChoiceCard';
-import { Question, Vote, Player } from '../types';
 import { ShareButton } from './ShareButton';
-
-interface QuestionDisplayProps {
-  question: Question;
-  votes: Vote[];
-  players: Player[];
-  onVote: (choice: 'A' | 'B') => void;
-  currentPlayerId?: string;
-}
 
 export const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
   question,
@@ -19,16 +11,16 @@ export const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
   onVote,
   currentPlayerId
 }) => {
-  const totalVotes = votes.length;
-  const optionAVotes = votes.filter(v => v.vote === 'A').length;
-  const optionBVotes = votes.filter(v => v.vote === 'B').length;
   const hasVoted = currentPlayerId ? votes.some(v => v.playerId === currentPlayerId) : false;
+  const totalVotes = votes.length;
+  const votesA = votes.filter(v => v.choice === 'A').length;
+  const votesB = votes.filter(v => v.choice === 'B').length;
 
   const shareText = `Would you rather...
 ${question.optionA} 
 OR
 ${question.optionB}
-${totalVotes > 0 ? `\nResults: ${optionAVotes} vs ${optionBVotes}` : ''}`;
+${totalVotes > 0 ? `\nResults: ${votesA} vs ${votesB}` : ''}`;
 
   return (
     <motion.div
@@ -47,9 +39,9 @@ ${totalVotes > 0 ? `\nResults: ${optionAVotes} vs ${optionBVotes}` : ''}`;
           text={question.optionA}
           onClick={() => onVote('A')}
           disabled={hasVoted}
-          selected={hasVoted && votes.some(v => v.playerId === currentPlayerId && v.vote === 'A')}
+          selected={hasVoted && votes.some(v => v.playerId === currentPlayerId && v.choice === 'A')}
           consequences={question.consequences?.A}
-          votes={optionAVotes}
+          votes={votesA}
           totalVotes={totalVotes}
         />
         <ChoiceCard
@@ -57,9 +49,9 @@ ${totalVotes > 0 ? `\nResults: ${optionAVotes} vs ${optionBVotes}` : ''}`;
           text={question.optionB}
           onClick={() => onVote('B')}
           disabled={hasVoted}
-          selected={hasVoted && votes.some(v => v.playerId === currentPlayerId && v.vote === 'B')}
+          selected={hasVoted && votes.some(v => v.playerId === currentPlayerId && v.choice === 'B')}
           consequences={question.consequences?.B}
-          votes={optionBVotes}
+          votes={votesB}
           totalVotes={totalVotes}
         />
       </div>

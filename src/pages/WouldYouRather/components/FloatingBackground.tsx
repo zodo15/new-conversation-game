@@ -49,55 +49,50 @@ const FloatingIcon = ({
       transition={{ 
         duration: 6,
         repeat: Infinity,
-        ease: "easeInOut",
-        delay 
+        delay,
+        ease: "easeInOut"
       }}
-      className={`absolute ${colorClasses[color as keyof typeof colorClasses]} ${className}`}
+      className={`absolute ${sizeClasses[size]} ${colorClasses[color]} ${className}`}
     >
-      <Icon className={`${sizeClasses[size]} filter blur-[0.5px]`} />
+      <Icon className="w-full h-full" />
     </motion.div>
   );
 };
 
 const GlowingOrb = ({ className = "", delay = 0 }) => (
   <motion.div
-    initial={{ scale: 1, opacity: 0.15 }}
+    initial={{ scale: 0.8, opacity: 0.4 }}
     animate={{ 
-      scale: [1, 1.2, 1],
-      opacity: [0.15, 0.25, 0.15]
+      scale: [0.8, 1.2, 0.8],
+      opacity: [0.4, 0.6, 0.4]
     }}
     transition={{ 
       duration: 4,
       repeat: Infinity,
-      ease: "easeInOut",
-      delay 
+      delay,
+      ease: "easeInOut"
     }}
-    className={`absolute rounded-full bg-gradient-to-r from-purple-500/30 to-pink-500/30 blur-xl ${className}`}
+    className={`absolute w-32 h-32 rounded-full bg-gradient-to-r from-purple-500/30 to-pink-500/30 blur-xl ${className}`}
   />
 );
 
-export const FloatingBackground = () => {
+const FloatingBackground = () => {
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {/* Glowing orbs in the background */}
-      <GlowingOrb className="w-64 h-64 top-20 left-[10%]" delay={0} />
-      <GlowingOrb className="w-96 h-96 bottom-40 right-[15%]" delay={2} />
-      <GlowingOrb className="w-72 h-72 top-60 left-[60%]" delay={1} />
-
-      {/* Floating icons */}
-      <FloatingIcon icon={SparklesIcon} className="top-20 left-[10%]" size="lg" color="purple" delay={0} />
-      <FloatingIcon icon={QuestionMarkCircleIcon} className="top-40 right-[15%]" color="pink" delay={1} />
-      <FloatingIcon icon={HeartIcon} className="bottom-20 left-[20%]" size="sm" color="purple" delay={2} />
-      <FloatingIcon icon={StarIcon} className="top-60 left-1/2" color="indigo" delay={1.5} />
-      <FloatingIcon icon={LightBulbIcon} className="bottom-40 right-[25%]" size="lg" color="blue" delay={3} />
-      <FloatingIcon icon={FireIcon} className="top-32 left-[30%]" size="sm" color="pink" delay={2.5} />
-      <FloatingIcon icon={MoonIcon} className="bottom-32 right-[10%]" color="purple" delay={1.8} />
-      <FloatingIcon icon={SunIcon} className="top-80 right-[30%]" size="lg" color="indigo" delay={0.5} />
+      <FloatingIcon icon={SparklesIcon} className="top-1/4 left-1/4" delay={0} color="purple" />
+      <FloatingIcon icon={HeartIcon} className="top-1/3 right-1/4" delay={1} color="pink" />
+      <FloatingIcon icon={StarIcon} className="bottom-1/4 left-1/3" delay={2} color="indigo" />
+      <FloatingIcon icon={QuestionMarkCircleIcon} className="top-1/2 right-1/3" delay={3} color="blue" />
+      <FloatingIcon icon={LightBulbIcon} className="bottom-1/3 right-1/4" delay={4} color="purple" />
+      <FloatingIcon icon={FireIcon} className="top-1/3 left-1/3" delay={5} color="pink" />
+      <FloatingIcon icon={MoonIcon} className="bottom-1/4 right-1/3" delay={6} color="indigo" />
+      <FloatingIcon icon={SunIcon} className="top-1/4 right-1/4" delay={7} color="blue" />
       
-      {/* Additional smaller decorative elements */}
-      <FloatingIcon icon={StarIcon} className="top-1/4 left-[45%]" size="sm" color="pink" delay={2.2} />
-      <FloatingIcon icon={SparklesIcon} className="bottom-1/4 right-[40%]" size="sm" color="blue" delay={1.3} />
-      <FloatingIcon icon={HeartIcon} className="top-2/3 left-[25%]" size="sm" color="indigo" delay={2.8} />
+      <GlowingOrb className="top-1/4 left-1/4" delay={0} />
+      <GlowingOrb className="bottom-1/4 right-1/4" delay={2} />
+      <GlowingOrb className="top-1/2 right-1/3" delay={4} />
     </div>
   );
 };
+
+export default FloatingBackground;
