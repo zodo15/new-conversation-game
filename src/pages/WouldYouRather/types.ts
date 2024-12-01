@@ -1,4 +1,5 @@
 export enum GameMode {
+  NONE = 'none',
   CLASSIC = 'classic',
   SPICY = 'spicy',
   FRIEND = 'friend',
@@ -54,6 +55,7 @@ export interface GameState {
   chaosEnabled: boolean;
   showAddQuestion: boolean;
   timer: number;
+  streak: number | null;
 }
 
 export interface ChaosEvent {

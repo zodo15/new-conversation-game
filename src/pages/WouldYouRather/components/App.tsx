@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Home, Shuffle, Info, Sparkles, Wifi, WifiOff, ArrowLeft, X, SkipForward, Zap, Plus } from 'lucide-react';
 import { Toaster, toast } from 'react-hot-toast';
-import { GameMode, FriendMode } from '../types';
+import { GameMode, FriendMode, Question, ChaosEvent } from '../types';
 import { useGameStore } from '../store/gameStore';
 import { GameModes } from './GameModes';
 import { FriendGameModes } from './FriendGameModes';
@@ -13,7 +13,11 @@ import { Timer } from './Timer';
 import { AddQuestionModal } from './AddQuestionModal';
 import { FloatingBackground } from './FloatingBackground';
 
-export const App: React.FC = () => {
+interface AppProps {
+  onBack?: () => void;
+}
+
+export const App: React.FC<AppProps> = ({ onBack }) => {
   const {
     mode,
     friendMode,

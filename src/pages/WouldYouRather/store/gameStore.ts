@@ -1,9 +1,11 @@
 import create from 'zustand';
-import { GameState, GameMode, Question, Player } from '../types';
+import { GameState, GameMode, FriendMode, Question, Player, Vote, ChaosEvent } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import { generateAvatar } from '../utils/avatarGenerator';
 
 const initialState: GameState = {
   mode: GameMode.NONE,
+  friendMode: undefined,
   gameStarted: false,
   players: [],
   currentPlayerIndex: 0,
@@ -13,30 +15,39 @@ const initialState: GameState = {
   showAddQuestion: false,
   usedQuestionIds: new Set(),
   customQuestions: [],
+  timer: 0,
+  chaosMaster: null,
+  chaosEnabled: false,
   streak: null,
 };
 
-export const useGameStore = create<GameState & {
+interface GameStore extends GameState {
   setMode: (mode: GameMode) => void;
+  setFriendMode: (mode: FriendMode) => void;
   startGame: () => void;
   resetGame: () => void;
   addPlayer: (name: string) => void;
   removePlayer: (id: string) => void;
   setCurrentQuestion: (question: Question | null) => void;
-  addVote: (playerId: string, choice: 'option1' | 'option2') => void;
+  addVote: (playerId: string, choice: 'A' | 'B') => void;
   clearVotes: () => void;
   updateScore: (playerId: string, points: number) => void;
   setShowChaosMasterWheel: (show: boolean) => void;
+  setChaosmaster: (playerId: string | null) => void;
+  toggleChaosMode: () => void;
   setShowAddQuestion: (show: boolean) => void;
   addCustomQuestion: (question: Question) => void;
-  addUsedQuestionId: (id: string) => void;
   setCurrentPlayerIndex: (index: number) => void;
-  updateStreak: (playerId: string, choice: 'option1' | 'option2') => void;
-  getRandomQuestion: (mode: GameMode) => Question | null;
-}>((set, get) => ({
+  setTimer: (duration: number) => void;
+  triggerChaosEvent: (event: ChaosEvent) => void;
+}
+
+export const useGameStore = create<GameStore>((set, get) => ({
   ...initialState,
 
   setMode: (mode) => set({ mode }),
+
+  setFriendMode: (mode) => set({ friendMode: mode }),
 
   startGame: () => set({ gameStarted: true }),
 
@@ -49,46 +60,55 @@ export const useGameStore = create<GameState & {
         id: uuidv4(),
         name,
         score: 0,
-        choices: [],
-        streakCount: 0,
-        lastChoice: null,
-      },
-    ],
+        streak: 0,
+        avatar: generateAvatar(),
+        isChaosmaster: false
+      }
+    ]
   })),
 
   removePlayer: (id) => set((state) => ({
-    players: state.players.filter((p) => p.id !== id),
+    players: state.players.filter(player => player.id !== id)
   })),
 
   setCurrentQuestion: (question) => set({ currentQuestion: question }),
 
   addVote: (playerId, choice) => set((state) => {
-    const newVotes = [...state.votes, { playerId, choice }];
-    const player = state.players.find(p => p.id === playerId);
-    
-    if (player && state.currentQuestion) {
-      const updatedPlayers = state.players.map(p => {
-        if (p.id === playerId) {
-          const newStreakCount = p.lastChoice === choice ? p.streakCount + 1 : 1;
+    const newVote: Vote = {
+      playerId,
+      choice,
+      timestamp: Date.now()
+    };
+
+    // Check if all players have voted
+    const newVotes = [...state.votes, newVote];
+    if (newVotes.length === state.players.length) {
+      // Calculate results and update scores
+      const choiceA = newVotes.filter(v => v.choice === 'A').length;
+      const choiceB = newVotes.filter(v => v.choice === 'B').length;
+      const majority = choiceA > choiceB ? 'A' : 'B';
+
+      // Update scores for players who voted with majority
+      const updatedPlayers = state.players.map(player => {
+        const playerVote = newVotes.find(v => v.playerId === player.id);
+        if (playerVote && playerVote.choice === majority) {
           return {
-            ...p,
-            choices: [...p.choices, { questionId: state.currentQuestion!.id, choice }],
-            streakCount: newStreakCount,
-            lastChoice: choice,
+            ...player,
+            score: player.score + 1,
+            streak: player.streak + 1
+          };
+        } else {
+          return {
+            ...player,
+            streak: 0
           };
         }
-        return p;
       });
-
-      const updatedPlayer = updatedPlayers.find(p => p.id === playerId)!;
-      const newStreak = !state.streak || updatedPlayer.streakCount > state.streak.count
-        ? { playerId, count: updatedPlayer.streakCount }
-        : state.streak;
 
       return {
         votes: newVotes,
         players: updatedPlayers,
-        streak: newStreak,
+        currentPlayerIndex: (state.currentPlayerIndex + 1) % state.players.length
       };
     }
 
@@ -98,56 +118,73 @@ export const useGameStore = create<GameState & {
   clearVotes: () => set({ votes: [] }),
 
   updateScore: (playerId, points) => set((state) => ({
-    players: state.players.map((p) =>
-      p.id === playerId ? { ...p, score: p.score + points } : p
-    ),
+    players: state.players.map(player =>
+      player.id === playerId
+        ? { ...player, score: player.score + points }
+        : player
+    )
   })),
 
   setShowChaosMasterWheel: (show) => set({ showChaosMasterWheel: show }),
 
+  setChaosmaster: (playerId) => set((state) => ({
+    chaosMaster: playerId,
+    players: state.players.map(player => ({
+      ...player,
+      isChaosmaster: player.id === playerId
+    }))
+  })),
+
+  toggleChaosMode: () => set((state) => ({ chaosEnabled: !state.chaosEnabled })),
+
   setShowAddQuestion: (show) => set({ showAddQuestion: show }),
 
   addCustomQuestion: (question) => set((state) => ({
-    customQuestions: [...state.customQuestions, { ...question, id: uuidv4() }],
-  })),
-
-  addUsedQuestionId: (id) => set((state) => ({
-    usedQuestionIds: new Set([...state.usedQuestionIds, id]),
+    customQuestions: [...state.customQuestions, question]
   })),
 
   setCurrentPlayerIndex: (index) => set({ currentPlayerIndex: index }),
 
-  updateStreak: (playerId, choice) => set((state) => {
-    const updatedPlayers = state.players.map(p => {
-      if (p.id === playerId) {
-        const newStreakCount = p.lastChoice === choice ? p.streakCount + 1 : 1;
-        return {
-          ...p,
-          streakCount: newStreakCount,
-          lastChoice: choice,
-        };
-      }
-      return p;
-    });
+  setTimer: (duration) => set({ timer: duration }),
 
-    const updatedPlayer = updatedPlayers.find(p => p.id === playerId)!;
-    const newStreak = !state.streak || updatedPlayer.streakCount > state.streak.count
-      ? { playerId, count: updatedPlayer.streakCount }
-      : state.streak;
-
-    return {
-      players: updatedPlayers,
-      streak: newStreak,
-    };
-  }),
-
-  getRandomQuestion: (mode) => {
+  triggerChaosEvent: (event) => {
     const state = get();
-    const questions = [...state.customQuestions];
-    const unusedQuestions = questions.filter(q => !state.usedQuestionIds.has(q.id));
-    if (unusedQuestions.length === 0) return null;
-    
-    const randomIndex = Math.floor(Math.random() * unusedQuestions.length);
-    return unusedQuestions[randomIndex];
-  },
+    switch (event.type) {
+      case 'swap':
+        // Swap player positions
+        set((state) => {
+          const players = [...state.players];
+          const i = Math.floor(Math.random() * players.length);
+          const j = Math.floor(Math.random() * players.length);
+          [players[i], players[j]] = [players[j], players[i]];
+          return { players };
+        });
+        break;
+      case 'skip':
+        // Skip to next player
+        set((state) => ({
+          currentPlayerIndex: (state.currentPlayerIndex + 1) % state.players.length
+        }));
+        break;
+      case 'reverse':
+        // Reverse player order
+        set((state) => ({
+          players: [...state.players].reverse()
+        }));
+        break;
+      case 'double':
+        // Double points for next round
+        set((state) => ({
+          players: state.players.map(player => ({
+            ...player,
+            score: player.score * 2
+          }))
+        }));
+        break;
+      case 'timeout':
+        // Set a timer for the next round
+        set({ timer: 30 });
+        break;
+    }
+  }
 }));
