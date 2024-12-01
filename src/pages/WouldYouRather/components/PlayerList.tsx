@@ -1,75 +1,66 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useGameStore } from '../store/gameStore';
+import { motion } from 'framer-motion';
+import { Crown, Trophy } from 'lucide-react';
 import { Player } from '../types';
-import { X } from 'lucide-react';
 
-export const PlayerList: React.FC = () => {
-  const { players, currentPlayerIndex, removePlayer, gameStarted } = useGameStore();
+interface PlayerListProps {
+  players: Player[];
+  currentPlayerId: string;
+  onRemovePlayer?: (id: string) => void;
+}
 
-  const renderPlayerStats = (player: Player) => (
-    <div className="flex gap-2 text-sm text-white/80">
-      <span>Score: {player.score}</span>
-      <span>|</span>
-      <span>Truth: {player.truthCount}</span>
-      <span>|</span>
-      <span>Dare: {player.dareCount}</span>
-      <span>|</span>
-      <span>WYR: {player.wouldYouRatherCount}</span>
-    </div>
-  );
+export const PlayerList: React.FC<PlayerListProps> = ({
+  players,
+  currentPlayerId,
+  onRemovePlayer
+}) => {
+  // Sort players by score in descending order
+  const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
+  const leader = sortedPlayers[0];
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-xl font-bold text-white text-center">Players</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <AnimatePresence>
-          {players.map((player, index) => (
-            <motion.div
-              key={player.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className={`relative p-4 rounded-lg ${
-                index === currentPlayerIndex
-                  ? 'bg-purple-500'
-                  : 'bg-white/10'
-              }`}
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="font-semibold text-white">
-                    {player.name}
-                    {index === currentPlayerIndex && (
-                      <span className="ml-2 text-xs bg-white/20 px-2 py-1 rounded-full">
-                        Current
-                      </span>
-                    )}
-                  </h4>
-                  {renderPlayerStats(player)}
-                </div>
-
-                {!gameStarted && (
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => removePlayer(player.id)}
-                    className="text-white/60 hover:text-white/90 transition-colors"
-                  >
-                    <X size={16} />
-                  </motion.button>
-                )}
-              </div>
-
-              {index === currentPlayerIndex && (
-                <motion.div
-                  className="absolute -bottom-1 left-0 right-0 h-1 bg-white/30"
-                  layoutId="playerIndicator"
-                />
+    <div className="w-full max-w-md mx-auto">
+      <h2 className="text-xl font-bold mb-4">Players</h2>
+      <div className="space-y-2">
+        {sortedPlayers.map((player) => (
+          <motion.div
+            key={player.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`
+              flex items-center justify-between
+              p-3 rounded-lg shadow-sm
+              ${player.id === currentPlayerId ? 'bg-blue-500 text-white' : 'bg-white'}
+              ${player.id === leader.id ? 'ring-2 ring-yellow-400' : ''}
+            `}
+          >
+            <div className="flex items-center gap-3">
+              {player.id === leader.id && (
+                <Crown className="w-5 h-5 text-yellow-400" />
               )}
-            </motion.div>
-          ))}
-        </AnimatePresence>
+              <span className="font-medium">{player.name}</span>
+              {player.streak > 2 && (
+                <div className="flex items-center gap-1 text-sm bg-white/10 px-2 py-1 rounded">
+                  <Trophy className="w-4 h-4" />
+                  <span>{player.streak}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-4">
+              <span className="font-bold">{player.score}</span>
+              {onRemovePlayer && (
+                <button
+                  onClick={() => onRemovePlayer(player.id)}
+                  className="text-sm opacity-60 hover:opacity-100"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          </motion.div>
+        ))}
       </div>
     </div>
   );

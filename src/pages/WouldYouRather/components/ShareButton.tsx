@@ -1,47 +1,15 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { Share2 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { ShareButtonProps } from '../types';
 
-interface ShareButtonProps {
-  votes: Record<string, 'option1' | 'option2'>;
-}
-
-export const ShareButton: React.FC<ShareButtonProps> = ({ votes }) => {
-  const handleShare = async () => {
-    const option1Votes = Object.values(votes).filter(v => v === 'option1').length;
-    const option2Votes = Object.values(votes).filter(v => v === 'option2').length;
-    const total = option1Votes + option2Votes;
-
-    const text = `Would You Rather Results:\n` +
-      `Option 1: ${Math.round((option1Votes / total) * 100)}%\n` +
-      `Option 2: ${Math.round((option2Votes / total) * 100)}%\n` +
-      `Total Votes: ${total}`;
-
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: 'Would You Rather Results',
-          text: text,
-        });
-      } else {
-        await navigator.clipboard.writeText(text);
-        toast.success('Results copied to clipboard!');
-      }
-    } catch (error) {
-      console.error('Error sharing:', error);
-      toast.error('Failed to share results');
-    }
-  };
-
+export const ShareButton: React.FC<ShareButtonProps> = ({ onShare }) => {
   return (
-    <motion.button
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
-      onClick={handleShare}
-      className="p-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
+    <button
+      onClick={onShare}
+      className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
     >
-      <Share2 className="w-6 h-6" />
-    </motion.button>
+      <Share2 className="w-5 h-5" />
+      <span>Share</span>
+    </button>
   );
 };

@@ -1,153 +1,128 @@
-import create from 'zustand';
-import { GameState, GameMode, Question, Player } from '../types';
-import { v4 as uuidv4 } from 'uuid';
+import { create } from 'zustand';
+import { GameState, GameMode, Question, Player, Choice, Vote, Streak } from '../types';
 
 const initialState: GameState = {
-  mode: GameMode.NONE,
-  gameStarted: false,
+  mode: '',
   players: [],
-  currentPlayerIndex: 0,
   currentQuestion: null,
+  currentPlayerIndex: 0,
+  gameStarted: false,
+  chaosMode: false,
+  timer: 30,
   votes: [],
   showChaosMasterWheel: false,
   showAddQuestion: false,
-  usedQuestionIds: new Set(),
+  usedQuestionIds: new Set<string>(),
   customQuestions: [],
   streak: null,
+  chaosMaster: ''
 };
 
-export const useGameStore = create<GameState & {
+interface GameStore extends GameState {
   setMode: (mode: GameMode) => void;
-  startGame: () => void;
-  resetGame: () => void;
-  addPlayer: (name: string) => void;
-  removePlayer: (id: string) => void;
-  setCurrentQuestion: (question: Question | null) => void;
-  addVote: (playerId: string, choice: 'option1' | 'option2') => void;
-  clearVotes: () => void;
-  updateScore: (playerId: string, points: number) => void;
+  addPlayer: (name: string, state?: Partial<GameState>) => void;
+  removePlayer: (id: string, state?: Partial<GameState>) => void;
+  setCurrentQuestion: (question: Question) => void;
+  addPlayerChoice: (playerId: string, choice: Choice, state?: Partial<GameState>) => void;
+  addPlayerPoints: (playerId: string, points: number, state?: Partial<GameState>) => void;
   setShowChaosMasterWheel: (show: boolean) => void;
   setShowAddQuestion: (show: boolean) => void;
-  addCustomQuestion: (question: Question) => void;
-  addUsedQuestionId: (id: string) => void;
+  addCustomQuestion: (question: Question, state?: Partial<GameState>) => void;
+  removeCustomQuestion: (id: string, state?: Partial<GameState>) => void;
   setCurrentPlayerIndex: (index: number) => void;
-  updateStreak: (playerId: string, choice: 'option1' | 'option2') => void;
-  getRandomQuestion: (mode: GameMode) => Question | null;
-}>((set, get) => ({
+  addPlayerVote: (playerId: string, choice: string, state?: Partial<GameState>) => void;
+}
+
+export const useGameStore = create<GameStore>((set, get) => ({
   ...initialState,
+  
+  setMode: (mode: GameMode) => {
+    set({ mode });
+  },
 
-  setMode: (mode) => set({ mode }),
+  addPlayer: (name: string, state = {}) => {
+    set((currentState) => ({
+      ...currentState,
+      ...state,
+      players: [...currentState.players, { id: '', name, score: 0, choices: [], streakCount: 0, lastChoice: null }]
+    }));
+  },
 
-  startGame: () => set({ gameStarted: true }),
+  removePlayer: (id: string, state = {}) => {
+    set((currentState) => ({
+      ...currentState,
+      ...state,
+      players: currentState.players.filter((p) => p.id !== id)
+    }));
+  },
 
-  resetGame: () => set(initialState),
+  setCurrentQuestion: (question: Question) => {
+    set({ currentQuestion: question });
+  },
 
-  addPlayer: (name) => set((state) => ({
-    players: [
-      ...state.players,
-      {
-        id: uuidv4(),
-        name,
-        score: 0,
-        choices: [],
-        streakCount: 0,
-        lastChoice: null,
-      },
-    ],
-  })),
-
-  removePlayer: (id) => set((state) => ({
-    players: state.players.filter((p) => p.id !== id),
-  })),
-
-  setCurrentQuestion: (question) => set({ currentQuestion: question }),
-
-  addVote: (playerId, choice) => set((state) => {
-    const newVotes = [...state.votes, { playerId, choice }];
-    const player = state.players.find(p => p.id === playerId);
-    
-    if (player && state.currentQuestion) {
-      const updatedPlayers = state.players.map(p => {
+  addPlayerChoice: (playerId: string, choice: Choice, state = {}) => {
+    set((currentState) => {
+      const updatedPlayers = currentState.players.map((p) => {
         if (p.id === playerId) {
-          const newStreakCount = p.lastChoice === choice ? p.streakCount + 1 : 1;
           return {
             ...p,
-            choices: [...p.choices, { questionId: state.currentQuestion!.id, choice }],
-            streakCount: newStreakCount,
-            lastChoice: choice,
+            choices: [...(p.choices || []), { questionId: currentState.currentQuestion!.id, choice }]
           };
         }
         return p;
       });
 
-      const updatedPlayer = updatedPlayers.find(p => p.id === playerId)!;
-      const newStreak = !state.streak || updatedPlayer.streakCount > state.streak.count
-        ? { playerId, count: updatedPlayer.streakCount }
-        : state.streak;
-
       return {
-        votes: newVotes,
-        players: updatedPlayers,
-        streak: newStreak,
+        ...currentState,
+        ...state,
+        players: updatedPlayers
       };
-    }
-
-    return { votes: newVotes };
-  }),
-
-  clearVotes: () => set({ votes: [] }),
-
-  updateScore: (playerId, points) => set((state) => ({
-    players: state.players.map((p) =>
-      p.id === playerId ? { ...p, score: p.score + points } : p
-    ),
-  })),
-
-  setShowChaosMasterWheel: (show) => set({ showChaosMasterWheel: show }),
-
-  setShowAddQuestion: (show) => set({ showAddQuestion: show }),
-
-  addCustomQuestion: (question) => set((state) => ({
-    customQuestions: [...state.customQuestions, { ...question, id: uuidv4() }],
-  })),
-
-  addUsedQuestionId: (id) => set((state) => ({
-    usedQuestionIds: new Set([...state.usedQuestionIds, id]),
-  })),
-
-  setCurrentPlayerIndex: (index) => set({ currentPlayerIndex: index }),
-
-  updateStreak: (playerId, choice) => set((state) => {
-    const updatedPlayers = state.players.map(p => {
-      if (p.id === playerId) {
-        const newStreakCount = p.lastChoice === choice ? p.streakCount + 1 : 1;
-        return {
-          ...p,
-          streakCount: newStreakCount,
-          lastChoice: choice,
-        };
-      }
-      return p;
     });
-
-    const updatedPlayer = updatedPlayers.find(p => p.id === playerId)!;
-    const newStreak = !state.streak || updatedPlayer.streakCount > state.streak.count
-      ? { playerId, count: updatedPlayer.streakCount }
-      : state.streak;
-
-    return {
-      players: updatedPlayers,
-      streak: newStreak,
-    };
-  }),
-
-  getRandomQuestion: (mode) => {
-    const state = get();
-    const questions = [...state.customQuestions];
-    const unusedQuestions = questions.filter(q => !state.usedQuestionIds.has(q.id));
-    if (unusedQuestions.length === 0) return null;
-    
-    const randomIndex = Math.floor(Math.random() * unusedQuestions.length);
-    return unusedQuestions[randomIndex];
   },
+
+  addPlayerPoints: (playerId: string, points: number, state = {}) => {
+    set((currentState) => ({
+      ...currentState,
+      ...state,
+      players: currentState.players.map((p) => 
+        p.id === playerId ? { ...p, score: (p.score || 0) + points } : p
+      )
+    }));
+  },
+
+  setShowChaosMasterWheel: (show: boolean) => {
+    set({ showChaosMasterWheel: show });
+  },
+
+  setShowAddQuestion: (show: boolean) => {
+    set({ showAddQuestion: show });
+  },
+
+  addCustomQuestion: (question: Question, state = {}) => {
+    set((currentState) => ({
+      ...currentState,
+      ...state,
+      customQuestions: [...(currentState.customQuestions || []), { ...question, id: '' }]
+    }));
+  },
+
+  removeCustomQuestion: (id: string, state = {}) => {
+    set((currentState) => ({
+      ...currentState,
+      ...state,
+      customQuestions: (currentState.customQuestions || []).filter(q => q.id !== id)
+    }));
+  },
+
+  setCurrentPlayerIndex: (index: number) => {
+    set({ currentPlayerIndex: index });
+  },
+
+  addPlayerVote: (playerId: string, choice: string, state = {}) => {
+    set((currentState) => ({
+      ...currentState,
+      ...state,
+      votes: [...(currentState.votes || []), { playerId, choice }]
+    }));
+  }
 }));

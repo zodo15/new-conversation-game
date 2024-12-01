@@ -1,31 +1,28 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
+import { Question, Vote, Player } from '../types';
 import { ChoiceCard } from './ChoiceCard';
 import { Timer } from './Timer';
 import { ShareButton } from './ShareButton';
 
-export const QuestionDisplay: React.FC = () => {
+interface QuestionDisplayProps {
+  question: Question;
+  onVote: (choice: 'option1' | 'option2') => void;
+  currentPlayer: Player;
+}
+
+export const QuestionDisplay: React.FC<QuestionDisplayProps> = ({ question, onVote, currentPlayer }) => {
   const {
-    currentQuestion,
-    currentPlayerIndex,
-    players,
-    votes,
-    mode,
+    votes = [],
     addVote,
     updateScore,
     updateStreak,
     setCurrentPlayerIndex,
-    setCurrentQuestion,
-    clearVotes,
-    addUsedQuestionId,
+    currentPlayerIndex,
+    players
   } = useGameStore();
 
-  if (!currentQuestion || !players[currentPlayerIndex]) {
-    return null;
-  }
-
-  const currentPlayer = players[currentPlayerIndex];
   const totalVotes = votes.length;
   const option1Votes = votes.filter(v => v.choice === 'option1').length;
   const option2Votes = votes.filter(v => v.choice === 'option2').length;
@@ -33,24 +30,13 @@ export const QuestionDisplay: React.FC = () => {
 
   const handleVote = (choice: 'option1' | 'option2') => {
     if (hasVoted) return;
-
-    // Add vote and update player stats
+    
     addVote(currentPlayer.id, choice);
     updateScore(currentPlayer.id, 1);
     updateStreak(currentPlayer.id, choice);
-
-    // Move to next player or reset round
-    const nextIndex = (currentPlayerIndex + 1) % players.length;
-    if (nextIndex === 0) {
-      // End of round, clear votes and get new question
-      clearVotes();
-      const newQuestion = getRandomQuestion(mode);
-      if (newQuestion) {
-        addUsedQuestionId(newQuestion.id);
-        setCurrentQuestion(newQuestion);
-      }
-    }
-    setCurrentPlayerIndex(nextIndex);
+    
+    const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    setCurrentPlayerIndex(nextPlayerIndex);
   };
 
   return (
@@ -74,8 +60,8 @@ export const QuestionDisplay: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <ChoiceCard
-          option={currentQuestion.option1}
-          consequence={currentQuestion.consequences?.option1}
+          option={question.option1}
+          consequence={question.consequences?.option1}
           votes={option1Votes}
           totalVotes={totalVotes}
           selected={votes.some(v => v.playerId === currentPlayer.id && v.choice === 'option1')}
@@ -83,8 +69,8 @@ export const QuestionDisplay: React.FC = () => {
           disabled={hasVoted}
         />
         <ChoiceCard
-          option={currentQuestion.option2}
-          consequence={currentQuestion.consequences?.option2}
+          option={question.option2}
+          consequence={question.consequences?.option2}
           votes={option2Votes}
           totalVotes={totalVotes}
           selected={votes.some(v => v.playerId === currentPlayer.id && v.choice === 'option2')}
@@ -93,15 +79,13 @@ export const QuestionDisplay: React.FC = () => {
         />
       </div>
 
-      {mode === 'friends' && (
-        <div className="flex justify-between items-center">
-          <Timer duration={30} onComplete={() => {}} />
-          <ShareButton 
-            question={currentQuestion}
-            playerChoice={votes.find(v => v.playerId === currentPlayer.id)?.choice}
-          />
-        </div>
-      )}
+      <div className="flex justify-between items-center">
+        <Timer duration={30} onComplete={() => {}} />
+        <ShareButton 
+          question={question}
+          playerChoice={votes.find(v => v.playerId === currentPlayer.id)?.choice}
+        />
+      </div>
     </div>
   );
 };

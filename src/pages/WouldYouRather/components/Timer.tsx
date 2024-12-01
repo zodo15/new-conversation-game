@@ -1,19 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Timer as TimerIcon, RotateCw } from 'lucide-react';
+import { TimerProps } from '../types';
 
 interface TimerProps {
   duration: number;
-  onDurationChange?: (duration: number) => void;
+  onComplete?: () => void;
 }
 
 const DURATION_OPTIONS = [5, 10, 15, 20, 25, 30];
 
-export const Timer: React.FC<TimerProps> = ({ duration, onDurationChange }) => {
+export const Timer: React.FC<TimerProps> = ({ duration, onComplete }) => {
   const [timeLeft, setTimeLeft] = useState(duration);
   const [isRunning, setIsRunning] = useState(true);
 
   useEffect(() => {
+    if (timeLeft <= 0) {
+      onComplete?.();
+      setIsRunning(false);
+      return;
+    }
+
     if (!isRunning) return;
 
     const timer = setInterval(() => {
@@ -28,7 +35,7 @@ export const Timer: React.FC<TimerProps> = ({ duration, onDurationChange }) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isRunning]);
+  }, [timeLeft, onComplete, isRunning]);
 
   const resetTimer = () => {
     setTimeLeft(duration);
@@ -36,13 +43,13 @@ export const Timer: React.FC<TimerProps> = ({ duration, onDurationChange }) => {
   };
 
   const handleDurationChange = () => {
-    if (!onDurationChange) return;
     const currentIndex = DURATION_OPTIONS.indexOf(duration);
     const nextIndex = (currentIndex + 1) % DURATION_OPTIONS.length;
-    onDurationChange(DURATION_OPTIONS[nextIndex]);
+    const newDuration = DURATION_OPTIONS[nextIndex];
+    setTimeLeft(newDuration);
   };
 
-  const progress = (timeLeft / duration) * 100;
+  const percentage = (timeLeft / duration) * 100;
 
   return (
     <motion.div
@@ -68,7 +75,7 @@ export const Timer: React.FC<TimerProps> = ({ duration, onDurationChange }) => {
             stroke="white"
             strokeWidth="4"
             strokeDasharray={`${2 * Math.PI * 20}`}
-            strokeDashoffset={`${((100 - progress) / 100) * (2 * Math.PI * 20)}`}
+            strokeDashoffset={`${((100 - percentage) / 100) * (2 * Math.PI * 20)}`}
             className="transition-all duration-1000 ease-linear"
           />
         </svg>
@@ -87,16 +94,14 @@ export const Timer: React.FC<TimerProps> = ({ duration, onDurationChange }) => {
           <RotateCw className="w-5 h-5" />
         </motion.button>
 
-        {onDurationChange && (
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={handleDurationChange}
-            className="text-sm font-medium hover:bg-white/10 px-2 py-1 rounded transition-colors"
-          >
-            {duration}s
-          </motion.button>
-        )}
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={handleDurationChange}
+          className="text-sm font-medium hover:bg-white/10 px-2 py-1 rounded transition-colors"
+        >
+          {duration}s
+        </motion.button>
       </div>
     </motion.div>
   );

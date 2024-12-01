@@ -4,82 +4,61 @@ import { ChoiceCardProps } from '../types';
 
 interface ChoiceCardProps {
   option: string;
+  votes: number;
+  totalVotes: number;
+  selected: boolean;
+  onSelect: () => void;
+  disabled: boolean;
   consequence?: string;
-  votes?: number;
-  totalVotes?: number;
-  selected?: boolean;
-  onClick?: () => void;
-  disabled?: boolean;
 }
 
 export const ChoiceCard: React.FC<ChoiceCardProps> = ({
   option,
-  consequence,
-  votes = 0,
-  totalVotes = 0,
-  selected = false,
-  onClick,
-  disabled = false,
+  votes,
+  totalVotes,
+  selected,
+  onSelect,
+  disabled,
+  consequence
 }) => {
   const percentage = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
 
   return (
-    <motion.div
-      whileHover={!disabled && !selected ? { scale: 1.02 } : {}}
-      whileTap={!disabled && !selected ? { scale: 0.98 } : {}}
+    <motion.button
+      whileHover={!disabled ? { scale: 1.02 } : {}}
+      whileTap={!disabled ? { scale: 0.98 } : {}}
+      onClick={onSelect}
+      disabled={disabled}
       className={`
-        relative w-full p-6 rounded-xl cursor-pointer
+        w-full p-6 rounded-xl shadow-lg
         ${selected 
-          ? 'bg-purple-600 text-white ring-2 ring-white' 
+          ? 'bg-blue-500 text-white' 
           : disabled 
-            ? 'bg-white/10 text-white/60 cursor-not-allowed'
-            : 'bg-white/10 hover:bg-white/20 text-white'
+            ? 'bg-gray-100 cursor-not-allowed'
+            : 'bg-white hover:bg-blue-50'
         }
+        transition-colors duration-200
       `}
-      onClick={!disabled ? onClick : undefined}
     >
-      {/* Main Content */}
-      <div className="relative z-10">
-        <h3 className="text-lg font-semibold mb-2">{option}</h3>
-        {consequence && (
-          <p className="text-sm opacity-75 mt-2">
-            Consequence: {consequence}
-          </p>
-        )}
-      </div>
+      <div className="text-lg font-medium mb-2">{option}</div>
+      
+      {consequence && (
+        <div className="text-sm opacity-75 mb-4">{consequence}</div>
+      )}
 
-      {/* Vote Stats */}
-      {totalVotes > 0 && (
-        <div className="mt-4 space-y-2">
-          <div className="flex justify-between text-sm">
-            <span>{votes} votes</span>
-            <span>{percentage}%</span>
-          </div>
-          <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${percentage}%` }}
-              transition={{ duration: 0.5 }}
-              className="h-full bg-purple-400"
+      {disabled && (
+        <div className="mt-4">
+          <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div
+              className="bg-blue-600 h-2.5 rounded-full transition-all duration-500"
+              style={{ width: `${percentage}%` }}
             />
+          </div>
+          <div className="text-sm mt-2">
+            {votes} votes ({percentage}%)
           </div>
         </div>
       )}
-
-      {/* Selection Indicator */}
-      {selected && (
-        <motion.div
-          layoutId="selection-indicator"
-          className="absolute inset-0 border-2 border-white rounded-xl"
-          initial={false}
-          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        />
-      )}
-
-      {/* Disabled Overlay */}
-      {disabled && !selected && (
-        <div className="absolute inset-0 bg-black/20 rounded-xl" />
-      )}
-    </motion.div>
+    </motion.button>
   );
 };

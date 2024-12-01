@@ -4,32 +4,25 @@ export interface Question {
   id: string;
   optionA: string;
   optionB: string;
-  mode: GameMode;
+  mode?: GameMode;
+  type?: string;
+  question?: string;
+  consequences?: {
+    option1?: string;
+    option2?: string;
+  };
+  votesA?: number;
+  votesB?: number;
 }
 
 export interface Choice {
-  questionId: string;
-  choice: 'optionA' | 'optionB';
-}
-
-export interface Player {
-  id: string;
-  name: string;
-  score: number;
-  choices: Choice[];
-}
-
-export interface GameState {
-  mode: GameMode;
-  players: string[];
-  currentQuestion: Question | null;
-  currentPlayerIndex: number;
-  gameStarted: boolean;
+  playerId: string;
+  choice: 'A' | 'B';
 }
 
 export interface Vote {
   playerId: string;
-  choice: 'optionA' | 'optionB';
+  vote: string;
 }
 
 export interface Streak {
@@ -37,33 +30,50 @@ export interface Streak {
   count: number;
 }
 
-export interface ChaosMasterProps {
-  onSpin: (action: string) => void;
-  onClose: () => void;
+export interface Player {
+  id: string;
+  name: string;
+  points: number;
+  truthCount?: number;
+  dareCount?: number;
+  wouldYouRatherCount?: number;
+  choices?: Choice[];
 }
 
-export interface QuestionDisplayProps {
-  question: Question;
-  currentPlayer: Player;
-  onChoice: (choice: 'optionA' | 'optionB') => void;
-  votes: Vote[];
-}
-
-export interface ChoiceCardProps {
-  option: string;
-  consequence?: string;
-  votes?: number;
-  totalVotes?: number;
-  selected?: boolean;
-  onClick?: () => void;
-  disabled?: boolean;
+export interface GameState {
+  mode: GameMode | '';
+  players: string[];
+  currentQuestion: Question | null;
+  currentPlayerIndex: number;
+  gameStarted: boolean;
+  chaosMode?: boolean;
+  timer?: number;
+  votes?: Vote[];
+  showChaosMasterWheel?: boolean;
+  showAddQuestion?: boolean;
+  usedQuestionIds?: Set<string>;
+  customQuestions?: Question[];
+  streak?: Streak | null;
+  chaosMaster?: string;
 }
 
 export interface ShareButtonProps {
-  votes: Vote[];
+  onShare: () => void;
 }
 
 export interface TimerProps {
   duration: number;
-  onComplete: () => void;
+  onComplete?: () => void;
+}
+
+export interface ChaosMasterProps {
+  onClose: () => void;
+  onComplete?: (action: string) => void;
+}
+
+export interface ChoiceCardProps {
+  choice: string;
+  onClick: () => void;
+  selected?: boolean;
+  disabled?: boolean;
 }
