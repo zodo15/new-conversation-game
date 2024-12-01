@@ -1,91 +1,72 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useGameStore } from '../store/gameStore';
-import { Question, Vote, Player } from '../types';
 import { ChoiceCard } from './ChoiceCard';
-import { Timer } from './Timer';
+import { Question, Vote, Player } from '../types';
 import { ShareButton } from './ShareButton';
 
 interface QuestionDisplayProps {
   question: Question;
-  onVote: (choice: 'option1' | 'option2') => void;
-  currentPlayer: Player;
+  votes: Vote[];
+  players: Player[];
+  onVote: (choice: 'A' | 'B') => void;
+  currentPlayerId?: string;
 }
 
-export const QuestionDisplay: React.FC<QuestionDisplayProps> = ({ question, onVote, currentPlayer }) => {
-  const {
-    votes = [],
-    addVote,
-    updateScore,
-    updateStreak,
-    setCurrentPlayerIndex,
-    currentPlayerIndex,
-    players
-  } = useGameStore();
-
+export const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
+  question,
+  votes,
+  players,
+  onVote,
+  currentPlayerId
+}) => {
   const totalVotes = votes.length;
-  const option1Votes = votes.filter(v => v.choice === 'option1').length;
-  const option2Votes = votes.filter(v => v.choice === 'option2').length;
-  const hasVoted = votes.some(v => v.playerId === currentPlayer.id);
+  const optionAVotes = votes.filter(v => v.vote === 'A').length;
+  const optionBVotes = votes.filter(v => v.vote === 'B').length;
+  const hasVoted = currentPlayerId ? votes.some(v => v.playerId === currentPlayerId) : false;
 
-  const handleVote = (choice: 'option1' | 'option2') => {
-    if (hasVoted) return;
-    
-    addVote(currentPlayer.id, choice);
-    updateScore(currentPlayer.id, 1);
-    updateStreak(currentPlayer.id, choice);
-    
-    const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
-    setCurrentPlayerIndex(nextPlayerIndex);
-  };
+  const shareText = `Would you rather...
+${question.optionA} 
+OR
+${question.optionB}
+${totalVotes > 0 ? `\nResults: ${optionAVotes} vs ${optionBVotes}` : ''}`;
 
   return (
-    <div className="space-y-8">
-      <div className="text-center">
-        <motion.h2
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="text-2xl font-bold text-white mb-2"
-        >
-          {currentPlayer.name}'s Turn
-        </motion.h2>
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="text-white/60"
-        >
-          Choose wisely...
-        </motion.div>
-      </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="space-y-6"
+    >
+      <h2 className="text-3xl font-bold text-center text-white mb-8">
+        Would You Rather...
+      </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ChoiceCard
-          option={question.option1}
-          consequence={question.consequences?.option1}
-          votes={option1Votes}
-          totalVotes={totalVotes}
-          selected={votes.some(v => v.playerId === currentPlayer.id && v.choice === 'option1')}
-          onClick={() => handleVote('option1')}
+          choice="A"
+          text={question.optionA}
+          onClick={() => onVote('A')}
           disabled={hasVoted}
+          selected={hasVoted && votes.some(v => v.playerId === currentPlayerId && v.vote === 'A')}
+          consequences={question.consequences?.A}
+          votes={optionAVotes}
+          totalVotes={totalVotes}
         />
         <ChoiceCard
-          option={question.option2}
-          consequence={question.consequences?.option2}
-          votes={option2Votes}
-          totalVotes={totalVotes}
-          selected={votes.some(v => v.playerId === currentPlayer.id && v.choice === 'option2')}
-          onClick={() => handleVote('option2')}
+          choice="B"
+          text={question.optionB}
+          onClick={() => onVote('B')}
           disabled={hasVoted}
+          selected={hasVoted && votes.some(v => v.playerId === currentPlayerId && v.vote === 'B')}
+          consequences={question.consequences?.B}
+          votes={optionBVotes}
+          totalVotes={totalVotes}
         />
       </div>
 
-      <div className="flex justify-between items-center">
-        <Timer duration={30} onComplete={() => {}} />
-        <ShareButton 
-          question={question}
-          playerChoice={votes.find(v => v.playerId === currentPlayer.id)?.choice}
-        />
+      <div className="flex justify-center">
+        <ShareButton text={shareText} />
       </div>
-    </div>
+    </motion.div>
   );
 };

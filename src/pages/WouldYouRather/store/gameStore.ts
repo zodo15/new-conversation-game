@@ -15,6 +15,8 @@ interface GameStore extends GameState {
   startGame: () => void;
   toggleChaosMode: () => void;
   setTimer: (duration: number) => void;
+  addCustomQuestion: (question: Question) => void;
+  removeCustomQuestion: (id: string) => void;
 }
 
 const initialState: GameState = {
@@ -26,6 +28,8 @@ const initialState: GameState = {
   gameStarted: false,
   chaosMode: false,
   timer: 30,
+  usedQuestionIds: new Set<string>(),
+  customQuestions: [],
 };
 
 export const useGameStore = create<GameStore>((set) => ({
@@ -102,5 +106,15 @@ export const useGameStore = create<GameStore>((set) => ({
   setTimer: (duration: number) =>
     set(() => ({
       timer: duration,
+    })),
+
+  addCustomQuestion: (question: Question) =>
+    set((state) => ({
+      customQuestions: [...state.customQuestions, question],
+    })),
+
+  removeCustomQuestion: (id: string) =>
+    set((state) => ({
+      customQuestions: state.customQuestions.filter((q) => q.id !== id),
     })),
 }));

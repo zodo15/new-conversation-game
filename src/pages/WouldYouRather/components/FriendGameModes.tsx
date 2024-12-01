@@ -1,117 +1,84 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Plus, Minus } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { ArrowLeft, Users, Globe, Zap } from 'lucide-react';
+import { GameMode } from '../types';
 
 interface FriendGameModesProps {
+  onSelectMode: (mode: GameMode) => void;
   onBack: () => void;
-  onStartOfflineGame: (players: string[]) => void;
 }
 
+interface Mode {
+  id: GameMode;
+  name: string;
+  description: string;
+  icon: React.ComponentType<React.ComponentProps<any>>;
+  color: string;
+}
+
+const modes: Mode[] = [
+  {
+    id: 'local' as GameMode,
+    name: 'Local Play',
+    description: 'Play with friends on the same device',
+    icon: Users,
+    color: 'from-green-500 to-green-600'
+  },
+  {
+    id: 'online' as GameMode,
+    name: 'Online Play',
+    description: 'Play with friends over the internet',
+    icon: Globe,
+    color: 'from-blue-500 to-blue-600'
+  },
+  {
+    id: 'party' as GameMode,
+    name: 'Party Mode',
+    description: 'Fast-paced party game with special rules',
+    icon: Zap,
+    color: 'from-purple-500 to-purple-600'
+  }
+];
+
 export const FriendGameModes: React.FC<FriendGameModesProps> = ({
-  onBack,
-  onStartOfflineGame,
+  onSelectMode,
+  onBack
 }) => {
-  const [players, setPlayers] = useState<string[]>(['', '']);
-
-  const addPlayer = () => {
-    if (players.length < 8) {
-      setPlayers([...players, '']);
-    } else {
-      toast.error('Maximum 8 players allowed!');
-    }
-  };
-
-  const removePlayer = (index: number) => {
-    if (players.length > 2) {
-      const newPlayers = players.filter((_, i) => i !== index);
-      setPlayers(newPlayers);
-    } else {
-      toast.error('Minimum 2 players required!');
-    }
-  };
-
-  const updatePlayer = (index: number, name: string) => {
-    const newPlayers = [...players];
-    newPlayers[index] = name;
-    setPlayers(newPlayers);
-  };
-
-  const handleStartGame = () => {
-    const filledPlayers = players.filter(name => name.trim() !== '');
-    if (filledPlayers.length < 2) {
-      toast.error('Please add at least 2 players!');
-      return;
-    }
-    
-    const uniquePlayers = new Set(filledPlayers);
-    if (uniquePlayers.size !== filledPlayers.length) {
-      toast.error('Player names must be unique!');
-      return;
-    }
-
-    onStartOfflineGame(filledPlayers);
-  };
-
   return (
     <div className="space-y-6">
       <motion.button
+        onClick={onBack}
+        className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={onBack}
-        className="mb-8 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white flex items-center gap-2 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-5 h-5" />
         Back
       </motion.button>
 
-      <div className="bg-white/10 rounded-xl p-6 space-y-6">
-        <h2 className="text-2xl font-bold text-white text-center">
-          Add Players
-        </h2>
-
-        <div className="space-y-4">
-          {players.map((player, index) => (
-            <div key={index} className="flex items-center gap-4">
-              <input
-                type="text"
-                value={player}
-                onChange={(e) => updatePlayer(index, e.target.value)}
-                placeholder={`Player ${index + 1}`}
-                className="flex-1 px-4 py-2 bg-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400"
-              />
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => removePlayer(index)}
-                className="p-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
-              >
-                <Minus className="w-4 h-4" />
-              </motion.button>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex justify-between">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={addPlayer}
-            className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white flex items-center gap-2 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Add Player
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleStartGame}
-            className="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg text-white font-semibold shadow-lg transition-colors"
-          >
-            Start Game
-          </motion.button>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {modes.map((mode) => {
+          const Icon = mode.icon;
+          return (
+            <motion.button
+              key={mode.id}
+              onClick={() => onSelectMode(mode.id)}
+              className={`p-6 rounded-xl bg-gradient-to-br ${mode.color} text-white shadow-lg hover:shadow-xl transition-shadow`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="flex flex-col items-center text-center gap-4">
+                <div className="p-3 bg-white/10 rounded-lg">
+                  <Icon className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold">{mode.name}</h3>
+                  <p className="text-sm text-white/80">{mode.description}</p>
+                </div>
+              </div>
+            </motion.button>
+          );
+        })}
       </div>
     </div>
   );

@@ -1,13 +1,14 @@
-export type GameMode = 'classic' | 'spicy' | 'friends' | 'chaos' | '';
+export type GameMode = 'classic' | 'spicy' | 'friends' | 'chaos' | 'local' | 'online' | 'party' | '';
 
 export interface Question {
   id: string;
   optionA: string;
   optionB: string;
   mode: GameMode;
+  type: 'normal' | 'custom' | 'spicy';
   consequences?: {
-    optionA: string;
-    optionB: string;
+    A?: string;
+    B?: string;
   };
 }
 
@@ -22,29 +23,19 @@ export interface Player {
   name: string;
   score: number;
   streak: number;
+  avatar?: string;
 }
 
 export interface GameState {
-  players: Player[];
-  currentQuestion: Question | null;
-  currentPlayerIndex: number;
-  votes: Vote[];
-  mode: GameMode;
   gameStarted: boolean;
-  chaosMode: boolean;
-  timer: number;
-}
-
-export interface TimerProps {
-  duration: number;
-  onComplete: () => void;
-  isPaused?: boolean;
-}
-
-export interface ShareButtonProps {
-  question: Question;
-  votes: Vote[];
+  currentQuestion: Question | null;
   players: Player[];
+  currentPlayerIndex: number;
+  mode: GameMode;
+  chaosMode: boolean;
+  chaosMaster?: string;
+  timer: number;
+  votes: Vote[];
 }
 
 export interface ChoiceCardProps {
@@ -54,25 +45,30 @@ export interface ChoiceCardProps {
   disabled?: boolean;
   selected?: boolean;
   consequences?: string;
+  votes?: number;
+  totalVotes?: number;
 }
 
-export interface PlayerInputProps {
-  onAddPlayer: (name: string) => void;
-  maxPlayers?: number;
-}
-
-export interface PlayerListProps {
-  players: Player[];
-  currentPlayerIndex: number;
-  onRemovePlayer?: (id: string) => void;
-}
-
-export interface GameModeProps {
-  onSelectMode: (mode: GameMode) => void;
-  selectedMode: GameMode;
+export interface TimerProps {
+  duration: number;
+  onComplete: () => void;
 }
 
 export interface ChaosMasterProps {
-  isActive: boolean;
-  onEvent: (event: string) => void;
+  isVisible: boolean;
+  onClose: () => void;
+  onComplete: (event: string) => void;
+}
+
+export interface ShareButtonProps {
+  text: string;
+  url?: string;
+}
+
+export interface GameModeData {
+  id: GameMode;
+  name: string;
+  description: string;
+  icon: React.ComponentType;
+  color: string;
 }

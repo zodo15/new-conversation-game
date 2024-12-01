@@ -1,72 +1,75 @@
-import create from 'zustand';
-import { Question, GameMode } from '../types';
+import { create } from 'zustand';
+import { Question } from '../types';
 
-interface QuestionsState {
+interface QuestionsStore {
   questions: Question[];
   addQuestion: (question: Question) => void;
-  getQuestionsByMode: (mode: GameMode) => Question[];
+  getQuestionsByMode: (mode: string) => Question[];
   removeQuestion: (id: string) => void;
-  editQuestion: (id: string, updatedQuestion: Partial<Question>) => void;
+  updateQuestion: (id: string, updatedQuestion: Question) => void;
 }
 
 const defaultQuestions: Question[] = [
   {
     id: '1',
-    option1: 'Have the ability to fly',
-    option2: 'Have the ability to read minds',
-    mode: GameMode.CLASSIC,
-    category: 'Superpowers',
+    optionA: 'Live in a world where everyone knows your thoughts',
+    optionB: 'Live in a world where you can read everyone else\'s thoughts',
+    mode: 'classic',
   },
   {
     id: '2',
-    option1: 'Live in a world without music',
-    option2: 'Live in a world without movies',
-    mode: GameMode.CLASSIC,
-    category: 'Lifestyle',
+    optionA: 'Have the ability to fly',
+    optionB: 'Have the ability to be invisible',
+    mode: 'classic',
   },
   {
     id: '3',
-    option1: 'Always speak your mind',
-    option2: 'Never speak again',
-    mode: GameMode.SPICY,
-    category: 'Social',
+    optionA: 'Tell your crush your true feelings',
+    optionB: 'Keep it a secret forever',
+    mode: 'spicy',
     consequences: {
-      option1: 'You might hurt people\'s feelings but they\'ll always know where they stand',
-      option2: 'You\'ll have to find new ways to communicate',
+      A: 'You must actually tell your crush how you feel',
+      B: 'You can never tell them, even if they ask',
     },
   },
   {
     id: '4',
-    option1: 'Fight 100 duck-sized horses',
-    option2: 'Fight 1 horse-sized duck',
-    mode: GameMode.EXTREME,
-    category: 'Combat',
+    optionA: 'Share an embarrassing story',
+    optionB: 'Do 20 push-ups',
+    mode: 'friends',
+  },
+  {
+    id: '5',
+    optionA: 'Switch bodies with your best friend for a day',
+    optionB: 'Switch minds with your worst enemy for an hour',
+    mode: 'chaos',
     consequences: {
-      option1: 'They\'ll attack in waves but are individually weak',
-      option2: 'One powerful opponent but predictable attacks',
+      A: 'You must act like your best friend for the next round',
+      B: 'You lose all your points',
     },
   },
 ];
 
-export const useQuestionsStore = create<QuestionsState>((set, get) => ({
+export const useQuestionsStore = create<QuestionsStore>((set, get) => ({
   questions: defaultQuestions,
 
-  addQuestion: (question) => set((state) => ({
-    questions: [...state.questions, question],
-  })),
+  addQuestion: (question: Question) =>
+    set((state) => ({
+      questions: [...state.questions, question],
+    })),
 
-  getQuestionsByMode: (mode) => {
-    const { questions } = get();
-    return questions.filter((q) => q.mode === mode);
-  },
+  getQuestionsByMode: (mode: string) =>
+    get().questions.filter((q) => q.mode === mode),
 
-  removeQuestion: (id) => set((state) => ({
-    questions: state.questions.filter((q) => q.id !== id),
-  })),
+  removeQuestion: (id: string) =>
+    set((state) => ({
+      questions: state.questions.filter((q) => q.id !== id),
+    })),
 
-  editQuestion: (id, updatedQuestion) => set((state) => ({
-    questions: state.questions.map((q) =>
-      q.id === id ? { ...q, ...updatedQuestion } : q
-    ),
-  })),
+  updateQuestion: (id: string, updatedQuestion: Question) =>
+    set((state) => ({
+      questions: state.questions.map((q) =>
+        q.id === id ? updatedQuestion : q
+      ),
+    })),
 }));

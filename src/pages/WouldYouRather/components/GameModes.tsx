@@ -7,16 +7,16 @@ import { useGameStore } from '../store/gameStore';
 import { GameMode } from '../types';
 
 interface GameModesProps {
-  onSelectMode: (mode: string) => void;
+  onSelectMode: (mode: GameMode) => void;
 }
 
-const GameModes = ({ onSelectMode }: GameModesProps) => {
+export const GameModes: React.FC<GameModesProps> = ({ onSelectMode }) => {
   const navigate = useNavigate();
   const { setMode, startGame } = useGameStore();
 
   const modes = [
     {
-      id: 'classic',
+      id: 'classic' as GameMode,
       name: 'Classic Mode',
       description: 'The original Would You Rather experience',
       icon: <Sparkles className="w-8 h-8 text-blue-400" />,
@@ -24,7 +24,7 @@ const GameModes = ({ onSelectMode }: GameModesProps) => {
       hoverGradient: 'from-blue-600 to-purple-700'
     },
     {
-      id: 'spicy',
+      id: 'spicy' as GameMode,
       name: 'Spicy Mode',
       description: 'More challenging and controversial choices',
       icon: <Flame className="w-8 h-8 text-orange-400" />,
@@ -32,7 +32,7 @@ const GameModes = ({ onSelectMode }: GameModesProps) => {
       hoverGradient: 'from-orange-600 to-red-700'
     },
     {
-      id: 'friend',
+      id: 'friend' as GameMode,
       name: 'Friend Mode',
       description: 'Play with friends and track turns',
       icon: <Users className="w-8 h-8 text-green-400" />,
@@ -40,7 +40,7 @@ const GameModes = ({ onSelectMode }: GameModesProps) => {
       hoverGradient: 'from-green-600 to-teal-700'
     },
     {
-      id: 'random',
+      id: 'random' as GameMode,
       name: 'Random Mix',
       description: 'Mix of all question types',
       icon: <Shuffle className="w-8 h-8 text-purple-400" />,
@@ -49,8 +49,8 @@ const GameModes = ({ onSelectMode }: GameModesProps) => {
     }
   ];
 
-  const handleModeSelect = (mode: string) => {
-    setMode(mode as GameMode);
+  const handleModeSelect = (mode: GameMode) => {
+    setMode(mode);
     startGame();
     navigate('game');
   };
@@ -100,5 +100,3 @@ const GameModes = ({ onSelectMode }: GameModesProps) => {
     </div>
   );
 };
-
-export default GameModes;

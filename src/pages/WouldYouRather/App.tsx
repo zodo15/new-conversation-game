@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Home, Shuffle, Info, Sparkles, Wifi, WifiOff, ArrowLeft, X, SkipForward, Zap, Plus } from 'lucide-react';
+import { 
+  Home, 
+  Shuffle, 
+  Info, 
+  Sparkles, 
+  Wifi, 
+  WifiOff, 
+  ArrowLeft, 
+  SkipForward, 
+  Zap, 
+  Plus, 
+  X 
+} from 'lucide-react';
 import { Toaster, toast } from 'react-hot-toast';
 import { Question } from './types';
 import { getQuestionsByMode } from './data/questions';

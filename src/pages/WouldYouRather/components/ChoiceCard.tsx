@@ -1,25 +1,27 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ChoiceCardProps } from '../types';
+import { AlertTriangle } from 'lucide-react';
 
 interface ChoiceCardProps {
-  option: string;
-  votes: number;
-  totalVotes: number;
-  selected: boolean;
-  onSelect: () => void;
-  disabled: boolean;
-  consequence?: string;
+  choice: 'A' | 'B';
+  text: string;
+  onClick: () => void;
+  disabled?: boolean;
+  selected?: boolean;
+  consequences?: string;
+  votes?: number;
+  totalVotes?: number;
 }
 
 export const ChoiceCard: React.FC<ChoiceCardProps> = ({
-  option,
-  votes,
-  totalVotes,
-  selected,
-  onSelect,
-  disabled,
-  consequence
+  choice,
+  text,
+  onClick,
+  disabled = false,
+  selected = false,
+  consequences,
+  votes = 0,
+  totalVotes = 0,
 }) => {
   const percentage = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
 
@@ -27,35 +29,46 @@ export const ChoiceCard: React.FC<ChoiceCardProps> = ({
     <motion.button
       whileHover={!disabled ? { scale: 1.02 } : {}}
       whileTap={!disabled ? { scale: 0.98 } : {}}
-      onClick={onSelect}
+      onClick={onClick}
       disabled={disabled}
       className={`
-        w-full p-6 rounded-xl shadow-lg
-        ${selected 
-          ? 'bg-blue-500 text-white' 
-          : disabled 
-            ? 'bg-gray-100 cursor-not-allowed'
-            : 'bg-white hover:bg-blue-50'
+        relative w-full p-6 rounded-xl shadow-lg
+        ${selected
+          ? 'bg-indigo-600 text-white'
+          : disabled
+            ? 'bg-gray-700/50 text-gray-300'
+            : 'bg-white/10 hover:bg-white/20 text-white'
         }
         transition-colors duration-200
+        flex flex-col gap-4
       `}
     >
-      <div className="text-lg font-medium mb-2">{option}</div>
+      <div className="text-sm font-semibold uppercase tracking-wider opacity-70">
+        Option {choice}
+      </div>
       
-      {consequence && (
-        <div className="text-sm opacity-75 mb-4">{consequence}</div>
+      <div className="text-xl font-medium">{text}</div>
+
+      {consequences && (
+        <div className="flex items-center gap-2 text-sm text-yellow-300">
+          <AlertTriangle className="w-4 h-4" />
+          <span>{consequences}</span>
+        </div>
       )}
 
-      {disabled && (
+      {disabled && votes !== undefined && totalVotes > 0 && (
         <div className="mt-4">
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
-            <div
-              className="bg-blue-600 h-2.5 rounded-full transition-all duration-500"
-              style={{ width: `${percentage}%` }}
-            />
+          <div className="flex justify-between text-sm mb-1">
+            <span>{votes} votes</span>
+            <span>{percentage}%</span>
           </div>
-          <div className="text-sm mt-2">
-            {votes} votes ({percentage}%)
+          <div className="w-full h-2 bg-black/20 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${percentage}%` }}
+              transition={{ duration: 0.5 }}
+              className="h-full bg-white/30 rounded-full"
+            />
           </div>
         </div>
       )}

@@ -1,67 +1,60 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Crown, Trophy } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import { Player } from '../types';
 
 interface PlayerListProps {
   players: Player[];
-  currentPlayerId: string;
+  currentPlayerIndex: number;
   onRemovePlayer?: (id: string) => void;
 }
 
 export const PlayerList: React.FC<PlayerListProps> = ({
   players,
-  currentPlayerId,
+  currentPlayerIndex,
   onRemovePlayer
 }) => {
-  // Sort players by score in descending order
-  const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
-  const leader = sortedPlayers[0];
-
   return (
-    <div className="w-full max-w-md mx-auto">
-      <h2 className="text-xl font-bold mb-4">Players</h2>
-      <div className="space-y-2">
-        {sortedPlayers.map((player) => (
-          <motion.div
-            key={player.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className={`
-              flex items-center justify-between
-              p-3 rounded-lg shadow-sm
-              ${player.id === currentPlayerId ? 'bg-blue-500 text-white' : 'bg-white'}
-              ${player.id === leader.id ? 'ring-2 ring-yellow-400' : ''}
-            `}
-          >
-            <div className="flex items-center gap-3">
-              {player.id === leader.id && (
-                <Crown className="w-5 h-5 text-yellow-400" />
-              )}
-              <span className="font-medium">{player.name}</span>
-              {player.streak > 2 && (
-                <div className="flex items-center gap-1 text-sm bg-white/10 px-2 py-1 rounded">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {players.map((player, index) => (
+        <motion.div
+          key={player.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.2, delay: index * 0.1 }}
+          className={`relative p-4 rounded-lg backdrop-blur-sm ${
+            index === currentPlayerIndex
+              ? 'bg-white/20 ring-2 ring-white'
+              : 'bg-white/10'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-semibold">{player.name}</span>
+              {player.score > 0 && (
+                <div className="flex items-center gap-1 text-yellow-400">
                   <Trophy className="w-4 h-4" />
-                  <span>{player.streak}</span>
+                  <span className="text-sm">{player.score}</span>
                 </div>
               )}
             </div>
-
-            <div className="flex items-center gap-4">
-              <span className="font-bold">{player.score}</span>
-              {onRemovePlayer && (
-                <button
-                  onClick={() => onRemovePlayer(player.id)}
-                  className="text-sm opacity-60 hover:opacity-100"
-                >
-                  ×
-                </button>
-              )}
+            {onRemovePlayer && (
+              <button
+                onClick={() => onRemovePlayer(player.id)}
+                className="text-white/60 hover:text-white/90 transition-colors"
+              >
+                ×
+              </button>
+            )}
+          </div>
+          {player.streak > 1 && (
+            <div className="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-full">
+              {player.streak}🔥
             </div>
-          </motion.div>
-        ))}
-      </div>
+          )}
+        </motion.div>
+      ))}
     </div>
   );
 };

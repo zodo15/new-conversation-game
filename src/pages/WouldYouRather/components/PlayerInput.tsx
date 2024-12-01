@@ -4,71 +4,52 @@ import { UserPlus } from 'lucide-react';
 
 interface PlayerInputProps {
   onAddPlayer: (name: string) => void;
-  disabled?: boolean;
   maxPlayers?: number;
   currentPlayerCount: number;
 }
 
 export const PlayerInput: React.FC<PlayerInputProps> = ({
   onAddPlayer,
-  disabled = false,
   maxPlayers = 8,
-  currentPlayerCount,
+  currentPlayerCount
 }) => {
   const [name, setName] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (name.trim() && !disabled && currentPlayerCount < maxPlayers) {
+    if (name.trim() && currentPlayerCount < maxPlayers) {
       onAddPlayer(name.trim());
       setName('');
     }
   };
 
-  const remainingSlots = maxPlayers - currentPlayerCount;
+  const canAddMore = currentPlayerCount < maxPlayers;
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-md">
-      <div className="relative">
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Enter player name"
-          disabled={disabled || remainingSlots <= 0}
-          className={`
-            w-full px-4 py-2 pr-12
-            bg-white/10 rounded-lg
-            text-white placeholder-white/50
-            focus:outline-none focus:ring-2 focus:ring-white/20
-            disabled:opacity-50 disabled:cursor-not-allowed
-          `}
-          maxLength={20}
-        />
-        
-        <motion.button
-          type="submit"
-          whileHover={!disabled && name.trim() ? { scale: 1.1 } : {}}
-          whileTap={!disabled && name.trim() ? { scale: 0.9 } : {}}
-          disabled={disabled || !name.trim() || remainingSlots <= 0}
-          className={`
-            absolute right-2 top-1/2 transform -translate-y-1/2
-            p-1 rounded-full
-            ${name.trim() && !disabled ? 'text-white' : 'text-white/30'}
-            disabled:cursor-not-allowed
-          `}
-        >
-          <UserPlus className="w-5 h-5" />
-        </motion.button>
-      </div>
-
-      <div className="mt-2 text-sm text-white/60">
-        {remainingSlots > 0 ? (
-          `${remainingSlots} player slot${remainingSlots !== 1 ? 's' : ''} remaining`
-        ) : (
-          'Maximum players reached'
-        )}
-      </div>
+    <form onSubmit={handleSubmit} className="flex gap-2">
+      <motion.input
+        type="text"
+        value={name}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+        placeholder="Enter player name..."
+        className="flex-1 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50"
+        disabled={!canAddMore}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.2 }}
+      />
+      <motion.button
+        type="submit"
+        className={`px-4 py-2 rounded-lg backdrop-blur-sm flex items-center gap-2 transition-colors ${
+          canAddMore ? 'bg-white/10 hover:bg-white/20' : 'bg-white/5 cursor-not-allowed'
+        }`}
+        disabled={!canAddMore || !name.trim()}
+        whileHover={canAddMore ? { scale: 1.05 } : {}}
+        whileTap={canAddMore ? { scale: 0.95 } : {}}
+      >
+        <UserPlus className="w-5 h-5" />
+        Add Player
+      </motion.button>
     </form>
   );
 };
