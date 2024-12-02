@@ -1,19 +1,26 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../store/gameStore';
 import { QuestionDisplay } from './QuestionDisplay';
+import { PlayerList } from './PlayerList';
+import { CategorySelector } from './CategorySelector';
 import { ChaosMasterWheel } from './ChaosMasterWheel';
 import { AddQuestionModal } from './AddQuestionModal';
 import { Timer } from './Timer';
-import { toast } from 'react-hot-toast';
-import { GameMode, Question } from '../types';
-import { defaultQuestions, spicyQuestions, chaosQuestions } from '../data/questions';
+import { ShareButton } from './ShareButton';
+import { toast, Toaster } from 'react-hot-toast';
+import { ArrowLeft, Plus, Dice, Sparkles, Shuffle } from 'lucide-react';
+import ChoiceCard from './ChoiceCard';
+import ChaosButton from './ChaosButton';
+import FloatingBackground from './FloatingBackground';
 
 interface GameProps {
-  onBack?: () => void;
+  mode: string;
+  onBack: () => void;
 }
 
-export const Game: React.FC<GameProps> = ({ onBack }) => {
+const Game: React.FC = () => {
   const navigate = useNavigate();
   const {
     mode,
@@ -24,127 +31,161 @@ export const Game: React.FC<GameProps> = ({ onBack }) => {
     votes,
     showChaosMasterWheel,
     showAddQuestion,
-    timer,
     setShowChaosMasterWheel,
     setShowAddQuestion,
     resetGame,
     setCurrentQuestion,
+    addUsedQuestionId,
     setCurrentPlayerIndex,
     addVote,
+    updateScore,
+    updateStreak,
     clearVotes,
-    triggerChaosEvent,
+    getRandomQuestion,
   } = useGameStore();
 
+  const [questions, setQuestions] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [showChaosWheel, setShowChaosWheel] = useState(false);
+
   useEffect(() => {
-    // Initialize with appropriate questions based on mode
-    const getQuestionsByMode = (mode: GameMode): Question[] => {
-      switch (mode) {
-        case GameMode.SPICY:
-          return spicyQuestions;
-        case GameMode.CHAOS:
-          return chaosQuestions;
-        default:
-          return defaultQuestions;
-      }
-    };
-
-    const questions = getQuestionsByMode(mode);
-    if (questions.length > 0) {
-      const randomIndex = Math.floor(Math.random() * questions.length);
-      setCurrentQuestion(questions[randomIndex]);
+    if (!mode || !gameStarted) {
+      navigate('/would-you-rather');
     }
-  }, [mode, setCurrentQuestion]);
+  }, [mode, gameStarted, navigate]);
 
-  const handleVote = (choice: 'A' | 'B') => {
+  useEffect(() => {
+    setQuestions(getQuestionsByMode(mode));
+  }, [mode]);
+
+  const handleVote = (choice: 'option1' | 'option2') => {
     if (!currentQuestion || !players[currentPlayerIndex]) return;
-    
-    addVote(players[currentPlayerIndex].id, choice);
-    
-    // Get next question
-    const questions = mode === GameMode.SPICY ? spicyQuestions : 
-                     mode === GameMode.CHAOS ? chaosQuestions : 
-                     defaultQuestions;
-                     
-    if (questions.length > 0) {
-      const randomIndex = Math.floor(Math.random() * questions.length);
-      setCurrentQuestion(questions[randomIndex]);
-    }
 
-    clearVotes();
+    const player = players[currentPlayerIndex];
+    addVote(player.id, choice);
+    updateScore(player.id, 1);
+    updateStreak(player.id, choice);
+
+    // Move to next player
+    const nextIndex = (currentPlayerIndex + 1) % players.length;
+    if (nextIndex === 0) {
+      // End of round
+      clearVotes();
+      const newQuestion = getRandomQuestion(mode);
+      if (newQuestion) {
+        setCurrentQuestion(newQuestion);
+        addUsedQuestionId(newQuestion.id);
+      }
+    }
+    setCurrentPlayerIndex(nextIndex);
   };
 
+  const handleChaosMasterSpin = (action: string) => {
+    toast.success(`Chaos Master says: ${action}!`);
+    setShowChaosMasterWheel(false);
+  };
+
+  const handleNext = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+    }
+  };
+
+  const currentQuestion = questions[currentQuestionIndex];
+
+  if (!mode || !gameStarted) return null;
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Game Header */}
-      <div className="flex justify-between items-center mb-8">
-        <button
-          onClick={onBack}
-          className="flex items-center text-purple-300 hover:text-white transition-colors"
+    <div className="relative min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-indigo-900 p-4">
+      <FloatingBackground />
+      
+      <div className="absolute top-4 left-4 z-10">
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => {
+            resetGame();
+            navigate('/would-you-rather');
+          }}
+          className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-lg text-white backdrop-blur-sm"
         >
-          ← Back
-        </button>
-        <h2 className="text-2xl font-bold text-white">
-          {mode} Mode
-        </h2>
+          <ArrowLeft size={20} />
+          Back to Modes
+        </motion.button>
       </div>
 
-      {/* Timer */}
-      {timer > 0 && (
-        <div className="mb-6">
-          <Timer duration={timer} />
-        </div>
-      )}
+      <div className="absolute top-4 right-4 z-10 flex gap-4">
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setShowChaosMasterWheel(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-lg text-white backdrop-blur-sm"
+        >
+          <Sparkles size={20} />
+          Chaos Wheel
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setShowAddQuestion(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-lg text-white backdrop-blur-sm"
+        >
+          <Plus size={20} />
+          Add Question
+        </motion.button>
+      </div>
 
-      {/* Current Player */}
-      {players[currentPlayerIndex] && (
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-3 bg-purple-700/50 px-6 py-2 rounded-full">
-            <img
-              src={players[currentPlayerIndex].avatar}
-              alt={players[currentPlayerIndex].name}
-              className="w-8 h-8 rounded-full"
-            />
-            <span className="text-xl font-medium text-white">
-              {players[currentPlayerIndex].name}'s Turn
-            </span>
-            {players[currentPlayerIndex].streak > 1 && (
-              <span className="text-yellow-400">
-                🔥 {players[currentPlayerIndex].streak}
-              </span>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Question Display */}
-      {currentQuestion && (
-        <QuestionDisplay
-          question={currentQuestion}
-          votes={votes}
-          players={players}
-          onVote={handleVote}
-          currentPlayerId={players[currentPlayerIndex]?.id}
-        />
-      )}
-
-      {/* Chaos Master Wheel */}
       {showChaosMasterWheel && (
-        <ChaosMasterWheel
-          isVisible={showChaosMasterWheel}
-          onClose={() => setShowChaosMasterWheel(false)}
-          onComplete={triggerChaosEvent}
-        />
+        <ChaosMasterWheel onClose={() => setShowChaosMasterWheel(false)} onSpin={handleChaosMasterSpin} />
       )}
 
-      {/* Add Question Modal */}
       {showAddQuestion && (
         <AddQuestionModal
           onClose={() => setShowAddQuestion(false)}
-          onSubmit={(question: Question) => {
+          onAdd={(question) => {
+            // Handle adding question
             setShowAddQuestion(false);
+            toast.success('Question added successfully!');
           }}
         />
       )}
+
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen gap-8 px-4">
+        <div className="w-full max-w-4xl">
+          {currentQuestion && (
+            <div className="space-y-8">
+              <h2 className="text-3xl font-bold text-center text-white mb-8">
+                Would You Rather...
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <ChoiceCard
+                  text={currentQuestion.optionA}
+                  onClick={handleVote.bind(null, 'option1')}
+                  isOptionA={true}
+                />
+                <ChoiceCard
+                  text={currentQuestion.optionB}
+                  onClick={handleVote.bind(null, 'option2')}
+                  isOptionA={false}
+                />
+              </div>
+              <div className="flex justify-center mt-8">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={handleNext}
+                  className="flex items-center gap-2 px-6 py-3 bg-white/10 rounded-lg text-white backdrop-blur-sm"
+                >
+                  <Shuffle size={20} />
+                  Skip Question
+                </motion.button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
+
+export default Game;

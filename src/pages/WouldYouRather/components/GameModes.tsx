@@ -1,22 +1,22 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Users, Shuffle, Flame } from 'lucide-react';
+import { Sparkles, Users, Zap, Flame } from 'lucide-react';
 import FloatingBackground from './FloatingBackground';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../store/gameStore';
 import { GameMode } from '../types';
 
 interface GameModesProps {
-  onSelectMode: (mode: string) => void;
+  onSelectMode: (mode: GameMode) => void;
 }
 
 const GameModes = ({ onSelectMode }: GameModesProps) => {
   const navigate = useNavigate();
-  const { setMode, startGame } = useGameStore();
+  const { setGameMode, startGame } = useGameStore();
 
   const modes = [
     {
-      id: 'classic',
+      id: GameMode.CLASSIC,
       name: 'Classic Mode',
       description: 'The original Would You Rather experience',
       icon: <Sparkles className="w-8 h-8 text-blue-400" />,
@@ -24,7 +24,7 @@ const GameModes = ({ onSelectMode }: GameModesProps) => {
       hoverGradient: 'from-blue-600 to-purple-700'
     },
     {
-      id: 'spicy',
+      id: GameMode.SPICY,
       name: 'Spicy Mode',
       description: 'More challenging and controversial choices',
       icon: <Flame className="w-8 h-8 text-orange-400" />,
@@ -32,7 +32,7 @@ const GameModes = ({ onSelectMode }: GameModesProps) => {
       hoverGradient: 'from-orange-600 to-red-700'
     },
     {
-      id: 'friend',
+      id: GameMode.FRIEND,
       name: 'Friend Mode',
       description: 'Play with friends and track turns',
       icon: <Users className="w-8 h-8 text-green-400" />,
@@ -40,17 +40,17 @@ const GameModes = ({ onSelectMode }: GameModesProps) => {
       hoverGradient: 'from-green-600 to-teal-700'
     },
     {
-      id: 'random',
-      name: 'Random Mix',
-      description: 'Mix of all question types',
-      icon: <Shuffle className="w-8 h-8 text-purple-400" />,
+      id: GameMode.CHAOS,
+      name: 'Chaos Mode',
+      description: 'Random events and crazy consequences',
+      icon: <Zap className="w-8 h-8 text-purple-400" />,
       gradient: 'from-purple-500 to-pink-600',
       hoverGradient: 'from-purple-600 to-pink-700'
     }
   ];
 
-  const handleModeSelect = (mode: string) => {
-    setMode(mode as GameMode);
+  const handleModeSelect = (mode: GameMode) => {
+    setGameMode(mode);
     startGame();
     navigate('game');
   };
