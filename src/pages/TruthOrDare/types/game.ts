@@ -2,6 +2,8 @@ export type QuestionType = 'truth' | 'dare';
 export type QuestionCategory = 'spicy' | 'funny' | 'deep' | 'social' | 'physical' | 'creative';
 
 export interface Question {
+  option1: any;
+  option2: any;
   id: number;
   content: string;
   type: QuestionType;

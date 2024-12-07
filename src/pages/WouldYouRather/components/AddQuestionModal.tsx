@@ -5,33 +5,30 @@ import { toast } from 'react-hot-toast';
 
 interface AddQuestionModalProps {
   onClose: () => void;
-  onAdd: (question: { id: string; option1: string; option2: string; type: 'custom' }) => void;
+  onAdd: (question: { id: string; question: string; option1: string; option2: string; type: 'custom' }) => void;
 }
 
 export const AddQuestionModal: React.FC<AddQuestionModalProps> = ({
   onClose,
   onAdd,
 }) => {
+  const [question, setQuestion] = useState('');
   const [option1, setOption1] = useState('');
   const [option2, setOption2] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!option1.trim() || !option2.trim()) {
-      toast.error('Please fill in both options');
-      return;
-    }
-
-    if (option1.trim() === option2.trim()) {
-      toast.error('Options must be different');
+    if (!question.trim() || !option1.trim() || !option2.trim()) {
+      toast.error('Please fill in all fields');
       return;
     }
 
     onAdd({
       id: Date.now().toString(),
-      option1: option1.trim(),
-      option2: option2.trim(),
+      question: question,
+      option1,
+      option2,
       type: 'custom',
     });
   };
@@ -55,6 +52,19 @@ export const AddQuestionModal: React.FC<AddQuestionModalProps> = ({
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium mb-2 text-white/90">
+              Question
+            </label>
+            <input
+              type="text"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="Would you rather..."
+              className="w-full px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E4A1FF] text-white placeholder-white/50"
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium mb-2 text-white/90">
               Option 1

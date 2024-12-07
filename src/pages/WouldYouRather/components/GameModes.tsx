@@ -1,7 +1,8 @@
-import React from 'react';
+
 import { motion } from 'framer-motion';
-import { Sparkles, Users, Shuffle, Flame } from 'lucide-react';
-import FloatingBackground from './FloatingBackground';
+import { Sparkles, Users } from 'lucide-react';
+import { FaFireFlameCurved, FaShuffle } from "react-icons/fa6";
+import { FloatingBackground } from './FloatingBackground';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../store/gameStore';
 import { GameMode } from '../types';
@@ -10,7 +11,7 @@ interface GameModesProps {
   onSelectMode: (mode: string) => void;
 }
 
-const GameModes = ({ onSelectMode }: GameModesProps) => {
+const GameModes = ({ }: GameModesProps) => {
   const navigate = useNavigate();
   const { setMode, startGame } = useGameStore();
 
@@ -27,7 +28,7 @@ const GameModes = ({ onSelectMode }: GameModesProps) => {
       id: 'spicy',
       name: 'Spicy Mode',
       description: 'More challenging and controversial choices',
-      icon: <Flame className="w-8 h-8 text-orange-400" />,
+      icon: <FaFireFlameCurved className="w-8 h-8 text-orange-400" />,
       gradient: 'from-orange-500 to-red-600',
       hoverGradient: 'from-orange-600 to-red-700'
     },
@@ -43,7 +44,7 @@ const GameModes = ({ onSelectMode }: GameModesProps) => {
       id: 'random',
       name: 'Random Mix',
       description: 'Mix of all question types',
-      icon: <Shuffle className="w-8 h-8 text-purple-400" />,
+      icon: <FaShuffle className="w-8 h-8 text-purple-400" />,
       gradient: 'from-purple-500 to-pink-600',
       hoverGradient: 'from-purple-600 to-pink-700'
     }

@@ -1,22 +1,20 @@
 export type GameMode = 'classic' | 'spicy' | 'friend' | 'random';
 
 export interface Question {
-  id: string;
+  id: string | number;
+  question: string;
   optionA: string;
   optionB: string;
   mode: GameMode;
 }
 
-export interface Choice {
-  questionId: string;
-  choice: 'optionA' | 'optionB';
-}
-
 export interface Player {
+  score: number;
+  truthCount: number;
+  dareCount: number;
+  wouldYouRatherCount: number;
   id: string;
   name: string;
-  score: number;
-  choices: Choice[];
 }
 
 export interface GameState {
@@ -25,42 +23,23 @@ export interface GameState {
   currentQuestion: Question | null;
   currentPlayerIndex: number;
   gameStarted: boolean;
-}
-
-export interface Vote {
-  playerId: string;
-  choice: 'optionA' | 'optionB';
-}
-
-export interface Streak {
-  playerId: string;
-  count: number;
-}
-
-export interface ChaosMasterProps {
-  onSpin: (action: string) => void;
-  onClose: () => void;
+  showChaosMasterWheel: boolean;
+  showAddQuestion: boolean;
+  usedQuestionIds: Set<string>;
+  customQuestions: Question[];
 }
 
 export interface QuestionDisplayProps {
   question: Question;
   currentPlayer: Player;
   onChoice: (choice: 'optionA' | 'optionB') => void;
-  votes: Vote[];
 }
 
 export interface ChoiceCardProps {
   option: string;
   consequence?: string;
-  votes?: number;
-  totalVotes?: number;
-  selected?: boolean;
   onClick?: () => void;
   disabled?: boolean;
-}
-
-export interface ShareButtonProps {
-  votes: Vote[];
 }
 
 export interface TimerProps {

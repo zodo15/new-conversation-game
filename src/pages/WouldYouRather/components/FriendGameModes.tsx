@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Plus, Minus } from 'lucide-react';
+import { FaArrowLeft, FaPlus, FaMinus }  from "react-icons/fa6";
 import { toast } from 'react-hot-toast';
 
 interface FriendGameModesProps {
@@ -61,7 +61,7 @@ export const FriendGameModes: React.FC<FriendGameModesProps> = ({
         onClick={onBack}
         className="mb-8 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white flex items-center gap-2 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <FaArrowLeft className="w-4 h-4" />
         Back
       </motion.button>
 
@@ -86,7 +86,7 @@ export const FriendGameModes: React.FC<FriendGameModesProps> = ({
                 onClick={() => removePlayer(index)}
                 className="p-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
               >
-                <Minus className="w-4 h-4" />
+                <FaMinus className="w-4 h-4" />
               </motion.button>
             </div>
           ))}
@@ -99,7 +99,7 @@ export const FriendGameModes: React.FC<FriendGameModesProps> = ({
             onClick={addPlayer}
             className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white flex items-center gap-2 transition-colors"
           >
-            <Plus className="w-4 h-4" />
+            <FaPlus className="w-4 h-4" />
             Add Player
           </motion.button>
 

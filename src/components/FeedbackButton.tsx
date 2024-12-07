@@ -1,6 +1,6 @@
-import React from 'react';
+
 import { motion } from 'framer-motion';
-import { FaComments } from 'react-icons/fa';
+import { FaComments } from 'react-icons/fa6';
 
 export const FeedbackButton = () => {
   const handleClick = () => {

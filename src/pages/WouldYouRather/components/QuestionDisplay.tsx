@@ -3,21 +3,15 @@ import { motion } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
 import { ChoiceCard } from './ChoiceCard';
 import { Timer } from './Timer';
-import { ShareButton } from './ShareButton';
 
 export const QuestionDisplay: React.FC = () => {
   const {
     currentQuestion,
     currentPlayerIndex,
     players,
-    votes,
     mode,
-    addVote,
-    updateScore,
-    updateStreak,
     setCurrentPlayerIndex,
     setCurrentQuestion,
-    clearVotes,
     addUsedQuestionId,
   } = useGameStore();
 
@@ -26,24 +20,12 @@ export const QuestionDisplay: React.FC = () => {
   }
 
   const currentPlayer = players[currentPlayerIndex];
-  const totalVotes = votes.length;
-  const option1Votes = votes.filter(v => v.choice === 'option1').length;
-  const option2Votes = votes.filter(v => v.choice === 'option2').length;
-  const hasVoted = votes.some(v => v.playerId === currentPlayer.id);
 
-  const handleVote = (choice: 'option1' | 'option2') => {
-    if (hasVoted) return;
-
-    // Add vote and update player stats
-    addVote(currentPlayer.id, choice);
-    updateScore(currentPlayer.id, 1);
-    updateStreak(currentPlayer.id, choice);
-
+  const handleChoice = (p0: string) => {
     // Move to next player or reset round
     const nextIndex = (currentPlayerIndex + 1) % players.length;
     if (nextIndex === 0) {
-      // End of round, clear votes and get new question
-      clearVotes();
+      // End of round, get new question
       const newQuestion = getRandomQuestion(mode);
       if (newQuestion) {
         addUsedQuestionId(newQuestion.id);
@@ -74,34 +56,32 @@ export const QuestionDisplay: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <ChoiceCard
-          option={currentQuestion.option1}
-          consequence={currentQuestion.consequences?.option1}
-          votes={option1Votes}
-          totalVotes={totalVotes}
-          selected={votes.some(v => v.playerId === currentPlayer.id && v.choice === 'option1')}
-          onClick={() => handleVote('option1')}
-          disabled={hasVoted}
+          option={currentQuestion.optionA}
+          consequence={currentQuestion.consequences?.optionA}
+          onClick={() => handleChoice('optionA')}
         />
         <ChoiceCard
-          option={currentQuestion.option2}
-          consequence={currentQuestion.consequences?.option2}
-          votes={option2Votes}
-          totalVotes={totalVotes}
-          selected={votes.some(v => v.playerId === currentPlayer.id && v.choice === 'option2')}
-          onClick={() => handleVote('option2')}
-          disabled={hasVoted}
+          option={currentQuestion.optionB}
+          consequence={currentQuestion.consequences?.optionB}
+          onClick={() => handleChoice('optionB')}
         />
       </div>
 
       {mode === 'friends' && (
-        <div className="flex justify-between items-center">
-          <Timer duration={30} onComplete={() => {}} />
-          <ShareButton 
-            question={currentQuestion}
-            playerChoice={votes.find(v => v.playerId === currentPlayer.id)?.choice}
-          />
+        <div className="flex justify-center items-center">
+          <Timer duration={30} />
         </div>
       )}
     </div>
   );
 };
+
+function getRandomQuestion(_mode: string) {
+  const questions: Question[] = [
+    { id: '1', optionA: 'Fight a horse-sized duck', optionB: 'Fight a hundred duck-sized horses', mode: 'classic' },
+    { id: '2', optionA: 'Have the ability to fly', optionB: 'Be invisible', mode: 'spicy' },
+    { id: '3', optionA: 'Always be 10 minutes late', optionB: 'Always be 20 minutes early', mode: 'extreme' },
+  ];
+  const randomIndex = Math.floor(Math.random() * questions.length);
+  return questions[randomIndex];
+}

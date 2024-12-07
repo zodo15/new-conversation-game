@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { categories } from '../data/questions';
 import { QuestionCategory } from '../types/game';
 import { useGameStore } from '../store/gameStore';
 import useSound from 'use-sound';
-import { FaFire, FaLaugh, FaBrain, FaUsers, FaDumbbell, FaPalette } from 'react-icons/fa';
+import { FaFire, FaBrain, FaUsers, FaDumbbell, FaPalette } from 'react-icons/fa6';
+import { FaLaugh } from 'react-icons/fa';
 
 const categoryIcons: Record<QuestionCategory, React.ReactNode> = {
   'spicy': <FaFire className="text-3xl mb-2" />,
@@ -16,7 +16,7 @@ const categoryIcons: Record<QuestionCategory, React.ReactNode> = {
 };
 
 export const CategorySelect = () => {
-  const setCategory = useGameStore((state) => state.setCategory);
+  const setCategory = useGameStore((state: { setCategory: any; }) => state.setCategory);
   const [playHover] = useSound('/hover.mp3', { volume: 0.5 });
   const [playSelect] = useSound('/select.mp3', { volume: 0.5 });
 

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
-interface ChaosMasterProps {
+type ChaosMasterProps = {
   players: string[];
   onComplete: (selectedPlayer: string) => void;
   onClose: () => void;
-  onBack: () => void;
-}
+  onAction: () => void;
+};
 
 const colors = [
   'bg-gradient-to-r from-[#FF0000] to-[#FF3333]', // Bright Red
@@ -19,7 +19,11 @@ const colors = [
   'bg-gradient-to-r from-[#AA00FF] to-[#CC33FF]'  // Bright Purple
 ];
 
-export const ChaosMasterWheel: React.FC<ChaosMasterProps> = ({ players, onComplete, onClose }) => {
+const ChaosMasterWheel: React.FC<ChaosMasterProps> = ({
+  players,
+  onComplete,
+  
+}) => {
   const [spinning, setSpinning] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [rotationAngle, setRotationAngle] = useState(0);
@@ -123,3 +127,6 @@ export const ChaosMasterWheel: React.FC<ChaosMasterProps> = ({ players, onComple
     </motion.div>
   );
 };
+
+export { ChaosMasterWheel };
+export type { ChaosMasterProps };

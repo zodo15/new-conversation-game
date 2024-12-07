@@ -26,7 +26,7 @@ export const PlayerList: React.FC = () => {
         <AnimatePresence>
           {players.map((player, index) => (
             <motion.div
-              key={player.id}
+              key={player}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -39,7 +39,7 @@ export const PlayerList: React.FC = () => {
               <div className="flex justify-between items-start">
                 <div>
                   <h4 className="font-semibold text-white">
-                    {player.name}
+                    {player}
                     {index === currentPlayerIndex && (
                       <span className="ml-2 text-xs bg-white/20 px-2 py-1 rounded-full">
                         Current
@@ -53,7 +53,7 @@ export const PlayerList: React.FC = () => {
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => removePlayer(player.id)}
+                    onClick={() => removePlayer(player)}
                     className="text-white/60 hover:text-white/90 transition-colors"
                   >
                     <X size={16} />

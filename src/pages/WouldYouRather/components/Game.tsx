@@ -1,24 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../store/gameStore';
-import { QuestionDisplay } from './QuestionDisplay';
-import { PlayerList } from './PlayerList';
-import { CategorySelector } from './CategorySelector';
 import { ChaosMasterWheel } from './ChaosMasterWheel';
 import { AddQuestionModal } from './AddQuestionModal';
-import { Timer } from './Timer';
-import { ShareButton } from './ShareButton';
-import { toast, Toaster } from 'react-hot-toast';
-import { ArrowLeft, Plus, Dice, Sparkles, Shuffle } from 'lucide-react';
-import ChoiceCard from './ChoiceCard';
-import ChaosButton from './ChaosButton';
-import FloatingBackground from './FloatingBackground';
+import { toast } from 'react-hot-toast';
+import { FaArrowLeft, FaPlus, FaShuffle } from "react-icons/fa6";
+import { IoSparklesSharp } from "react-icons/io5";
+import { ChoiceCard } from './ChoiceCard';
+import { FloatingBackground } from './FloatingBackground';
 
-interface GameProps {
-  mode: string;
-  onBack: () => void;
-}
 
 const Game: React.FC = () => {
   const navigate = useNavigate();
@@ -28,25 +19,16 @@ const Game: React.FC = () => {
     players,
     currentPlayerIndex,
     currentQuestion,
-    votes,
     showChaosMasterWheel,
     showAddQuestion,
     setShowChaosMasterWheel,
     setShowAddQuestion,
-    resetGame,
     setCurrentQuestion,
-    addUsedQuestionId,
     setCurrentPlayerIndex,
-    addVote,
-    updateScore,
-    updateStreak,
-    clearVotes,
+    setMode,
+    addUsedQuestionId,
     getRandomQuestion,
   } = useGameStore();
-
-  const [questions, setQuestions] = useState([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [showChaosWheel, setShowChaosWheel] = useState(false);
 
   useEffect(() => {
     if (!mode || !gameStarted) {
@@ -55,135 +37,139 @@ const Game: React.FC = () => {
   }, [mode, gameStarted, navigate]);
 
   useEffect(() => {
-    setQuestions(getQuestionsByMode(mode));
-  }, [mode]);
+    const newQuestion = getRandomQuestion(mode);
+    setCurrentQuestion(newQuestion);
+  }, [mode, setCurrentQuestion, getRandomQuestion]);
 
-  const handleVote = (choice: 'option1' | 'option2') => {
+  const handleChoice = (_choice: 'optionA' | 'optionB') => {
     if (!currentQuestion || !players[currentPlayerIndex]) return;
 
-    const player = players[currentPlayerIndex];
-    addVote(player.id, choice);
-    updateScore(player.id, 1);
-    updateStreak(player.id, choice);
-
     // Move to next player
-    const nextIndex = (currentPlayerIndex + 1) % players.length;
-    if (nextIndex === 0) {
-      // End of round
-      clearVotes();
-      const newQuestion = getRandomQuestion(mode);
-      if (newQuestion) {
-        setCurrentQuestion(newQuestion);
-        addUsedQuestionId(newQuestion.id);
-      }
-    }
-    setCurrentPlayerIndex(nextIndex);
-  };
+    const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    setCurrentPlayerIndex(nextPlayerIndex);
 
-  const handleChaosMasterSpin = (action: string) => {
-    toast.success(`Chaos Master says: ${action}!`);
-    setShowChaosMasterWheel(false);
+    // Mark question as used
+    if (currentQuestion.id) {
+      addUsedQuestionId(currentQuestion.id);
+    }
+
+    // Get next question
+    const nextQuestion = getRandomQuestion(mode);
+    setCurrentQuestion(nextQuestion);
+
+    if (!nextQuestion) {
+      toast.error('No more questions available!');
+      return;
+    }
   };
 
   const handleNext = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
+    const nextQuestion = getRandomQuestion(mode);
+    setCurrentQuestion(nextQuestion);
+
+    if (!nextQuestion) {
+      toast.error('No more questions available!');
+      return;
     }
   };
 
-  const currentQuestion = questions[currentQuestionIndex];
-
-  if (!mode || !gameStarted) return null;
-
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-indigo-900 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-900 text-white p-8">
       <FloatingBackground />
       
-      <div className="absolute top-4 left-4 z-10">
+      <div className="absolute top-8 left-8 z-10">
         <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => {
-            resetGame();
+            setCurrentQuestion(null);
+            setCurrentPlayerIndex(0);
+            setMode('classic');
             navigate('/would-you-rather');
           }}
           className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-lg text-white backdrop-blur-sm"
         >
-          <ArrowLeft size={20} />
+          <FaArrowLeft size={20} />
           Back to Modes
         </motion.button>
       </div>
 
-      <div className="absolute top-4 right-4 z-10 flex gap-4">
+      <div className="absolute top-8 right-8 z-10 flex gap-4">
         <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setShowChaosMasterWheel(true)}
           className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-lg text-white backdrop-blur-sm"
         >
-          <Sparkles size={20} />
+          <IoSparklesSharp size={20} />
           Chaos Wheel
         </motion.button>
         <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setShowAddQuestion(true)}
           className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-lg text-white backdrop-blur-sm"
         >
-          <Plus size={20} />
+          <FaPlus size={20} />
           Add Question
         </motion.button>
       </div>
 
-      {showChaosMasterWheel && (
-        <ChaosMasterWheel onClose={() => setShowChaosMasterWheel(false)} onSpin={handleChaosMasterSpin} />
-      )}
-
-      {showAddQuestion && (
-        <AddQuestionModal
-          onClose={() => setShowAddQuestion(false)}
-          onAdd={(question) => {
-            // Handle adding question
-            setShowAddQuestion(false);
-            toast.success('Question added successfully!');
-          }}
-        />
-      )}
-
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen gap-8 px-4">
-        <div className="w-full max-w-4xl">
-          {currentQuestion && (
-            <div className="space-y-8">
-              <h2 className="text-3xl font-bold text-center text-white mb-8">
-                Would You Rather...
+      <div className="max-w-4xl mx-auto pt-24">
+        {currentQuestion ? (
+          <div className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold mb-2">
+                {players[currentPlayerIndex]}'s Turn
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ChoiceCard
-                  text={currentQuestion.optionA}
-                  onClick={handleVote.bind(null, 'option1')}
-                  isOptionA={true}
-                />
-                <ChoiceCard
-                  text={currentQuestion.optionB}
-                  onClick={handleVote.bind(null, 'option2')}
-                  isOptionA={false}
-                />
-              </div>
-              <div className="flex justify-center mt-8">
+              <p className="text-xl">{currentQuestion.question}</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <ChoiceCard
+                option={currentQuestion.optionA}
+                onClick={() => handleChoice('optionA')}
+              />
+              <ChoiceCard
+                option={currentQuestion.optionB}
+                onClick={() => handleChoice('optionB')}
+              />
+            </div>
+
+            <div className="flex justify-center">
+              <div className="flex gap-4">
                 <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={handleNext}
                   className="flex items-center gap-2 px-6 py-3 bg-white/10 rounded-lg text-white backdrop-blur-sm"
                 >
-                  <Shuffle size={20} />
+                  <FaShuffle size={20} />
                   Skip Question
                 </motion.button>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="text-center">
+            <h2 className="text-3xl font-bold">No more questions available!</h2>
+          </div>
+        )}
       </div>
+
+      {showChaosMasterWheel && (
+        <ChaosMasterWheel onClose={() => setShowChaosMasterWheel(false)} players={[]} onComplete={function (): void {
+          throw new Error('Function not implemented.');
+        } } onAction={function (): void {
+          throw new Error('Function not implemented.');
+        } } />
+      )}
+
+      {showAddQuestion && (
+        <AddQuestionModal onClose={() => setShowAddQuestion(false)} onAdd={function (): void {
+          throw new Error('Function not implemented.');
+        } } />
+      )}
     </div>
   );
 };

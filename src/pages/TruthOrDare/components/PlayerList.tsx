@@ -6,7 +6,7 @@ import { Player } from '../types';
 export const PlayerList: React.FC = () => {
   const { players, currentPlayerIndex, removePlayer } = useGameStore();
 
-  const getPlayerStatus = (player: Player, index: number) => {
+  const getPlayerStatus = (_player: Player, index: number) => {
     if (index === currentPlayerIndex) return 'Current';
     if (index === (currentPlayerIndex + 1) % players.length) return 'Next';
     return '';
@@ -16,7 +16,7 @@ export const PlayerList: React.FC = () => {
     <div className="space-y-4">
       <h2 className="text-2xl font-bold text-gray-800">Players</h2>
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {players.map((player, index) => (
+        {players.map((player: Player, index: number) => (
           <motion.div
             key={player.id}
             initial={{ opacity: 0, y: 20 }}

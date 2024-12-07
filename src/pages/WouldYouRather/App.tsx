@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Home, Shuffle, Info, Sparkles, Wifi, WifiOff, ArrowLeft, X, SkipForward, Zap, Plus } from 'lucide-react';
+import { FaShuffle, FaArrowLeft, FaXmark, FaForward, FaPlus } from "react-icons/fa6";
+import { FiZap } from "react-icons/fi";
 import { Toaster, toast } from 'react-hot-toast';
-import { Question } from './types';
+import { Question, GameMode } from './types';
 import { getQuestionsByMode } from './data/questions';
 import { FloatingBackground } from './components/FloatingBackground';
 import { Timer } from './components/Timer';
@@ -32,7 +33,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
     timer: 30,
   });
 
-  const [playerInput, setPlayerInput] = useState('');
+  const [playerInput, setPlayerInput] = useState(''); 
   const [showPlayerInput, setShowPlayerInput] = useState(false);
   const [showChaosWheel, setShowChaosWheel] = useState(false);
   const [timerDuration, setTimerDuration] = useState(30);
@@ -42,7 +43,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
     setTimerDuration(newDuration);
   };
 
-  const GAME_MODES = ['classic', 'spicy', 'friend', 'random'];
+  const GAME_MODES = ['classic', 'spicy', 'friend', 'random']
 
   const chaosActions = [
     "Stutter while answering",
@@ -70,7 +71,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
     });
   };
 
-  const handleChaosWheelComplete = (action: string) => {
+  const handleChaosWheelComplete = (selectedPlayer: string) => {
     const questions = getQuestionsByMode(gameState.mode);
     if (questions.length === 0) {
       toast.error('No questions available for this mode');
@@ -79,61 +80,15 @@ const App = ({ onBack }: { onBack: () => void }) => {
 
     setGameState(prev => ({
       ...prev,
+      chaosMaster: selectedPlayer,
       gameStarted: true,
       currentQuestion: questions[Math.floor(Math.random() * questions.length)],
       chaosMode: true
     }));
-    
+
     setShowChaosWheel(false);
   };
 
-  const handleChaosEffect = () => {
-    const effects = [
-      {
-        name: 'Dance Break!',
-        action: () => toast('Everyone must dance for 30 seconds! 💃🕺', { icon: '🎵', duration: 5000 })
-      },
-      {
-        name: 'Accent Challenge',
-        action: () => toast('Next player must answer in a funny accent! 🗣️', { icon: '🎭', duration: 5000 })
-      },
-      {
-        name: 'Truth Bomb',
-        action: () => toast('Current player must share an embarrassing story! 😅', { icon: '💣', duration: 5000 })
-      },
-      {
-        name: 'Switch Seats',
-        action: () => toast('Everyone must switch seats clockwise! 🔄', { icon: '💺', duration: 5000 })
-      },
-      {
-        name: 'Silent Mode',
-        action: () => toast('Next round must be played in complete silence! 🤫', { icon: '🤐', duration: 5000 })
-      },
-      {
-        name: 'Impersonation',
-        action: () => toast('Answer as your favorite celebrity! 🌟', { icon: '🎬', duration: 5000 })
-      },
-      {
-        name: 'Speed Round',
-        action: () => toast('Timer is now 5 seconds! ⚡', { icon: '⏰', duration: 5000 })
-      },
-      {
-        name: 'Reverse Psychology',
-        action: () => toast('Must argue for the option you DON\'T choose! 🔄', { icon: '🤔', duration: 5000 })
-      },
-      {
-        name: 'Group Choice',
-        action: () => toast('Everyone votes together on this one! 👥', { icon: '🗳️', duration: 5000 })
-      },
-      {
-        name: 'Dramatic Reading',
-        action: () => toast('Read the options in the most dramatic way possible! 🎭', { icon: '📖', duration: 5000 })
-      }
-    ];
-
-    const effect = effects[Math.floor(Math.random() * effects.length)];
-    effect.action();
-  };
 
   const startGame = () => {
     setShowChaosWheel(true);
@@ -188,17 +143,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
     }
   };
 
-  const handleOptionSelect = (option: 'A' | 'B') => {
-    if (!gameState.currentQuestion) return;
-    
-    if (option === 'A') {
-      handleChoice('optionA');
-    } else {
-      handleChoice('optionB');
-    }
-  };
-
-  const handleChoice = (choice: 'optionA' | 'optionB') => {
+  const handleChoice = (p0: string) => {
     setTimeout(() => {
       nextQuestion();
     }, 1500);
@@ -253,14 +198,15 @@ const App = ({ onBack }: { onBack: () => void }) => {
     });
   };
 
-  const handleAddQuestion = (question: { id: string; option1: string; option2: string; type: 'custom' }) => {
+  const handleAddQuestion = (question: { id: string; question: string; option1: string; option2: string; type: 'custom' }) => {
     setGameState(prev => ({
       ...prev,
       currentQuestion: {
         id: question.id,
+        question: question.question,
         optionA: question.option1,
         optionB: question.option2,
-        type: question.type
+        mode: prev.mode as GameMode
       }
     }));
     setShowAddQuestion(false);
@@ -277,6 +223,8 @@ const App = ({ onBack }: { onBack: () => void }) => {
         players: [],
         currentPlayerIndex: 0,
         mode: '',
+        chaosMode: false,
+        chaosMaster: undefined,
         timer: 30,
       });
       setShowPlayerInput(false);
@@ -299,7 +247,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
           onClick={handleBack}
           className="absolute top-4 left-4 p-2 hover:bg-white/20 rounded-full transition-colors bg-white/10"
         >
-          <ArrowLeft className="w-6 h-6 text-white" />
+          <FaArrowLeft className="w-6 h-6 text-white" />
         </button>
 
         {gameState.gameStarted && !showChaosWheel && gameState.currentQuestion ? (
@@ -324,7 +272,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
                     onClick={triggerChaosEffect}
                     className="px-4 py-2 bg-gradient-to-r from-[#E4A1FF] to-[#FF9CEE] rounded-lg hover:from-[#D880FF] hover:to-[#FF80E5] transition-all flex items-center gap-2 text-sm"
                   >
-                    <Zap className="w-4 h-4" />
+                    <FiZap className="w-4 h-4" />
                     Chaos!
                   </motion.button>
                 )}
@@ -368,7 +316,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
                 onClick={skipQuestion}
                 className="px-6 py-3 bg-white/10 backdrop-blur-sm rounded-lg hover:bg-white/20 transition-all flex items-center gap-2"
               >
-                <SkipForward className="w-5 h-5" />
+                <FaForward className="w-5 h-5" />
                 Skip
               </motion.button>
 
@@ -379,7 +327,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
                   onClick={startNewRound}
                   className="px-6 py-3 bg-white/10 backdrop-blur-sm rounded-lg hover:bg-white/20 transition-all flex items-center gap-2"
                 >
-                  <Shuffle className="w-5 h-5" />
+                  <FaShuffle className="w-5 h-5" />
                   Next Round
                 </motion.button>
               )}
@@ -390,7 +338,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
                 onClick={() => setShowAddQuestion(true)}
                 className="px-6 py-3 bg-white/10 backdrop-blur-sm rounded-lg hover:bg-white/20 transition-all flex items-center gap-2"
               >
-                <Plus className="w-5 h-5" />
+                <FaPlus className="w-5 h-5" />
                 Add Question
               </motion.button>
             </div>
@@ -437,7 +385,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
                         onClick={() => handleRemovePlayer(index)}
                         className="p-1 hover:bg-white/10 rounded-full transition-colors"
                       >
-                        <X className="w-5 h-5" />
+                        <FaXmark className="w-5 h-5" />
                       </button>
                     </div>
                   ))}
@@ -480,21 +428,9 @@ const App = ({ onBack }: { onBack: () => void }) => {
         {showChaosWheel && (
           <ChaosMasterWheel
             players={gameState.players}
-            onComplete={(selectedPlayer) => {
-              setGameState(prev => ({
-                ...prev,
-                chaosMaster: selectedPlayer,
-                gameStarted: true,
-                currentQuestion: getQuestionsByMode(prev.mode)[0]
-              }));
-              setShowChaosWheel(false);
-              toast.success(`${selectedPlayer} is now the Chaos Master!`, {
-                duration: 3000,
-                icon: '👑'
-              });
-            }}
+            onComplete={handleChaosWheelComplete}
             onClose={() => setShowChaosWheel(false)}
-            onBack={handleBack}
+            onAction={handleChaosAction}
           />
         )}
       </div>

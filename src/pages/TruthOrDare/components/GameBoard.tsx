@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
-import { Shuffle, RotateCcw, Home, Brain, Sparkles, Zap, Users, Dumbbell, Palette, Plus } from 'lucide-react';
+import { Shuffle, RotateCcw, House, Brain, Sparkles, Zap, Users, Dumbbell, Palette, Plus } from 'lucide-react';
 import { truthQuestions, dareQuestions } from '../data/questions';
 
 type QuestionType = 'truth' | 'dare';
@@ -109,7 +109,7 @@ const GameBoard: React.FC<Props> = ({ players, onEndGame }) => {
           onClick={onEndGame}
           className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors flex items-center gap-2"
         >
-          <Home className="w-4 h-4" />
+          <House className="w-4 h-4" />
           End Game
         </motion.button>
         

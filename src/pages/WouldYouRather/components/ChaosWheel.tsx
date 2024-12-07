@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { FaArrowLeft } from "react-icons/fa6";
 import toast from 'react-hot-toast';
 
 interface ChaosWheelProps {
@@ -67,7 +67,7 @@ export const ChaosWheel: React.FC<ChaosWheelProps> = ({ players, onComplete, onB
           onClick={onBack}
           className="absolute top-4 left-4 p-2 hover:bg-white/10 rounded-full transition-colors"
         >
-          <ArrowLeft className="w-6 h-6" />
+          <FaArrowLeft className="w-6 h-6" />
         </button>
 
         <h2 className="text-2xl font-bold text-center mb-6 bg-gradient-to-r from-[#E4A1FF] to-[#FF9CEE] text-transparent bg-clip-text">

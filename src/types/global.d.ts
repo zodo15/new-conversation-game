@@ -99,6 +99,14 @@ declare module 'react-hot-toast' {
     loading(message: string | React.ReactNode, options?: ToastOptions): string;
     dismiss(toastId?: string): void;
   };
+
+  export function success(arg0: string, p0: { icon: string; duration: number; }) {
+    throw new Error('Function not implemented.');
+  }
+
+  export function error(arg0: string) {
+    throw new Error('Function not implemented.');
+  }
 }
 
 declare module 'lucide-react' {
