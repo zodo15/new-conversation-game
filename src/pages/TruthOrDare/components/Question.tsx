@@ -11,7 +11,7 @@ interface QuestionProps {
   question: QuestionType;
 }
 
-export const Question: React.FC<QuestionProps> = ({ question }) => {
+const Question: React.FC<QuestionProps> = ({ question }) => {
   const [hasVoted, setHasVoted] = useState(false);
   const [showPlotTwist, setShowPlotTwist] = useState(false);
   const { addVote, timerMode } = useGameStore();
@@ -48,7 +48,7 @@ export const Question: React.FC<QuestionProps> = ({ question }) => {
         animate={shakeAnimation}
         className="flex flex-col md:flex-row gap-6"
       >
-        {[
+        {[ 
           { option: 1, text: question.option1 },
           { option: 2, text: question.option2 }
         ].map(({ option, text }) => (
@@ -72,10 +72,14 @@ export const Question: React.FC<QuestionProps> = ({ question }) => {
         <>
           <Reactions questionId={question.id} />
           {showPlotTwist && question.plotTwist && (
-            <PlotTwist twist={question.plotTwist} />
+            <PlotTwist twist={question.plotTwist} isVisible={false} onClose={function (): void {
+              throw new Error('Function not implemented.');
+            } } />
           )}
         </>
       )}
     </div>
   );
 };
+
+export default Question;

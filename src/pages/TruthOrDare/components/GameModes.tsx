@@ -1,10 +1,9 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
 import useSound from 'use-sound';
 import { FaDice, FaBolt, FaClock, FaSkull } from 'react-icons/fa';
 
-export const GameModes = () => {
+const GameModes = () => {
   const { setChaosMode, setTimer } = useGameStore();
   const [playSelect] = useSound('/select.mp3', { volume: 0.5 });
 
@@ -68,3 +67,5 @@ export const GameModes = () => {
     </motion.div>
   );
 };
+
+export default GameModes;

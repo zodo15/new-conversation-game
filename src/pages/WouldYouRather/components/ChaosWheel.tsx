@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { FaArrowLeft } from "react-icons/fa6";
 import toast from 'react-hot-toast';
 
 interface ChaosWheelProps {
@@ -10,14 +10,14 @@ interface ChaosWheelProps {
 }
 
 const COLORS = [
-  '#EC4899', // pink-500
-  '#3B82F6', // blue-500
-  '#10B981', // emerald-500
-  '#F97316', // orange-500
-  '#EF4444', // rose-500
-  '#6366F1', // indigo-500
-  '#84CC16', // lime-500
-  '#D946EF'  // fuchsia-500
+  '#FF4B4B',  // Red
+  '#4169E1',  // Blue
+  '#32CD32',  // Green
+  '#FFD700',  // Yellow
+  '#FF1493',  // Pink
+  '#9400D3',  // Purple
+  '#FF8C00',  // Orange
+  '#00CED1',  // Cyan
 ];
 
 export const ChaosWheel: React.FC<ChaosWheelProps> = ({ players, onComplete, onBack }) => {
@@ -48,7 +48,7 @@ export const ChaosWheel: React.FC<ChaosWheelProps> = ({ players, onComplete, onB
       
       setIsSpinning(false);
       toast.success(`${selectedPlayer} is now the Chaos Master!`, {
-        icon: '👑',
+        icon: '',
         duration: 4000
       });
       onComplete(selectedPlayer);
@@ -67,7 +67,7 @@ export const ChaosWheel: React.FC<ChaosWheelProps> = ({ players, onComplete, onB
           onClick={onBack}
           className="absolute top-4 left-4 p-2 hover:bg-white/10 rounded-full transition-colors"
         >
-          <ArrowLeft className="w-6 h-6" />
+          <FaArrowLeft className="w-6 h-6" />
         </button>
 
         <h2 className="text-2xl font-bold text-center mb-6 bg-gradient-to-r from-[#E4A1FF] to-[#FF9CEE] text-transparent bg-clip-text">
@@ -104,10 +104,11 @@ export const ChaosWheel: React.FC<ChaosWheelProps> = ({ players, onComplete, onB
                   'Z'
                 ].join(' ');
 
+                // Calculate star position
                 const midAngle = (startAngle + endAngle) / 2;
                 const midRad = (midAngle * Math.PI) / 180;
-                const textX = 50 + 30 * Math.cos(midRad);
-                const textY = 50 + 30 * Math.sin(midRad);
+                const starX = 50 + 35 * Math.cos(midRad);
+                const starY = 50 + 35 * Math.sin(midRad);
                 
                 return (
                   <g key={player}>
@@ -116,31 +117,23 @@ export const ChaosWheel: React.FC<ChaosWheelProps> = ({ players, onComplete, onB
                       fill={COLORS[index % COLORS.length]}
                       className="stroke-white/20 stroke-2 transition-all hover:brightness-110"
                     />
-                    <text
-                      x={textX}
-                      y={textY}
+                    {/* Add star */}
+                    <path
+                      d="M 0,-3 L 0.9,-0.9 L 3,0 L 0.9,0.9 L 0,3 L -0.9,0.9 L -3,0 L -0.9,-0.9 Z"
                       fill="white"
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      style={{
-                        transform: `rotate(${midAngle}deg)`,
-                        transformOrigin: `${textX}px ${textY}px`,
-                        fontSize: '8px',
-                        fontWeight: 'bold',
-                        textShadow: '0 1px 2px rgba(0,0,0,0.5)'
-                      }}
-                    >
-                      {player}
-                    </text>
+                      transform={`translate(${starX},${starY}) scale(2)`}
+                      className="filter drop-shadow-md"
+                    />
                   </g>
                 );
               })}
 
+              {/* Center circle */}
               <circle
                 cx="50"
                 cy="50"
                 r="8"
-                fill="#8B5CF6"
+                fill="#1A0527"
                 stroke="white"
                 strokeOpacity="0.3"
                 strokeWidth="2"

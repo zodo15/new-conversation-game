@@ -1,12 +1,21 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useGameStore } from '../store/gameStore';
-import { Player } from '../types';
-import { X } from 'lucide-react';
+import { FaXmark } from 'react-icons/fa6';
+import type { Player } from '../types';
 
-export const PlayerList: React.FC = () => {
-  const { players, currentPlayerIndex, removePlayer, gameStarted } = useGameStore();
+interface PlayerListProps {
+  players: Player[];
+  onRemove: (playerId: string) => void;
+  currentPlayerIndex?: number;
+  gameStarted?: boolean;
+}
 
+export const PlayerList: React.FC<PlayerListProps> = ({
+  players,
+  onRemove,
+  currentPlayerIndex = 0,
+  gameStarted = false
+}) => {
   const renderPlayerStats = (player: Player) => (
     <div className="flex gap-2 text-sm text-white/80">
       <span>Score: {player.score}</span>
@@ -26,7 +35,7 @@ export const PlayerList: React.FC = () => {
         <AnimatePresence>
           {players.map((player, index) => (
             <motion.div
-              key={player.id}
+              key={player}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -39,7 +48,7 @@ export const PlayerList: React.FC = () => {
               <div className="flex justify-between items-start">
                 <div>
                   <h4 className="font-semibold text-white">
-                    {player.name}
+                    {player}
                     {index === currentPlayerIndex && (
                       <span className="ml-2 text-xs bg-white/20 px-2 py-1 rounded-full">
                         Current
@@ -53,10 +62,10 @@ export const PlayerList: React.FC = () => {
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => removePlayer(player.id)}
+                    onClick={() => onRemove(player)}
                     className="text-white/60 hover:text-white/90 transition-colors"
                   >
-                    <X size={16} />
+                    <FaXmark size={16} />
                   </motion.button>
                 )}
               </div>

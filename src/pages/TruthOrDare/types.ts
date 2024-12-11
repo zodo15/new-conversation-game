@@ -50,6 +50,10 @@ export interface GameActions {
   resetGame: () => void;
   setShowAddQuestion: (show: boolean) => void;
   skipQuestion: (question: Question) => void;
+  selectCategory: (category: QuestionCategory) => void;
+  completeChallenge: () => void;
+  skipChallenge: () => void;
+  nextPlayer: () => void;
 }
 
 export interface TimerProps {

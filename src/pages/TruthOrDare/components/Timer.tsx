@@ -7,7 +7,7 @@ interface TimerProps {
   isActive: boolean;
 }
 
-export const Timer = ({ onTimeout, isActive }: TimerProps) => {
+const Timer = ({ onTimeout, isActive }: TimerProps) => {
   const [timeLeft, setTimeLeft] = useState(30);
   const [playTick] = useSound('/tick.mp3', { volume: 0.3 });
   const [playAlarm] = useSound('/alarm.mp3', { volume: 0.5 });
@@ -54,3 +54,5 @@ export const Timer = ({ onTimeout, isActive }: TimerProps) => {
     </motion.div>
   );
 };
+
+export default Timer;

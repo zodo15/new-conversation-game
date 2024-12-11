@@ -21,7 +21,8 @@ export const Game: React.FC = () => {
     setCurrentQuestion,
     addVote,
     getRandomQuestion,
-    triggerChaosEvent
+    triggerChaosEvent,
+    setShowChaosMasterWheel
   } = useGameStore();
 
   const currentPlayer = players[currentPlayerIndex];
@@ -80,7 +81,7 @@ export const Game: React.FC = () => {
               />
               <span className="text-xl font-medium">{currentPlayer.name}'s Turn</span>
               {currentPlayer.streak > 1 && (
-                <span className="text-yellow-400">🔥 {currentPlayer.streak}</span>
+                <span className="text-yellow-400"> {currentPlayer.streak}</span>
               )}
             </div>
           </div>
@@ -100,9 +101,9 @@ export const Game: React.FC = () => {
         {/* Chaos Master Wheel */}
         {showChaosMasterWheel && (
           <ChaosMasterWheel
-            isVisible={showChaosMasterWheel}
-            onClose={() => {}}
+            players={players.map(p => p.name)}
             onComplete={triggerChaosEvent}
+            onBack={() => setShowChaosMasterWheel(false)}
           />
         )}
 

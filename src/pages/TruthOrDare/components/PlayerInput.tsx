@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
-import { UserPlus, Play } from 'lucide-react';
+import { FaPlus, FaPlay } from "react-icons/fa6";
 
 interface Props {
   players: string[];
@@ -63,7 +63,7 @@ const PlayerInput: React.FC<Props> = ({ players, setPlayers, onStart }) => {
           whileTap={{ scale: 0.95 }}
           className="px-6 py-2 bg-purple-500 text-white font-semibold rounded-lg shadow-lg hover:bg-purple-600 transition-colors flex items-center gap-2"
         >
-          <UserPlus className="w-4 h-4" />
+          <FaPlus className="w-4 h-4" />
           Add Player
         </motion.button>
       </form>
@@ -103,7 +103,7 @@ const PlayerInput: React.FC<Props> = ({ players, setPlayers, onStart }) => {
             onClick={onStart}
             className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-purple-600 hover:to-pink-600 transition-colors flex items-center gap-2"
           >
-            <Play className="w-4 h-4" />
+            <FaPlay className="w-4 h-4" />
             Start Game
           </motion.button>
         </motion.div>

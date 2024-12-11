@@ -9,13 +9,20 @@ export function useGameQuestions() {
     setCustomQuestions(prev => [...prev, question]);
   }, []);
 
-  const getRandomQuestion = useCallback((type: QuestionType, category: QuestionCategory, currentPlayer: string): Question | null => {
+  const getRandomQuestion = useCallback((type: QuestionType, category: QuestionCategory): Question | null => {
     // Get default questions from gameContent
-    const defaultQuestions = (gameContent[type][category] || []).map(content => ({
+    const categoryQuestions = (type === 'truth' ? 
+      gameContent.truth[category as 'spicy' | 'funny' | 'deep'] :
+      gameContent.dare[category as 'physical' | 'social' | 'creative']) ?? [];
+
+    const defaultQuestions: Question[] = categoryQuestions.map((content: string) => ({
+      id: Math.random(),
       content,
       type,
       category,
-      isCustom: false
+      custom: false,
+      option1: null,
+      option2: null
     }));
 
     // Get custom questions for this type and category
@@ -31,13 +38,13 @@ export function useGameQuestions() {
       return null;
     }
 
-    const randomIndex = Math.floor(Math.random() * allQuestions.length);
-    return allQuestions[randomIndex];
+    // Return a random question
+    return allQuestions[Math.floor(Math.random() * allQuestions.length)];
   }, [customQuestions]);
 
   return {
-    customQuestions,
     addCustomQuestion,
-    getRandomQuestion
+    getRandomQuestion,
+    customQuestions
   };
 }

@@ -1,15 +1,14 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { FaLaugh, FaAngry, FaSurprise, FaSadTear, FaHeart } from 'react-icons/fa';
 import { useGameStore } from '../store/gameStore';
 
 interface ReactionsProps {
-  questionId: string;
+  questionId: string | number;
 }
 
-export const Reactions = ({ questionId }: ReactionsProps) => {
+const Reactions = ({ questionId }: ReactionsProps) => {
   const { addReaction, reactions } = useGameStore();
-  
+
   const reactionIcons = [
     { icon: <FaLaugh />, type: 'laugh' },
     { icon: <FaAngry />, type: 'angry' },
@@ -37,3 +36,5 @@ export const Reactions = ({ questionId }: ReactionsProps) => {
     </div>
   );
 };
+
+export default Reactions;

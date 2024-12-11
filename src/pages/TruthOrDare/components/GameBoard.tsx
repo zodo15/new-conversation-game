@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
-import { Shuffle, RotateCcw, Home, Brain, Sparkles, Zap, Users, Dumbbell, Palette, Plus } from 'lucide-react';
+import { RotateCcw, Brain, Sparkles, Zap, Users, Dumbbell, Palette, Plus } from 'lucide-react';
+import {  FaHouse, FaShuffle } from 'react-icons/fa6';
 import { truthQuestions, dareQuestions } from '../data/questions';
 
 type QuestionType = 'truth' | 'dare';
@@ -26,7 +27,7 @@ const GameBoard: React.FC<Props> = ({ players, onEndGame }) => {
     const questions = type === 'truth' ? truthQuestions : dareQuestions;
     const categoryQuestions = questions.filter(q => q.category === category);
     if (categoryQuestions.length === 0) {
-      toast.error('No questions available for this category', { id: 'no-questions' });
+      toast.error('No questions available for this category');
       return null;
     }
     const randomIndex = Math.floor(Math.random() * categoryQuestions.length);
@@ -63,13 +64,13 @@ const GameBoard: React.FC<Props> = ({ players, onEndGame }) => {
     const newQuestion = getRandomQuestion(selectedType, selectedCategory);
     if (newQuestion) {
       setCurrentQuestion(newQuestion);
-      toast('Question skipped!', { id: 'question-skipped' });
+      toast('Question skipped!');
     }
   };
 
   const handleAddQuestion = () => {
     if (!selectedType || !selectedCategory || !newQuestion.trim()) {
-      toast.error('Please fill in all fields', { id: 'missing-fields' });
+      toast.error('Please fill in all fields');
       return;
     }
 
@@ -79,7 +80,7 @@ const GameBoard: React.FC<Props> = ({ players, onEndGame }) => {
       category: selectedCategory
     });
 
-    toast.success('Question added successfully!', { id: 'question-added' });
+    toast.success('Question added successfully!');
     setNewQuestion('');
     setShowAddQuestion(false);
   };
@@ -109,7 +110,7 @@ const GameBoard: React.FC<Props> = ({ players, onEndGame }) => {
           onClick={onEndGame}
           className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors flex items-center gap-2"
         >
-          <Home className="w-4 h-4" />
+          <FaHouse className="w-4 h-4" />
           End Game
         </motion.button>
         
@@ -277,7 +278,7 @@ const GameBoard: React.FC<Props> = ({ players, onEndGame }) => {
               onClick={skipQuestion}
               className="px-6 py-3 bg-yellow-500/20 rounded-lg hover:bg-yellow-500/30 transition-colors flex items-center gap-2"
             >
-              <Shuffle className="w-4 h-4" />
+              <FaShuffle className="w-4 h-4" />
               Skip
             </motion.button>
 

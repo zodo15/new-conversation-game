@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Zap, Brain, Users, Dumbbell, Palette } from 'lucide-react';
 
 interface FloatingIconProps {
   icon: React.ElementType;

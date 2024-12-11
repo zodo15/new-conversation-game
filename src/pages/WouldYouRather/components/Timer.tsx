@@ -1,103 +1,103 @@
-import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Timer as TimerIcon, RotateCw } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { FaClock, FaPlay, FaPause } from "react-icons/fa6";
 
 interface TimerProps {
   duration: number;
-  onDurationChange?: (duration: number) => void;
+  onComplete?: () => void;
+  key?: number;
 }
 
-const DURATION_OPTIONS = [5, 10, 15, 20, 25, 30];
-
-export const Timer: React.FC<TimerProps> = ({ duration, onDurationChange }) => {
+export const Timer = ({ duration, onComplete, key }: TimerProps) => {
   const [timeLeft, setTimeLeft] = useState(duration);
-  const [isRunning, setIsRunning] = useState(true);
+  const [isRunning, setIsRunning] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (!isRunning) return;
+    if (isRunning && timeLeft > 0) {
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current!);
+            setIsRunning(false);
+            onComplete?.();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
 
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setIsRunning(false);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [isRunning, timeLeft, onComplete]);
 
-    return () => clearInterval(timer);
-  }, [isRunning]);
-
-  const resetTimer = () => {
-    setTimeLeft(duration);
-    setIsRunning(true);
-  };
-
-  const handleDurationChange = () => {
-    if (!onDurationChange) return;
-    const currentIndex = DURATION_OPTIONS.indexOf(duration);
-    const nextIndex = (currentIndex + 1) % DURATION_OPTIONS.length;
-    onDurationChange(DURATION_OPTIONS[nextIndex]);
+  const handleClick = () => {
+    if (timeLeft === 0) {
+      // Reset timer if it's finished
+      setTimeLeft(duration);
+      setIsRunning(true);
+    } else {
+      // Toggle timer if it's running or paused
+      setIsRunning(!isRunning);
+    }
   };
 
   const progress = (timeLeft / duration) * 100;
 
   return (
-    <motion.div
-      initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      className="relative flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg"
+    <motion.button 
+      className="absolute top-4 right-4 flex items-center gap-2 group"
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      key={key}
+      onClick={handleClick}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
     >
       <div className="relative w-12 h-12">
-        <svg className="w-full h-full transform -rotate-90">
+        <svg className="w-12 h-12 transform -rotate-90">
           <circle
             cx="24"
             cy="24"
             r="20"
-            fill="none"
-            stroke="rgba(255, 255, 255, 0.2)"
+            stroke="currentColor"
             strokeWidth="4"
+            fill="none"
+            className="text-gray-700"
           />
           <circle
             cx="24"
             cy="24"
             r="20"
-            fill="none"
-            stroke="white"
+            stroke="currentColor"
             strokeWidth="4"
+            fill="none"
             strokeDasharray={`${2 * Math.PI * 20}`}
-            strokeDashoffset={`${((100 - progress) / 100) * (2 * Math.PI * 20)}`}
-            className="transition-all duration-1000 ease-linear"
+            strokeDashoffset={`${2 * Math.PI * 20 * (1 - progress / 100)}`}
+            className={`
+              transition-all duration-1000 ease-linear
+              ${timeLeft <= 5 ? 'text-red-500' : 'text-purple-500'}
+            `}
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-lg font-bold">{timeLeft}s</span>
+          <span className="text-lg font-bold">{timeLeft}</span>
+        </div>
+
+        {/* Play/Pause overlay on hover */}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+          {isRunning ? (
+            <FaPause className="w-5 h-5" />
+          ) : (
+            <FaPlay className="w-5 h-5" />
+          )}
         </div>
       </div>
-
-      <div className="flex items-center gap-2">
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={resetTimer}
-          className="p-2 hover:bg-white/10 rounded-full transition-colors"
-        >
-          <RotateCw className="w-5 h-5" />
-        </motion.button>
-
-        {onDurationChange && (
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={handleDurationChange}
-            className="text-sm font-medium hover:bg-white/10 px-2 py-1 rounded transition-colors"
-          >
-            {duration}s
-          </motion.button>
-        )}
-      </div>
-    </motion.div>
+      <FaClock className={`w-5 h-5 ${isRunning ? 'text-purple-400' : 'text-gray-400'}`} />
+    </motion.button>
   );
 };

@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBomb } from 'react-icons/fa';
 
@@ -8,7 +7,7 @@ interface PlotTwistProps {
   onClose: () => void;
 }
 
-export const PlotTwist = ({ twist, isVisible, onClose }: PlotTwistProps) => {
+const PlotTwist = ({ twist, isVisible, onClose }: PlotTwistProps) => {
   return (
     <AnimatePresence>
       {isVisible && (
@@ -46,3 +45,5 @@ export const PlotTwist = ({ twist, isVisible, onClose }: PlotTwistProps) => {
     </AnimatePresence>
   );
 };
+
+export default PlotTwist;

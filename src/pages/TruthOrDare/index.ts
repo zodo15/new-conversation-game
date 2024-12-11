@@ -1,0 +1,13 @@
+export { default as TruthOrDare } from './App';
+export { default as CategorySelect } from './components/CategorySelect';
+export { default as GameBoard } from './components/GameBoard';
+export { default as GameControls } from './components/GameControls';
+export { default as GameModes } from './components/GameModes';
+export { default as PlayerInput } from './components/PlayerInput';
+export { default as PlayerList } from './components/PlayerList';
+export { default as PlayerProfileModal } from './components/PlayerProfileModal';
+export { default as PlotTwist } from './components/PlotTwist';
+export { default as Question } from './components/Question';
+export { default as Reactions } from './components/Reactions';
+export { default as Timer } from './components/Timer';
+export { default as AddQuestionModal } from './components/AddQuestionModal';

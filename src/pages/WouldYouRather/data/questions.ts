@@ -1,95 +1,95 @@
-import { GameMode, Question } from '../types';
+import { GameMode, Question } from '../store/gameStore';
 
 const classicQuestions: Question[] = [
   {
-    id: 1,
-    question: "Would you rather be able to fly or be invisible?",
+    id: '1',
     optionA: "Fly through the skies",
-    optionB: "Become invisible at will"
+    optionB: "Become invisible at will",
+    type: 'classic'
   },
   {
-    id: 2,
-    question: "Would you rather live in a big city or a small town?",
+    id: '2',
     optionA: "Bustling big city life",
-    optionB: "Peaceful small town living"
+    optionB: "Peaceful small town living",
+    type: 'classic'
   },
   {
-    id: 3,
-    question: "Would you rather have the ability to speak all languages or play all musical instruments?",
+    id: '3',
     optionA: "Master all languages",
-    optionB: "Master all instruments"
-  },
+    optionB: "Master all instruments",
+    type: 'classic'
+  },  
   {
-    id: 4,
-    question: "Would you rather travel 100 years into the past or future?",
+    id: '4',
     optionA: "Visit the past",
-    optionB: "Explore the future"
+    optionB: "Explore the future",
+    type: 'classic'
   },
   {
-    id: 5,
-    question: "Would you rather be able to read minds or predict the future?",
+    id: '5',
     optionA: "Read everyone's thoughts",
-    optionB: "See future events"
+    optionB: "See future events",
+    type: 'classic'
   },
   {
-    id: 6,
-    question: "Would you rather have unlimited food or unlimited travel?",
+    id: '6',
     optionA: "Never pay for food again",
-    optionB: "Travel anywhere for free"
+    optionB: "Travel anywhere for free",
+    type: 'classic'
   },
   {
-    id: 7,
-    question: "Would you rather be the funniest or the smartest person in the room?",
+    id: '7',
     optionA: "Make everyone laugh",
-    optionB: "Know all the answers"
+    optionB: "Know all the answers",
+    type: 'classic'
   },
   {
-    id: 8,
-    question: "Would you rather have a rewind or pause button for your life?",
+    id: '8',
     optionA: "Undo past mistakes",
-    optionB: "Freeze perfect moments"
+    optionB: "Freeze perfect moments",
+    type: 'classic'
   },
   {
-    id: 9,
-    question: "Would you rather be a famous actor or a successful CEO?",
+    id: '9',
     optionA: "Hollywood stardom",
-    optionB: "Business leadership"
+    optionB: "Business leadership",
+    type: 'classic'
   },
   {
-    id: 10,
-    question: "Would you rather have a dragon or a unicorn as a pet?",
+    id: '10',
     optionA: "Powerful dragon companion",
-    optionB: "Magical unicorn friend"
+    optionB: "Magical unicorn friend",
+    type: 'classic'
   },
   {
-    id: 11,
-    question: "Would you rather be able to breathe underwater or survive in space?",
+    id: '11',
     optionA: "Explore ocean depths",
-    optionB: "Travel through space"
+    optionB: "Travel through space",
+    type: 'classic'
   },
   {
-    id: 12,
-    question: "Would you rather have unlimited books or unlimited movies?",
+    id: '12',
     optionA: "Endless reading material",
-    optionB: "Infinite film collection"
+    optionB: "Infinite film collection",
+    type: 'classic'
   },
   {
-    id: 13,
-    question: "Would you rather be the best player on a losing team or the worst player on a winning team?",
+    id: '13',
     optionA: "Star of underdogs",
-    optionB: "Part of champions"
+    optionB: "Part of champions",
+    type: 'classic'
   },
   {
-    id: 14,
-    question: "Would you rather have the power to heal or the power to protect?",
+    id: '14',
     optionA: "Cure any illness",
-    optionB: "Prevent any harm"
+    optionB: "Prevent any harm",
+    type: 'classic'
   },
   {
-    id: 15,
-    question: "Would you rather live in a treehouse or an underwater house?",
+    id: '15',
     optionA: "Forest canopy home",
-    optionB: "Submarine dwelling"
+    optionB: "Submarine dwelling",
+    type: 'classic'
   }
 ];
 
@@ -97,225 +97,378 @@ const spicyQuestions: Question[] = [
   {
     id: 's1',
     optionA: "Accidentally call out your ex's name during sex",
-    optionB: "Have your partner call out their ex's name"
+    optionB: "Have your partner call out their ex's name",
+    type: 'spicy'
   },
   {
     id: 's2',
     optionA: "Only be able to sleep with your worst enemy",
-    optionB: "Never have sex again"
+    optionB: "Never have sex again",
+    type: 'spicy'
   },
   {
     id: 's3',
     optionA: "Have your search history made public",
-    optionB: "Have a live stream of you having sex leaked online"
+    optionB: "Have a live stream of you having sex leaked online",
+    type: 'spicy'
   },
   {
     id: 's4',
     optionA: "Date someone into extreme BDSM",
-    optionB: "Date someone completely vanilla"
+    optionB: "Date someone completely vanilla",
+    type: 'spicy'
   },
   {
     id: 's5',
     optionA: "Never orgasm again",
-    optionB: "Never let your partner orgasm again"
+    optionB: "Never let your partner orgasm again",
+    type: 'spicy'
   },
   {
     id: 's6',
     optionA: "Have a threesome with your boss and their spouse",
-    optionB: "Have a threesome with your ex and their new partner"
+    optionB: "Have a threesome with your ex and their new partner",
+    type: 'spicy'
   },
   {
     id: 's7',
     optionA: "Sleep with someone who smells bad but is incredible in bed",
-    optionB: "Sleep with someone gorgeous but terrible in bed"
+    optionB: "Sleep with someone gorgeous but terrible in bed",
+    type: 'spicy'
   },
   {
     id: 's8',
     optionA: "Have a one-night stand with your best friend's partner",
-    optionB: "Let your partner have a one-night stand with your best friend"
+    optionB: "Let your partner have a one-night stand with your best friend",
+    type: 'spicy'
   },
   {
     id: 's9',
     optionA: "Walk in on your parents making an adult film",
-    optionB: "Have them find one of yours"
+    optionB: "Have them find one of yours",
+    type: 'spicy'
   },
   {
     id: 's10',
     optionA: "Be forced to moan loudly during every conversation",
-    optionB: "Grunt like you're lifting weights every time you sit down"
+    optionB: "Grunt like you're lifting weights every time you sit down",
+    type: 'spicy'
   },
   {
     id: 's11',
     optionA: "Only be able to dirty talk in baby voice",
-    optionB: "Only be able to dirty talk while using embarrassing slang"
+    optionB: "Only be able to dirty talk while using embarrassing slang",
+    type: 'spicy'
   },
   {
     id: 's12',
     optionA: "Sleep with someone who never showers",
-    optionB: "Sleep with someone who refuses to shave or groom anywhere"
+    optionB: "Sleep with someone who refuses to shave or groom anywhere",
+    type: 'spicy'
   },
   {
     id: 's13',
     optionA: "Have your partner read all your DMs",
-    optionB: "Have your boss read all your DMs"
+    optionB: "Have your boss read all your DMs",
+    type: 'spicy'
   },
   {
     id: 's14',
     optionA: "Have one intense, unforgettable sexual encounter that ruins your current relationship",
-    optionB: "Never have great sex again"
+    optionB: "Never have great sex again",
+    type: 'spicy'
   },
   {
     id: 's15',
     optionA: "Give a presentation on your sex life to your entire family",
-    optionB: "Have a stranger live-tweet your most recent sexual experience"
+    optionB: "Have a stranger live-tweet your most recent sexual experience",
+    type: 'spicy'
   },
   {
     id: 's16',
     optionA: "Lose all feeling below the waist",
-    optionB: "Only be able to climax once every five years"
+    optionB: "Only be able to climax once every five years",
+    type: 'spicy'
   },
   {
     id: 's17',
     optionA: "Accidentally send a nude to your boss",
-    optionB: "Accidentally send a nude to a family group chat"
+    optionB: "Accidentally send a nude to a family group chat",
+    type: 'spicy'
   },
   {
     id: 's18',
     optionA: "Always have to be completely silent during sex",
-    optionB: "Always scream at the top of your lungs during sex"
+    optionB: "Always scream at the top of your lungs during sex",
+    type: 'spicy'
   },
   {
     id: 's19',
     optionA: "Walk around naked in front of your coworkers for an hour",
-    optionB: "Be naked in front of your in-laws for an hour"
+    optionB: "Be naked in front of your in-laws for an hour",
+    type: 'spicy'
   },
   {
     id: 's20',
     optionA: "Have your partner rate you a 4/10 in bed but love you",
-    optionB: "Have your partner rate you a 10/10 in bed but secretly dislike you"
+    optionB: "Have your partner rate you a 10/10 in bed but secretly dislike you",
+    type: 'spicy'
   }
 ];
 
 const friendQuestions: Question[] = [
   {
     id: 'f1',
-    question: "Would you rather be best friends with someone who always tells you the brutal truth or someone who always tells white lies to protect your feelings?",
-    optionA: "Brutally honest friend",
-    optionB: "Kind but not always truthful friend"
+    optionA: "Accidentally call out your ex's name during sex",
+    optionB: "Have your partner call out their ex's name",
+    type: 'friend'
   },
   {
     id: 'f2',
-    question: "Would you rather have one best friend for life or a new close friend every year?",
-    optionA: "Lifelong best friend",
-    optionB: "New close friend annually"
+    optionA: "Only be able to sleep with your worst enemy",
+    optionB: "Never have sex again",
+    type: 'friend'
   },
   {
     id: 'f3',
-    question: "Would you rather your friend spoil every movie for you or always be late to every meetup?",
-    optionA: "Movie spoiler friend",
-    optionB: "Always late friend"
+    optionA: "Have your search history made public",
+    optionB: "Have a live stream of you having sex leaked online",
+    type: 'friend'
   },
   {
     id: 'f4',
-    question: "Would you rather have a friend who borrows but never returns things or one who always forgets your birthday?",
-    optionA: "Never returns borrowed items",
-    optionB: "Forgets your birthday"
+    optionA: "Date someone into extreme BDSM",
+    optionB: "Date someone completely vanilla",
+    type: 'friend'
   },
   {
     id: 'f5',
-    question: "Would you rather have a friend who's always up for adventure or one who's always there for emotional support?",
-    optionA: "Adventure buddy",
-    optionB: "Emotional support friend"
+    optionA: "Never orgasm again",
+    optionB: "Never let your partner orgasm again",
+    type: 'friend'
   },
   {
     id: 'f6',
-    question: "Would you rather have a friend who's super successful but humble or average but brags about everything?",
-    optionA: "Successful and humble",
-    optionB: "Average but boastful"
+    optionA: "Have a threesome with your boss and their spouse",
+    optionB: "Have a threesome with your ex and their new partner",
+    type: 'friend'
   },
   {
     id: 'f7',
-    question: "Would you rather have a friend who always wants to go out or one who always wants to stay in?",
-    optionA: "Always wants to party",
-    optionB: "Always wants to chill at home"
+    optionA: "Sleep with someone who smells bad but is incredible in bed",
+    optionB: "Sleep with someone gorgeous but terrible in bed",
+    type: 'friend'
   },
   {
     id: 'f8',
-    question: "Would you rather have a friend who copies everything you do or one who always does the opposite?",
-    optionA: "Copies everything",
-    optionB: "Always contradicts"
+    optionA: "Have a one-night stand with your best friend's partner",
+    optionB: "Let your partner have a one-night stand with your best friend",
+    type: 'friend'
   },
   {
     id: 'f9',
-    question: "Would you rather have a friend who's always early to everything or one who's perfectly on time but stressed?",
-    optionA: "Always early and relaxed",
-    optionB: "On time but stressed"
+    optionA: "Walk in on your parents making an adult film",
+    optionB: "Have them find one of yours",
+    type: 'friend'
   },
   {
     id: 'f10',
-    question: "Would you rather have a friend who never remembers your conversations or one who remembers every embarrassing detail?",
-    optionA: "Forgets everything",
-    optionB: "Remembers all embarrassing moments"
+    optionA: "Be forced to moan loudly during every conversation",
+    optionB: "Grunt like you're lifting weights every time you sit down",
+    type: 'friend'
   },
   {
     id: 'f11',
-    question: "Would you rather have a friend who always wants to split the bill exactly or one who never wants to pay?",
-    optionA: "Exact bill splitter",
-    optionB: "Never wants to pay"
+    optionA: "Only be able to dirty talk in baby voice",
+    optionB: "Only be able to dirty talk while using embarrassing slang",
+    type: 'friend'
   },
   {
     id: 'f12',
-    question: "Would you rather have a friend who's always competing with you or one who's completely uncompetitive?",
-    optionA: "Always competing",
-    optionB: "Never competitive"
+    optionA: "Sleep with someone who never showers",
+    optionB: "Sleep with someone who refuses to shave or groom anywhere",
+    type: 'friend'
   },
   {
     id: 'f13',
-    question: "Would you rather have a friend who's always trying to change you or one who never challenges you to grow?",
-    optionA: "Always pushing for change",
-    optionB: "Never challenges growth"
+    optionA: "Have your partner read all your DMs",
+    optionB: "Have your boss read all your DMs",
+    type: 'friend'
   },
   {
     id: 'f14',
-    question: "Would you rather have a friend who only talks about themselves or one who never shares anything personal?",
-    optionA: "Only talks about themselves",
-    optionB: "Never shares personal info"
+    optionA: "Have one intense, unforgettable sexual encounter that ruins your current relationship",
+    optionB: "Never have great sex again",
+    type: 'friend'
   },
   {
     id: 'f15',
-    question: "Would you rather have a friend who's always starting drama or one who avoids all conflict?",
-    optionA: "Drama starter",
-    optionB: "Conflict avoider"
+    optionA: "Give a presentation on your sex life to your entire family",
+    optionB: "Have a stranger live-tweet your most recent sexual experience",
+    type: 'friend'
+  },
+  {
+    id: 'f16',
+    optionA: "Lose all feeling below the waist",
+    optionB: "Only be able to climax once every five years",
+    type: 'friend'
+  },
+  {
+    id: 'f17',
+    optionA: "Accidentally send a nude to your boss",
+    optionB: "Accidentally send a nude to a family group chat",
+    type: 'friend'
+  },
+  {
+    id: 'f18',
+    optionA: "Always have to be completely silent during sex",
+    optionB: "Always scream at the top of your lungs during sex",
+    type: 'friend'
+  },
+  {
+    id: 'f19',
+    optionA: "Walk around naked in front of your coworkers for an hour",
+    optionB: "Be naked in front of your in-laws for an hour",
+    type: 'friend'
+  },
+  {
+    id: 'f20',
+    optionA: "Have your partner rate you a 4/10 in bed but love you",
+    optionB: "Have your partner rate you a 10/10 in bed but secretly dislike you",
+    type: 'friend'
+  },
+  {
+    id: 'f21',
+    optionA: "Fly through the skies",
+    optionB: "Become invisible at will",
+    type: 'friend'
+  },
+  {
+    id: 'f22',
+    optionA: "Bustling big city life",
+    optionB: "Peaceful small town living",
+    type: 'friend'
+  },
+  {
+    id: 'f23',
+    optionA: "Master all languages",
+    optionB: "Master all instruments",
+    type: 'friend'
+  },  
+  {
+    id: 'f24',
+    optionA: "Visit the past",
+    optionB: "Explore the future",
+    type: 'friend'
+  },
+  {
+    id: 'f25',
+    optionA: "Read everyone's thoughts",
+    optionB: "See future events",
+    type: 'friend'
+  },
+  {
+    id: 'f26',
+    optionA: "Never pay for food again",
+    optionB: "Travel anywhere for free",
+    type: 'friend'
+  },
+  {
+    id: 'f27',
+    optionA: "Make everyone laugh",
+    optionB: "Know all the answers",
+    type: 'friend'
+  },
+  {
+    id: 'f28',
+    optionA: "Undo past mistakes",
+    optionB: "Freeze perfect moments",
+    type: 'friend'
+  },
+  {
+    id: 'f29',
+    optionA: "Hollywood stardom",
+    optionB: "Business leadership",
+    type: 'friend'
+  },
+  {
+    id: 'f30',
+    optionA: "Powerful dragon companion",
+    optionB: "Magical unicorn friend",
+    type: 'friend'
+  },
+  {
+    id: 'f31',
+    optionA: "Explore ocean depths",
+    optionB: "Travel through space",
+    type: 'friend'
+  },
+  {
+    id: 'f32',
+    optionA: "Endless reading material",
+    optionB: "Infinite film collection",
+    type: 'friend'
+  },
+  {
+    id: 'f33',
+    optionA: "Star of underdogs",
+    optionB: "Part of champions",
+    type: 'friend'
+  },
+  {
+    id: 'f34',
+    optionA: "Cure any illness",
+    optionB: "Prevent any harm",
+    type: 'friend'
+  },
+  {
+    id: 'f35',
+    optionA: "Forest canopy home",
+    optionB: "Submarine dwelling",
+    type: 'friend'
   }
 ];
 
 const chaosQuestions: Question[] = [
   {
     id: 'c1',
-    optionA: "Have your choices randomly swapped",
-    optionB: "Have your points doubled but risk losing them all",
-    mode: GameMode.CHAOS
+    optionA: "Chaotic superpowers",
+    optionB: "Predictable superpowers",
+    type: 'chaos'
   },
   {
     id: 'c2',
-    optionA: "Skip your next turn but steal points",
-    optionB: "Take an extra turn but give away points",
-    mode: GameMode.CHAOS
-  },
-  // Add more chaos questions as needed
+    optionA: "Random teleportation",
+    optionB: "Random size changes",
+    type: 'chaos'
+  }
+];
+
+const questions: Question[] = [
+  ...classicQuestions,
+  ...spicyQuestions,
+  ...friendQuestions,
+  ...chaosQuestions
 ];
 
 export const getQuestionsByMode = (mode: GameMode): Question[] => {
-  switch (mode) {
-    case GameMode.CLASSIC:
-      return classicQuestions;
-    case GameMode.SPICY:
-      return spicyQuestions;
-    case GameMode.FRIEND:
-      return friendQuestions;
-    case GameMode.CHAOS:
-      return [...chaosQuestions, ...classicQuestions.map(q => ({ ...q, mode: GameMode.CHAOS }))];
-    default:
-      return classicQuestions;
+  if (mode === GameMode.FRIEND) {
+    // For friend mode, return all non-spicy questions
+    return questions.filter(q => q.type !== 'spicy');
   }
+  
+  if (mode === GameMode.CHAOS) {
+    // For chaos mode, return chaos questions first, then all others
+    const chaosQuestions = questions.filter(q => q.type === 'chaos');
+    const otherQuestions = questions.filter(q => q.type !== 'chaos');
+    return [...chaosQuestions, ...otherQuestions];
+  }
+
+  if (mode === GameMode.RANDOM) {
+    // For random mode, return all questions
+    return questions;
+  }
+  
+  // For classic and spicy modes, return questions of that type
+  return questions.filter(q => q.type === mode);
 };

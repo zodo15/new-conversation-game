@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
 import { QuestionType } from '../types';
 
-export const GameControls: React.FC = () => {
+const GameControls: React.FC = () => {
   const {
     questionType,
     setQuestionType,
@@ -85,7 +85,7 @@ export const GameControls: React.FC = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => {
-                  completeChallenge(true);
+                  completeChallenge();
                   nextPlayer();
                 }}
                 className="px-6 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-lg hover:bg-green-600 transition-colors"
@@ -110,3 +110,5 @@ export const GameControls: React.FC = () => {
     </div>
   );
 };
+
+export default GameControls;

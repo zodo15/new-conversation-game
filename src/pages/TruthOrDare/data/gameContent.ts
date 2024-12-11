@@ -1,4 +1,12 @@
-export const gameContent = {
+import { QuestionType, QuestionCategory } from '../types/game';
+
+type GameContentType = {
+  [K in QuestionType]: {
+    [C in Extract<QuestionCategory, K extends 'truth' ? 'spicy' | 'funny' | 'deep' : 'physical' | 'social' | 'creative'>]: string[]
+  }
+}
+
+export const gameContent: GameContentType = {
   truth: {
     spicy: [
       "What's the most scandalous thing you've done that you're secretly proud of?",

@@ -1,104 +1,96 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useGameStore } from '../store/gameStore';
-import { ChoiceCard } from './ChoiceCard';
-import { Timer } from './Timer';
-import { ShareButton } from './ShareButton';
+import type { Question, Vote, VoteMap, Player } from '../types';
 
-export const QuestionDisplay: React.FC = () => {
-  const {
-    currentQuestion,
-    currentPlayerIndex,
-    players,
-    votes,
-    mode,
-    addVote,
-    updateScore,
-    updateStreak,
-    setCurrentPlayerIndex,
-    setCurrentQuestion,
-    clearVotes,
-    getRandomQuestion,
-  } = useGameStore();
+interface QuestionDisplayProps {
+  question: Question;
+  votes: VoteMap;
+  players: Player[];
+  onVote: (choice: Vote) => void;
+  currentPlayerId: string;
+}
 
-  if (!currentQuestion || !players[currentPlayerIndex]) {
-    return null;
-  }
+export const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
+  question,
+  votes,
+  players,
+  onVote,
+  currentPlayerId
+}) => {
+  const currentPlayer = players.find(p => p.id === currentPlayerId);
+  const hasVoted = currentPlayerId in votes;
 
-  const currentPlayer = players[currentPlayerIndex];
-  const totalVotes = votes.length;
-  const option1Votes = votes.filter(v => v.choice === 'option1').length;
-  const option2Votes = votes.filter(v => v.choice === 'option2').length;
-  const hasVoted = votes.some(v => v.playerId === currentPlayer.id);
+  if (!currentPlayer) return null;
 
-  const handleVote = (choice: 'option1' | 'option2') => {
-    if (hasVoted) return;
-
-    // Add vote and update player stats
-    addVote(currentPlayer.id, choice);
-    updateScore(currentPlayer.id, 1);
-    updateStreak(currentPlayer.id, choice);
-
-    // Move to next player or reset round
-    const nextIndex = (currentPlayerIndex + 1) % players.length;
-    if (nextIndex === 0) {
-      clearVotes();
-      const newQuestion = getRandomQuestion(mode);
-      if (newQuestion) {
-        setCurrentQuestion(newQuestion);
-      }
-    }
-    setCurrentPlayerIndex(nextIndex);
+  const getVotePercentage = (choice: Vote) => {
+    const totalVotes = Object.values(votes).length;
+    if (totalVotes === 0) return 0;
+    
+    const choiceVotes = Object.values(votes).filter(vote => vote === choice).length;
+    return Math.round((choiceVotes / totalVotes) * 100);
   };
 
   return (
-    <div className="space-y-8">
-      <div className="text-center">
-        <motion.h2
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="text-2xl font-bold text-white mb-2"
-        >
-          {currentPlayer.name}'s Turn
-        </motion.h2>
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="text-white/60"
-        >
-          Choose wisely...
-        </motion.div>
-      </div>
+    <div className="max-w-4xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-2xl font-bold text-center mb-8"
+      >
+        {question.question}
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ChoiceCard
-          option={currentQuestion.optionA}
-          consequence={currentQuestion.consequences?.option1}
-          votes={option1Votes}
-          totalVotes={totalVotes}
-          selected={votes.some(v => v.playerId === currentPlayer.id && v.choice === 'option1')}
-          onClick={() => handleVote('option1')}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className={`p-6 rounded-xl transition-colors ${
+            hasVoted ? 'bg-purple-700/30 cursor-default' : 'bg-purple-700/50 hover:bg-purple-600/50'
+          }`}
+          onClick={() => !hasVoted && onVote('A')}
           disabled={hasVoted}
-        />
-        <ChoiceCard
-          option={currentQuestion.optionB}
-          consequence={currentQuestion.consequences?.option2}
-          votes={option2Votes}
-          totalVotes={totalVotes}
-          selected={votes.some(v => v.playerId === currentPlayer.id && v.choice === 'option2')}
-          onClick={() => handleVote('option2')}
-          disabled={hasVoted}
-        />
-      </div>
+        >
+          <h3 className="text-xl font-bold mb-2">{question.optionA}</h3>
+          {hasVoted && (
+            <div className="mt-4">
+              <div className="h-2 bg-purple-900 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-purple-500"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${getVotePercentage('A')}%` }}
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
+              <p className="text-right mt-1 text-purple-300">{getVotePercentage('A')}%</p>
+            </div>
+          )}
+        </motion.button>
 
-      {mode === 'friend' && (
-        <div className="flex justify-between items-center">
-          <Timer duration={30} onComplete={() => {}} />
-          <ShareButton 
-            votes={votes}
-          />
-        </div>
-      )}
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className={`p-6 rounded-xl transition-colors ${
+            hasVoted ? 'bg-purple-700/30 cursor-default' : 'bg-purple-700/50 hover:bg-purple-600/50'
+          }`}
+          onClick={() => !hasVoted && onVote('B')}
+          disabled={hasVoted}
+        >
+          <h3 className="text-xl font-bold mb-2">{question.optionB}</h3>
+          {hasVoted && (
+            <div className="mt-4">
+              <div className="h-2 bg-purple-900 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-purple-500"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${getVotePercentage('B')}%` }}
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
+              <p className="text-right mt-1 text-purple-300">{getVotePercentage('B')}%</p>
+            </div>
+          )}
+        </motion.button>
+      </div>
     </div>
   );
 };

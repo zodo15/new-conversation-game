@@ -4,22 +4,28 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface ChaosMasterProps {
   players: string[];
   onComplete: (selectedPlayer: string) => void;
+  onEffect?: (effect: string) => void;
+  onAction?: () => void;
   onClose: () => void;
   onBack: () => void;
 }
 
-const colors = [
-  'bg-gradient-to-r from-[#FF0000] to-[#FF3333]', // Bright Red
-  'bg-gradient-to-r from-[#00FF00] to-[#33FF33]', // Bright Green
-  'bg-gradient-to-r from-[#0000FF] to-[#3333FF]', // Bright Blue
-  'bg-gradient-to-r from-[#FFFF00] to-[#FFFF33]', // Bright Yellow
-  'bg-gradient-to-r from-[#FF00FF] to-[#FF33FF]', // Bright Magenta
-  'bg-gradient-to-r from-[#00FFFF] to-[#33FFFF]', // Bright Cyan
-  'bg-gradient-to-r from-[#FF8800] to-[#FFAA33]', // Bright Orange
-  'bg-gradient-to-r from-[#AA00FF] to-[#CC33FF]'  // Bright Purple
+const COLORS = [
+  '#FF4B4B',  // Red
+  '#4169E1',  // Blue
+  '#32CD32',  // Green
+  '#FFD700',  // Yellow
+  '#FF1493',  // Pink
+  '#9400D3',  // Purple
+  '#FF8C00',  // Orange
+  '#00CED1',  // Cyan
 ];
 
-export const ChaosMasterWheel: React.FC<ChaosMasterProps> = ({ players, onComplete, onClose }) => {
+export const ChaosMasterWheel: React.FC<ChaosMasterProps> = ({
+  players,
+  onComplete,
+  onBack
+}) => {
   const [spinning, setSpinning] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [rotationAngle, setRotationAngle] = useState(0);
@@ -43,7 +49,7 @@ export const ChaosMasterWheel: React.FC<ChaosMasterProps> = ({ players, onComple
     const sectionSize = 360 / players.length;
     const selectedIndex = Math.floor(((360 - finalAngle) % 360) / sectionSize);
     
-    setRotationAngle(totalRotation);
+    setRotationAngle(prev => prev + totalRotation);
     
     setTimeout(() => {
       setSpinning(false);
@@ -53,73 +59,95 @@ export const ChaosMasterWheel: React.FC<ChaosMasterProps> = ({ players, onComple
     }, 3000);
   }, [spinning, players, onComplete]);
 
-  const sections = players.map((player, index) => {
-    const angle = (index * 360) / players.length;
-    const sectionAngle = 360 / players.length;
-    const color = colors[index % colors.length];
-    
-    return (
-      <div
-        key={player}
-        className="absolute w-full h-full origin-center"
-        style={{
-          transform: `rotate(${angle}deg)`,
-        }}
-      >
-        <div
-          className={`absolute inset-0 ${color} opacity-90`}
-          style={{
-            clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0% 100%)',
-          }}
-        >
-          <div 
-            className="absolute whitespace-nowrap text-white font-extrabold text-xl"
-            style={{
-              left: '25%',
-              top: '50%',
-              transform: `rotate(${-angle + (180/players.length)}deg)`,
-              transformOrigin: 'left center',
-              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.75)',
-              letterSpacing: '0.05em'
-            }}
-          >
-            {player}
-          </div>
-        </div>
-      </div>
-    );
-  });
-
   return (
-    <motion.div
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      exit={{ scale: 0 }}
-      className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50"
-    >
-      <div className="bg-gradient-to-br from-purple-900 to-indigo-900 p-8 rounded-2xl shadow-2xl max-w-md w-full">
-        <div className="relative w-64 h-64 mx-auto">
-          <motion.div
-            className="w-full h-full rounded-full relative overflow-hidden border-4 border-white/20"
-            style={{
-              transform: `rotate(${rotationAngle}deg)`,
-              transition: spinning ? 'transform 4s cubic-bezier(0.2, 1, 0.3, 1)' : 'none'
-            }}
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        <div className="bg-gradient-to-br from-[#4A1D6A] via-[#2E0F45] to-[#1A0527] p-8 rounded-xl shadow-2xl max-w-md w-full mx-4 relative">
+          <button
+            onClick={onBack}
+            className="absolute top-4 left-4 p-2 hover:bg-white/10 rounded-full transition-colors"
           >
-            {sections}
-          </motion.div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-2 h-8 bg-white transform -translate-y-1/2" />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </button>
+
+          <h2 className="text-2xl font-bold text-center mb-6 bg-gradient-to-r from-[#E4A1FF] to-[#FF9CEE] text-transparent bg-clip-text">
+            Selecting Chaos Master...
+          </h2>
+
+          <div className="relative aspect-square mb-6">
+            {/* Pointer triangle */}
+            <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-b-[30px] border-b-[#E4A1FF] z-20" />
+            
+            <motion.div
+              className="absolute inset-0"
+              style={{ 
+                rotate: rotationAngle,
+                transition: spinning ? 'all 3s cubic-bezier(0.2, 1, 0.3, 1)' : 'none'
+              }}
+            >
+              <svg viewBox="0 0 100 100" className="w-full h-full">
+                {players.map((player, index) => {
+                  const angle = (index * 360) / players.length;
+                  const nextAngle = ((index + 1) * 360) / players.length;
+                  
+                  // Calculate segment path
+                  const startAngle = (angle * Math.PI) / 180;
+                  const endAngle = (nextAngle * Math.PI) / 180;
+                  
+                  const x1 = 50 + 50 * Math.cos(startAngle);
+                  const y1 = 50 + 50 * Math.sin(startAngle);
+                  const x2 = 50 + 50 * Math.cos(endAngle);
+                  const y2 = 50 + 50 * Math.sin(endAngle);
+                  
+                  const largeArc = nextAngle - angle <= 180 ? 0 : 1;
+                  
+                  // Calculate star position
+                  const midAngle = (angle + nextAngle) / 2;
+                  const midRad = (midAngle * Math.PI) / 180;
+                  const starX = 50 + 35 * Math.cos(midRad);
+                  const starY = 50 + 35 * Math.sin(midRad);
+                  
+                  return (
+                    <g key={index}>
+                      {/* Segment */}
+                      <path
+                        d={`M 50 50 L ${x1} ${y1} A 50 50 0 ${largeArc} 1 ${x2} ${y2} Z`}
+                        fill={COLORS[index % COLORS.length]}
+                        className="stroke-white/20 stroke-2"
+                      />
+                      {/* Star */}
+                      <path
+                        d="M 0,-4 L 0.9,-1.2 L 4,0 L 0.9,1.2 L 0,4 L -0.9,1.2 L -4,0 L -0.9,-1.2 Z"
+                        fill="white"
+                        transform={`translate(${starX} ${starY}) scale(1.5)`}
+                        className="filter drop-shadow-md"
+                      />
+                    </g>
+                  );
+                })}
+                
+                {/* Center circle */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="8"
+                  fill="#1A0527"
+                  stroke="white"
+                  strokeOpacity="0.3"
+                  strokeWidth="2"
+                />
+              </svg>
+            </motion.div>
           </div>
         </div>
-        {selectedPlayer && (
-          <div className="mt-6 text-center">
-            <span className="text-2xl font-bold text-white bg-purple-800/80 px-4 py-2 rounded-lg shadow-lg">
-              {selectedPlayer} is the Chaos Master!
-            </span>
-          </div>
-        )}
-      </div>
-    </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
