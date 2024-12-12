@@ -16,7 +16,7 @@ const categoryIcons: Record<QuestionCategory, React.ReactNode> = {
 };
 
 const CategorySelect = () => {
-  const setCategory = useGameStore((state: { setCategory: any; }) => state.setCategory);
+  const { setSelectedCategory: setCategory } = useGameStore((state) => state);
   const [playHover] = useSound('/hover.mp3', { volume: 0.5 });
   const [playSelect] = useSound('/select.mp3', { volume: 0.5 });
 
@@ -36,38 +36,27 @@ const CategorySelect = () => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       variants={container}
       initial="hidden"
       animate="show"
-      className="grid grid-cols-2 gap-6 p-8 max-w-4xl mx-auto"
+      className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto"
     >
       {categories.map((category) => (
         <motion.button
           key={category}
           variants={item}
-          whileHover={{ 
-            scale: 1.05,
-            boxShadow: '0 0 30px rgba(147,51,234,0.5)'
-          }}
+          whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => {
             playSelect();
             setCategory(category);
           }}
           onMouseEnter={() => playHover()}
-          className="bg-gradient-to-br from-gray-800 to-gray-900 p-8 rounded-xl
-                   border-2 border-purple-500/50 hover:border-purple-500
-                   shadow-[0_0_15px_rgba(147,51,234,0.3)]
-                   transition-all duration-300 flex flex-col items-center justify-center
-                   min-h-[200px] group"
+          className="flex flex-col items-center justify-center p-6 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-all"
         >
-          <div className="text-purple-400 group-hover:text-purple-300 transition-colors">
-            {categoryIcons[category]}
-          </div>
-          <h3 className="text-2xl text-purple-400 group-hover:text-purple-300 font-bold text-center">
-            {category}
-          </h3>
+          {categoryIcons[category]}
+          <span className="text-lg font-medium capitalize">{category}</span>
         </motion.button>
       ))}
     </motion.div>

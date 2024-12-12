@@ -23,125 +23,115 @@ const COLORS = [
 export const ChaosWheel: React.FC<ChaosWheelProps> = ({ players, onComplete, onBack }) => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
+  const [lastSelectedPlayer, setLastSelectedPlayer] = useState<string | null>(null);
+
+  const spinWheel = () => {
+    if (isSpinning || players.length === 0) return;
+    
+    setIsSpinning(true);
+    const spins = 5 + Math.floor(Math.random() * 3); // Random number of spins between 5-7
+    const baseRotation = 360 * spins;
+    
+    // Ensure we don't select the same player twice
+    let availablePlayers = players.filter(player => player !== lastSelectedPlayer);
+    if (availablePlayers.length === 0) {
+      availablePlayers = players; // Reset if all players have been selected
+    }
+    
+    // Calculate random offset to land on a new player
+    const segmentSize = 360 / players.length;
+    const selectedPlayerIndex = Math.floor(Math.random() * availablePlayers.length);
+    const selectedPlayer = availablePlayers[selectedPlayerIndex];
+    const playerIndex = players.indexOf(selectedPlayer);
+    const randomOffset = (playerIndex * segmentSize) + (Math.random() * (segmentSize * 0.5));
+    
+    const totalRotation = baseRotation + randomOffset;
+    setRotation(prev => prev + totalRotation);
+
+    setTimeout(() => {
+      setIsSpinning(false);
+      setLastSelectedPlayer(selectedPlayer);
+      toast.success(`${selectedPlayer} is now the Chaos Master!`, {
+        icon: '🎲',
+        duration: 2000
+      });
+      onComplete(selectedPlayer);
+    }, 3000);
+  };
 
   useEffect(() => {
     // Auto-spin on mount
     spinWheel();
   }, []);
 
-  const spinWheel = () => {
-    if (isSpinning) return;
-    
-    setIsSpinning(true);
-    const spins = 5 + Math.floor(Math.random() * 3); // Random number of spins between 5-7
-    const baseRotation = 360 * spins;
-    const randomOffset = Math.random() * 360;
-    const totalRotation = baseRotation + randomOffset;
-    
-    setRotation(prev => prev + totalRotation);
-
-    setTimeout(() => {
-      const normalizedRotation = totalRotation % 360;
-      const segmentSize = 360 / players.length;
-      const selectedIndex = Math.floor(normalizedRotation / segmentSize);
-      const selectedPlayer = players[players.length - 1 - selectedIndex];
-      
-      setIsSpinning(false);
-      toast.success(`${selectedPlayer} is now the Chaos Master!`, {
-        icon: '',
-        duration: 4000
-      });
-      onComplete(selectedPlayer);
-    }, 3000);
-  };
+  const segmentSize = 360 / players.length;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.8 }}
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-    >
-      <div className="bg-gradient-to-br from-[#4A1D6A] via-[#2E0F45] to-[#1A0527] p-8 rounded-xl shadow-2xl max-w-md w-full mx-4 relative">
-        <button
-          onClick={onBack}
-          className="absolute top-4 left-4 p-2 hover:bg-white/10 rounded-full transition-colors"
+    <div className="flex flex-col items-center justify-center min-h-[400px] relative">
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={onBack}
+        className="absolute top-4 left-4 text-white/80 hover:text-white flex items-center gap-2"
+      >
+        <FaArrowLeft />
+        <span>Back</span>
+      </motion.button>
+
+      <div className="relative w-80 h-80">
+        {/* Wheel */}
+        <motion.div
+          className="absolute inset-0 rounded-full overflow-hidden"
+          style={{
+            transformOrigin: 'center',
+            rotate: `${rotation}deg`,
+            transition: isSpinning ? 'all 3s cubic-bezier(0.3, 0, 0.2, 1)' : undefined
+          }}
         >
-          <FaArrowLeft className="w-6 h-6" />
-        </button>
+          {players.map((player, index) => (
+            <div
+              key={index}
+              className="absolute w-full h-full"
+              style={{
+                clipPath: 'polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%)',
+                transform: `rotate(${index * segmentSize}deg)`,
+                backgroundColor: COLORS[index % COLORS.length],
+              }}
+            >
+              <div
+                className="absolute left-1/2 top-12 -translate-x-1/2 transform"
+                style={{ transform: `translateX(-50%) rotate(${-90 - (index * segmentSize)}deg)` }}
+              >
+                <span className="text-white font-bold whitespace-nowrap text-lg">{player}</span>
+              </div>
+            </div>
+          ))}
+        </motion.div>
 
-        <h2 className="text-2xl font-bold text-center mb-6 bg-gradient-to-r from-[#E4A1FF] to-[#FF9CEE] text-transparent bg-clip-text">
-          Selecting Chaos Master...
-        </h2>
+        {/* Center point */}
+        <div className="absolute top-1/2 left-1/2 w-6 h-6 -mt-3 -ml-3 bg-white rounded-full shadow-lg z-10" />
 
-        <div className="relative aspect-square mb-6">
-          <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-b-[30px] border-b-[#E4A1FF] z-20" />
-          
-          <motion.div
-            className="absolute inset-0"
-            animate={{ rotate: rotation }}
-            transition={{ duration: 3, ease: [0.11, 0.8, 0.33, 1] }}
-          >
-            <svg viewBox="0 0 100 100" className="w-full h-full">
-              {players.map((player, index) => {
-                const startAngle = (index * 360) / players.length;
-                const endAngle = ((index + 1) * 360) / players.length;
-                
-                const startRad = (startAngle * Math.PI) / 180;
-                const endRad = (endAngle * Math.PI) / 180;
-                
-                const x1 = 50 + 50 * Math.cos(startRad);
-                const y1 = 50 + 50 * Math.sin(startRad);
-                const x2 = 50 + 50 * Math.cos(endRad);
-                const y2 = 50 + 50 * Math.sin(endRad);
-                
-                const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
-                
-                const path = [
-                  'M', 50, 50,
-                  'L', x1, y1,
-                  'A', 50, 50, 0, largeArc, 1, x2, y2,
-                  'Z'
-                ].join(' ');
-
-                // Calculate star position
-                const midAngle = (startAngle + endAngle) / 2;
-                const midRad = (midAngle * Math.PI) / 180;
-                const starX = 50 + 35 * Math.cos(midRad);
-                const starY = 50 + 35 * Math.sin(midRad);
-                
-                return (
-                  <g key={player}>
-                    <path
-                      d={path}
-                      fill={COLORS[index % COLORS.length]}
-                      className="stroke-white/20 stroke-2 transition-all hover:brightness-110"
-                    />
-                    {/* Add star */}
-                    <path
-                      d="M 0,-3 L 0.9,-0.9 L 3,0 L 0.9,0.9 L 0,3 L -0.9,0.9 L -3,0 L -0.9,-0.9 Z"
-                      fill="white"
-                      transform={`translate(${starX},${starY}) scale(2)`}
-                      className="filter drop-shadow-md"
-                    />
-                  </g>
-                );
-              })}
-
-              {/* Center circle */}
-              <circle
-                cx="50"
-                cy="50"
-                r="8"
-                fill="#1A0527"
-                stroke="white"
-                strokeOpacity="0.3"
-                strokeWidth="2"
-              />
-            </svg>
-          </motion.div>
+        {/* Pointer */}
+        <div className="absolute -right-6 top-1/2 -mt-6 w-12 h-12 z-20">
+          <div className="w-0 h-0 border-t-[24px] border-t-transparent border-l-[36px] border-l-white border-b-[24px] border-b-transparent" />
         </div>
       </div>
-    </motion.div>
+
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={spinWheel}
+        disabled={isSpinning}
+        className={`mt-8 px-8 py-3 rounded-xl font-bold text-white transition-colors ${
+          isSpinning
+            ? 'bg-gray-500 cursor-not-allowed'
+            : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
+        }`}
+      >
+        {isSpinning ? 'Spinning...' : 'Spin Again'}
+      </motion.button>
+    </div>
   );
 };
+
+export default ChaosWheel;

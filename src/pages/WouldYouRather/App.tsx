@@ -43,6 +43,10 @@ const App = ({ onBack }: { onBack: () => void }) => {
     setTimerDuration(newDuration);
   };
 
+  const handleTimerComplete = () => {
+    // Add your logic here
+  };
+
   const GAME_MODES = ['classic', 'spicy', 'friend', 'random']
 
   const chaosActions = [
@@ -78,15 +82,24 @@ const App = ({ onBack }: { onBack: () => void }) => {
       return;
     }
 
+    // Find the actual index of the selected player
+    const playerIndex = gameState.players.findIndex(p => p === selectedPlayer);
+    if (playerIndex === -1) {
+      toast.error('Selected player not found');
+      return;
+    }
+
     setGameState(prev => ({
       ...prev,
       chaosMaster: selectedPlayer,
+      currentPlayerIndex: playerIndex,
       gameStarted: true,
       currentQuestion: questions[Math.floor(Math.random() * questions.length)],
       chaosMode: true
     }));
 
     setShowChaosWheel(false);
+    toast.success(`${selectedPlayer} is now the Chaos Master!`);
   };
 
   const startGame = () => {
@@ -127,13 +140,13 @@ const App = ({ onBack }: { onBack: () => void }) => {
     setGameState(prev => ({
       ...prev,
       mode: mode,
-      players: mode === 'friend' ? [] : ['Player 1'],
+      players: mode === GameMode.FRIEND ? [] : ['Player 1'],
       currentQuestion: questions[Math.floor(Math.random() * questions.length)],
-      gameStarted: mode !== 'friend',
-      chaosMode: mode === 'friend'
+      gameStarted: mode !== GameMode.FRIEND,
+      chaosMode: mode === GameMode.FRIEND
     }));
 
-    if (mode === 'friend') {
+    if (mode === GameMode.FRIEND) {
       setShowPlayerInput(true);
     } else {
       toast.success(`Selected ${mode} mode!`, {
@@ -251,18 +264,19 @@ const App = ({ onBack }: { onBack: () => void }) => {
           <div className="space-y-8 max-w-2xl mx-auto mt-12">
             <div className="flex justify-between items-start">
               <div>
-                {gameState.mode === 'friend' && gameState.players.length > 0 && (
+                {gameState.mode === GameMode.FRIEND && gameState.players.length > 0 && (
                   <div className="text-2xl font-bold bg-gradient-to-r from-[#E4A1FF] to-[#FF9CEE] text-transparent bg-clip-text">
-                    {gameState.players[gameState.currentPlayerIndex]}'s Turn
+                    {gameState.chaosMaster ? `${gameState.chaosMaster} is the Chaos Master` : `${gameState.players[gameState.currentPlayerIndex]}'s Turn`}
                   </div>
                 )}
               </div>
               <div className="flex flex-col items-end gap-4">
                 <Timer 
                   duration={timerDuration} 
+                  onComplete={handleTimerComplete}
                   onDurationChange={handleDurationChange}
                 />
-                {gameState.mode === 'friend' && (
+                {gameState.mode === GameMode.FRIEND && (
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -317,7 +331,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
                 Skip
               </motion.button>
 
-              {gameState.mode === 'friend' && (
+              {gameState.mode === GameMode.FRIEND && (
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -354,7 +368,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
                       key={mode}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      onClick={() => handleModeSelect(mode)}
+                      onClick={() => handleModeSelect(mode === 'classic' ? GameMode.CLASSIC : mode === 'spicy' ? GameMode.SPICY : mode === 'friend' ? GameMode.FRIEND : GameMode.RANDOM)}
                       className="relative overflow-hidden p-6 bg-white/10 backdrop-blur-sm rounded-xl transition-all shadow-lg group"
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transform -skew-x-12 group-hover:animate-shine" />

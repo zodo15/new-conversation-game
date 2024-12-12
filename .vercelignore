@@ -1,0 +1,12 @@
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+.git
+.gitignore
+README.md
+.env.local
+.env.development
+.env.test
+node_modules
+.next/cache

@@ -47,7 +47,7 @@ export const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
           className={`p-6 rounded-xl transition-colors ${
             hasVoted ? 'bg-purple-700/30 cursor-default' : 'bg-purple-700/50 hover:bg-purple-600/50'
           }`}
-          onClick={() => !hasVoted && onVote('A')}
+          onClick={() => !hasVoted && onVote({ playerId: currentPlayerId, choice: 'A' })}
           disabled={hasVoted}
         >
           <h3 className="text-xl font-bold mb-2">{question.optionA}</h3>
@@ -72,7 +72,7 @@ export const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
           className={`p-6 rounded-xl transition-colors ${
             hasVoted ? 'bg-purple-700/30 cursor-default' : 'bg-purple-700/50 hover:bg-purple-600/50'
           }`}
-          onClick={() => !hasVoted && onVote('B')}
+          onClick={() => !hasVoted && onVote({ playerId: currentPlayerId, choice: 'B' })}
           disabled={hasVoted}
         >
           <h3 className="text-xl font-bold mb-2">{question.optionB}</h3>

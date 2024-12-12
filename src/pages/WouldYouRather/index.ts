@@ -1,4 +1,4 @@
-export { App as WouldYouRather } from './App';
+export { default as WouldYouRather } from './App';
 export { default as Game } from './components/Game';
 export { default as GameModes } from './components/GameModes';
 export { CategorySelector } from './components/CategorySelector';

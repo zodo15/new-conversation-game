@@ -7,14 +7,14 @@ interface CustomQuestionFormProps {
   onSubmit: (question: Question) => void;
 }
 
-export const CustomQuestionForm = ({ onSubmit }: CustomQuestionFormProps) => {
+const CustomQuestionForm = ({ onSubmit }: CustomQuestionFormProps) => {
   const [optionA, setOptionA] = useState('');
   const [optionB, setOptionB] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!optionA || !optionB) {
+    if (!optionA.trim() || !optionB.trim()) {
       toast.error('Please fill in both options');
       return;
     }
@@ -25,12 +25,11 @@ export const CustomQuestionForm = ({ onSubmit }: CustomQuestionFormProps) => {
     }
 
     const newQuestion: Question = {
-      id: Date.now(),
-      option1: optionA,
-      option2: optionB,
+      id: String(Date.now()),
+      optionA: optionA.trim(),
+      optionB: optionB.trim(),
       type: 'custom',
-      votesA: 0,
-      votesB: 0,
+      createdAt: new Date().toISOString()
     };
 
     onSubmit(newQuestion);

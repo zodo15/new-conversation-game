@@ -2,9 +2,13 @@ import { motion } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
 import useSound from 'use-sound';
 import { FaDice, FaBolt, FaClock, FaSkull } from 'react-icons/fa';
+import { GameState, GameActions } from '../types';
 
 const GameModes = () => {
-  const { setChaosMode, setTimer } = useGameStore();
+  const { setChaosMode, setTimer } = useGameStore((state: GameState & GameActions) => ({
+    setChaosMode: state.setChaosMode,
+    setTimer: state.setTimer
+  }));
   const [playSelect] = useSound('/select.mp3', { volume: 0.5 });
 
   const modes = [

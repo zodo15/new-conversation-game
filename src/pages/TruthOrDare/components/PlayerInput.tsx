@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
 import { FaPlus, FaPlay } from "react-icons/fa6";
+import { Player } from '../types';
 
 interface Props {
-  players: string[];
-  setPlayers: (players: string[]) => void;
+  players: Player[];
+  setPlayers: (players: Player[]) => void;
   onStart: () => void;
 }
 
@@ -20,7 +21,7 @@ const PlayerInput: React.FC<Props> = ({ players, setPlayers, onStart }) => {
       return;
     }
 
-    if (players.includes(newPlayer.trim())) {
+    if (players.some(p => p.name === newPlayer.trim())) {
       toast.error('Player already exists', { id: 'duplicate-player' });
       return;
     }
@@ -30,13 +31,23 @@ const PlayerInput: React.FC<Props> = ({ players, setPlayers, onStart }) => {
       return;
     }
 
-    setPlayers([...players, newPlayer.trim()]);
+    const player: Player = {
+      id: String(Date.now()),
+      name: newPlayer.trim(),
+      score: 0,
+      truthCount: 0,
+      dareCount: 0,
+      skippedCount: 0,
+      completedCount: 0
+    };
+
+    setPlayers([...players, player]);
     setNewPlayer('');
     toast.success('Player added!', { id: 'player-added' });
   };
 
-  const removePlayer = (playerToRemove: string) => {
-    setPlayers(players.filter(player => player !== playerToRemove));
+  const removePlayer = (playerToRemove: Player) => {
+    setPlayers(players.filter(player => player.id !== playerToRemove.id));
     toast.success('Player removed', { id: 'player-removed' });
   };
 
@@ -72,14 +83,14 @@ const PlayerInput: React.FC<Props> = ({ players, setPlayers, onStart }) => {
         <div className="flex flex-col gap-2">
           {players.map((player) => (
             <motion.div
-              key={player}
+              key={player.id}
               layout
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
               className="bg-white/10 p-4 rounded-lg flex items-center justify-between"
             >
-              <span>{player}</span>
+              <span>{player.name}</span>
               <button
                 onClick={() => removePlayer(player)}
                 className="text-red-400 hover:text-red-300 px-2"

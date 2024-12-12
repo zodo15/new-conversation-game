@@ -120,7 +120,7 @@ const Game: React.FC = () => {
           <div className="space-y-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold mb-2">
-                {players[currentPlayerIndex]}'s Turn
+                {players[currentPlayerIndex]} is the Chaos Master
               </h2>
               <p className="text-xl">{currentQuestion.question}</p>
             </div>
@@ -158,11 +158,15 @@ const Game: React.FC = () => {
       </div>
 
       {showChaosMasterWheel && (
-        <ChaosMasterWheel onClose={() => setShowChaosMasterWheel(false)} players={[]} onComplete={function (): void {
-          throw new Error('Function not implemented.');
-        } } onAction={function (): void {
-          throw new Error('Function not implemented.');
-        } } />
+        <ChaosMasterWheel
+          players={players.map(p => p.name)}
+          onComplete={(selectedPlayer, selectedIndex) => {
+            setCurrentPlayerIndex(selectedIndex);
+            setShowChaosMasterWheel(false);
+            toast.success(`${selectedPlayer} is now the Chaos Master!`);
+          }}
+          onBack={() => setShowChaosMasterWheel(false)}
+        />
       )}
 
       {showAddQuestion && (
