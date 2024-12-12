@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { FaShuffle, FaArrowLeft, FaXmark, FaForward, FaPlus } from "react-icons/fa6";
 import { FiZap } from "react-icons/fi";
 import { Toaster, toast } from 'react-hot-toast';
-import { Question, GameMode } from './types';
+import { Question, GameMode, CustomQuestion } from './types';
 import { getQuestionsByMode } from './data/questions';
 import { FloatingBackground } from './components/FloatingBackground';
 import { Timer } from './components/Timer';
@@ -16,7 +16,7 @@ interface GameState {
   currentQuestion: Question | null;
   players: string[];
   currentPlayerIndex: number;
-  mode: string;
+  mode: GameMode;
   chaosMode: boolean;
   chaosMaster?: string;
   timer: number;
@@ -28,12 +28,12 @@ const App = ({ onBack }: { onBack: () => void }) => {
     currentQuestion: null,
     players: [],
     currentPlayerIndex: 0,
-    mode: '',
+    mode: GameMode.NONE,
     chaosMode: false,
     timer: 30,
   });
 
-  const [playerInput, setPlayerInput] = useState(''); 
+  const [playerInput, setPlayerInput] = useState('');
   const [showPlayerInput, setShowPlayerInput] = useState(false);
   const [showChaosWheel, setShowChaosWheel] = useState(false);
   const [timerDuration, setTimerDuration] = useState(30);
@@ -89,7 +89,6 @@ const App = ({ onBack }: { onBack: () => void }) => {
     setShowChaosWheel(false);
   };
 
-
   const startGame = () => {
     setShowChaosWheel(true);
   };
@@ -118,7 +117,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
     }));
   };
 
-  const handleModeSelect = (mode: string) => {
+  const handleModeSelect = (mode: GameMode) => {
     const questions = getQuestionsByMode(mode);
     if (questions.length === 0) {
       toast.error('No questions available for this mode');
@@ -198,23 +197,21 @@ const App = ({ onBack }: { onBack: () => void }) => {
     });
   };
 
-  const handleAddQuestion = (question: { id: string; question: string; option1: string; option2: string; type: 'custom' }) => {
+  const handleAddQuestion = (question: CustomQuestion) => {
     setGameState(prev => ({
       ...prev,
       currentQuestion: {
-        id: question.id,
-        question: question.question,
-        optionA: question.option1,
-        optionB: question.option2,
-        mode: prev.mode as GameMode
+        id: crypto.randomUUID(),
+        optionA: question.optionA,
+        optionB: question.optionB,
+        type: 'custom'
       }
     }));
     setShowAddQuestion(false);
-    toast.success('Question added successfully!');
   };
 
   const handleBack = () => {
-    if (gameState.mode === '') {
+    if (gameState.mode === GameMode.NONE) {
       onBack();
     } else {
       setGameState({
@@ -222,7 +219,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
         currentQuestion: null,
         players: [],
         currentPlayerIndex: 0,
-        mode: '',
+        mode: GameMode.NONE,
         chaosMode: false,
         chaosMaster: undefined,
         timer: 30,
@@ -345,7 +342,7 @@ const App = ({ onBack }: { onBack: () => void }) => {
           </div>
         ) : (
           <div className="mt-12">
-            {!gameState.mode ? (
+            {!gameState.mode || gameState.mode === GameMode.NONE ? (
               /* Mode Selection */
               <div className="space-y-6">
                 <h1 className="text-5xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-[#E4A1FF] to-[#FF9CEE]">

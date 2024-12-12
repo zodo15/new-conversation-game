@@ -1,15 +1,34 @@
-export type GameMode = 'classic' | 'spicy' | 'friend' | 'random' | 'chaos';
+export enum GameMode {
+  NONE = 'none',
+  CLASSIC = 'classic',
+  SPICY = 'spicy',
+  FRIEND = 'friend',
+  RANDOM = 'random',
+  CHAOS = 'chaos'
+}
 
 export type FriendMode = 'online' | 'offline';
 
+export type QuestionType = 'classic' | 'spicy' | 'extreme' | 'friend' | 'random' | 'chaos' | 'custom';
+
+export type QuestionCategory = 'would-you-rather' | 'truth' | 'dare';
+
 export interface Question {
   id: string | number;
-  question: string;
+  question?: string;
   optionA: string;
   optionB: string;
-  mode: GameMode;
+  mode?: GameMode;
+  type?: QuestionType;
   category?: string;
   difficulty?: number;
+}
+
+export interface CustomQuestion {
+  optionA: string;
+  optionB: string;
+  type: 'custom';
+  createdBy?: string;
 }
 
 export interface Player {
@@ -23,17 +42,17 @@ export interface Player {
   wouldYouRatherCount: number;
 }
 
-export type Vote = 'A' | 'B';
+export type Vote = 'optionA' | 'optionB';
 
-export type VoteMap = {
+export interface VoteMap {
   [playerId: string]: Vote;
-};
+}
 
-export type ChaosEvent = {
+export interface ChaosEvent {
   type: 'timer' | 'swap' | 'reverse' | 'skip';
   duration?: number;
   description: string;
-};
+}
 
 export interface GameState {
   mode: GameMode;
@@ -45,7 +64,7 @@ export interface GameState {
   showChaosMasterWheel: boolean;
   showAddQuestion: boolean;
   usedQuestionIds: Set<string>;
-  customQuestions: Question[];
+  customQuestions: CustomQuestion[];
   votes: VoteMap;
   chaosEnabled: boolean;
   chaosMaster?: string;
@@ -63,9 +82,12 @@ export interface ChoiceCardProps {
   consequence?: string;
   onClick?: () => void;
   disabled?: boolean;
+  text?: string;
+  selected?: boolean;
 }
 
 export interface TimerProps {
   duration: number;
   onComplete: () => void;
+  onDurationChange?: (newDuration: number) => void;
 }

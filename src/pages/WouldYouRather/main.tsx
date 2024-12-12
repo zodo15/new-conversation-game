@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { App } from './components/App';
+import App from './App';
 import { FloatingBackground } from './components/FloatingBackground';
 import './index.css';
 

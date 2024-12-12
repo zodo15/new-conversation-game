@@ -1,7 +1,7 @@
   import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { CustomQuestion, Question } from '../types';
+import { CustomQuestion, QuestionType } from '../types';
 
 interface AddQuestionProps {
   onClose: () => void;
@@ -30,8 +30,8 @@ export const AddQuestion = ({ onClose, onSubmit, currentPlayer }: AddQuestionPro
     }
 
     const newQuestion: CustomQuestion = {
-      option1: option1.trim(),
-      option2: option2.trim(),
+      optionA: option1.trim(),
+      optionB: option2.trim(),
       type,
       createdBy: currentPlayer
     };
