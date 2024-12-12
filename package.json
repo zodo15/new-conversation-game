@@ -1,5 +1,5 @@
 {
-  "name": "conversation-games",
+  "name": "vibes",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -48,7 +48,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "vercel-build": "vite build"
+    "vercel-build": "vite build",
+    "postinstall": "npm run build"
   },
   "eslintConfig": {
     "extends": [
@@ -69,6 +70,7 @@
     ]
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   }
 }

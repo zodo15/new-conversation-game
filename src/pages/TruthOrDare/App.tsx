@@ -47,7 +47,7 @@ const TruthOrDare: React.FC<Props> = ({ onBack }) => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-purple-900 text-white relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 text-white relative overflow-hidden">
       <Toaster position="top-center" />
       <ConfettiComponent />
       

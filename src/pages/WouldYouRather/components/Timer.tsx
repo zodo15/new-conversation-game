@@ -49,55 +49,34 @@ export const Timer = ({ duration, onComplete, key }: TimerProps) => {
   const progress = (timeLeft / duration) * 100;
 
   return (
-    <motion.button 
-      className="absolute top-4 right-4 flex items-center gap-2 group"
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      key={key}
-      onClick={handleClick}
+    <motion.button
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
+      onClick={handleClick}
+      className="relative flex items-center justify-center bg-white/10 rounded-lg p-2 sm:p-3 hover:bg-white/20 transition-colors group"
     >
-      <div className="relative w-12 h-12">
-        <svg className="w-12 h-12 transform -rotate-90">
-          <circle
-            cx="24"
-            cy="24"
-            r="20"
-            stroke="currentColor"
-            strokeWidth="4"
-            fill="none"
-            className="text-gray-700"
-          />
-          <circle
-            cx="24"
-            cy="24"
-            r="20"
-            stroke="currentColor"
-            strokeWidth="4"
-            fill="none"
-            strokeDasharray={`${2 * Math.PI * 20}`}
-            strokeDashoffset={`${2 * Math.PI * 20 * (1 - progress / 100)}`}
-            className={`
-              transition-all duration-1000 ease-linear
-              ${timeLeft <= 5 ? 'text-red-500' : 'text-purple-500'}
-            `}
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-lg font-bold">{timeLeft}</span>
-        </div>
-
-        {/* Play/Pause overlay on hover */}
-        <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-          {isRunning ? (
-            <FaPause className="w-5 h-5" />
-          ) : (
-            <FaPlay className="w-5 h-5" />
-          )}
-        </div>
+      <div className="absolute inset-0.5 rounded-lg overflow-hidden">
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-1000 ease-linear origin-left"
+          style={{
+            transform: `scaleX(${progress / 100})`,
+            opacity: 0.2
+          }}
+        />
       </div>
-      <FaClock className={`w-5 h-5 ${isRunning ? 'text-purple-400' : 'text-gray-400'}`} />
+
+      <div className="flex items-center gap-2">
+        <FaClock className="w-4 h-4 sm:w-5 sm:h-5" />
+        <span className="font-mono text-sm sm:text-base">
+          {Math.floor(timeLeft / 60).toString().padStart(2, '0')}:
+          {(timeLeft % 60).toString().padStart(2, '0')}
+        </span>
+        {isRunning ? (
+          <FaPause className="w-3 h-3 sm:w-4 sm:h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+        ) : (
+          <FaPlay className="w-3 h-3 sm:w-4 sm:h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+        )}
+      </div>
     </motion.button>
   );
 };

@@ -93,21 +93,21 @@ const GameBoard: React.FC<Props> = ({ players, onEndGame }) => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="p-8 max-w-4xl mx-auto"
+      className="min-h-screen p-4 sm:p-8 max-w-4xl mx-auto"
     >
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={onEndGame}
-          className="text-white/80 hover:text-white flex items-center gap-2"
+          className="text-white/80 hover:text-white flex items-center gap-2 order-1 sm:order-none"
         >
-          <FaHouse className="w-5 h-5" />
-          <span>End Game</span>
+          <FaHouse className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="text-sm sm:text-base">End Game</span>
         </motion.button>
         
-        <div className="text-center flex-1">
-          <h2 className="text-2xl font-bold text-white">
+        <div className="text-center flex-1 order-0 sm:order-none">
+          <h2 className="text-xl sm:text-2xl font-bold text-white">
             {currentPlayer.name} {selectedType === 'dare' ? 'is Chaos Master' : "'s Turn"}
           </h2>
         </div>
@@ -116,27 +116,27 @@ const GameBoard: React.FC<Props> = ({ players, onEndGame }) => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setShowAddQuestion(true)}
-          className="text-white/80 hover:text-white flex items-center gap-2"
+          className="text-white/80 hover:text-white flex items-center gap-2 order-2 sm:order-none"
         >
-          <Plus className="w-5 h-5" />
-          <span>Add Question</span>
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="text-sm sm:text-base">Add Question</span>
         </motion.button>
       </div>
 
       {isChoosing ? (
-        <div className="space-y-8">
-          <h3 className="text-xl font-semibold text-center text-white/90">
+        <div className="space-y-6 sm:space-y-8">
+          <h3 className="text-lg sm:text-xl font-semibold text-center text-white/90">
             Choose your challenge
           </h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleChoice('truth')}
-              className="p-6 bg-purple-600/30 rounded-xl hover:bg-purple-600/40 transition-colors"
+              className="p-4 sm:p-6 bg-purple-600/30 rounded-xl hover:bg-purple-600/40 transition-colors"
             >
-              <h4 className="text-lg font-bold mb-2">Truth</h4>
-              <p className="text-sm text-white/70">
+              <h4 className="text-base sm:text-lg font-bold mb-2">Truth</h4>
+              <p className="text-xs sm:text-sm text-white/70">
                 Answer a question truthfully
               </p>
             </motion.button>
@@ -144,10 +144,10 @@ const GameBoard: React.FC<Props> = ({ players, onEndGame }) => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleChoice('dare')}
-              className="p-6 bg-pink-600/30 rounded-xl hover:bg-pink-600/40 transition-colors"
+              className="p-4 sm:p-6 bg-pink-600/30 rounded-xl hover:bg-pink-600/40 transition-colors"
             >
-              <h4 className="text-lg font-bold mb-2">Dare</h4>
-              <p className="text-sm text-white/70">
+              <h4 className="text-base sm:text-lg font-bold mb-2">Dare</h4>
+              <p className="text-xs sm:text-sm text-white/70">
                 Complete a challenging dare
               </p>
             </motion.button>
@@ -155,20 +155,20 @@ const GameBoard: React.FC<Props> = ({ players, onEndGame }) => {
         </div>
       ) : (
         <div className="space-y-6">
-          <div className="bg-white/10 p-6 rounded-xl">
-            <h3 className="text-xl font-semibold mb-4">
+          <div className="bg-white/10 p-4 sm:p-6 rounded-xl">
+            <h3 className="text-lg sm:text-xl font-semibold mb-4">
               {selectedType === 'truth' ? 'Truth' : 'Dare'}
             </h3>
-            <p className="text-lg">{currentQuestion}</p>
+            <p className="text-base sm:text-lg">{currentQuestion}</p>
           </div>
           <div className="flex justify-end gap-4">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleNextPlayer}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-2 rounded-lg font-semibold shadow-lg flex items-center gap-2"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 px-4 sm:px-6 py-2 rounded-lg font-semibold shadow-lg flex items-center gap-2 text-sm sm:text-base"
             >
-              <FaShuffle className="w-4 h-4" />
+              <FaShuffle className="w-3 h-3 sm:w-4 sm:h-4" />
               <span>Next Player</span>
             </motion.button>
           </div>
@@ -179,7 +179,7 @@ const GameBoard: React.FC<Props> = ({ players, onEndGame }) => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-4"
+          className="mt-6 sm:mt-8 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4"
         >
           {(selectedType === 'truth' ? ['deep', 'funny', 'spicy'] : ['social', 'physical', 'creative']).map((category) => (
             <motion.button
@@ -187,16 +187,11 @@ const GameBoard: React.FC<Props> = ({ players, onEndGame }) => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleCategorySelect(category as Category)}
-              className="p-4 bg-white/10 rounded-xl hover:bg-white/20 transition-colors"
+              className="p-3 sm:p-4 bg-white/10 rounded-xl hover:bg-white/20 transition-colors"
             >
               <div className="flex flex-col items-center gap-2">
-                {category === 'deep' && <Brain className="w-6 h-6" />}
-                {category === 'funny' && <Sparkles className="w-6 h-6" />}
-                {category === 'spicy' && <Zap className="w-6 h-6" />}
-                {category === 'social' && <Users className="w-6 h-6" />}
-                {category === 'physical' && <Dumbbell className="w-6 h-6" />}
-                {category === 'creative' && <Palette className="w-6 h-6" />}
-                <span className="capitalize">{category}</span>
+                {React.createElement(getCategoryIcon(category as Category), { className: "w-5 h-5 sm:w-6 sm:h-6" })}
+                <span className="capitalize text-sm sm:text-base">{category}</span>
               </div>
             </motion.button>
           ))}
@@ -204,69 +199,86 @@ const GameBoard: React.FC<Props> = ({ players, onEndGame }) => {
       )}
 
       {showAddQuestion && (
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-center">Add New Question</h2>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedType('truth')}
-                className={`p-4 rounded-lg ${
-                  selectedType === 'truth' ? 'bg-blue-500' : 'bg-white/10'
-                }`}
-              >
-                Truth
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedType('dare')}
-                className={`p-4 rounded-lg ${
-                  selectedType === 'dare' ? 'bg-red-500' : 'bg-white/10'
-                }`}
-              >
-                Dare
-              </motion.button>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+        >
+          <div className="bg-gray-900 rounded-xl p-4 sm:p-6 max-w-lg w-full space-y-4 sm:space-y-6">
+            <div className="text-center">
+              <h2 className="text-xl sm:text-2xl font-bold mb-2">Add New Question</h2>
+              <p className="text-white/70 text-sm sm:text-base">Create a new question for future games</p>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              {(selectedType === 'truth' 
-                ? ['deep', 'funny', 'spicy'] 
-                : ['social', 'physical', 'creative']
-              ).map((category) => {
-                const Icon = getCategoryIcon(category as Category);
-                return (
-                  <motion.button
-                    key={category}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setSelectedCategory(category as Category)}
-                    className={`p-4 rounded-lg flex flex-col items-center gap-2 ${
-                      selectedCategory === category ? 'bg-purple-500' : 'bg-white/10'
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm sm:text-base font-medium mb-1">Type</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => setSelectedType('truth')}
+                    className={`p-3 rounded-lg flex items-center justify-center gap-2 transition-colors ${
+                      selectedType === 'truth'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-white/10 hover:bg-white/20'
                     }`}
                   >
-                    <Icon className="w-6 h-6" />
-                    <span className="capitalize">{category}</span>
-                  </motion.button>
-                );
-              })}
+                    <span className="text-sm sm:text-base">Truth</span>
+                  </button>
+                  <button
+                    onClick={() => setSelectedType('dare')}
+                    className={`p-3 rounded-lg flex items-center justify-center gap-2 transition-colors ${
+                      selectedType === 'dare'
+                        ? 'bg-pink-600 text-white'
+                        : 'bg-white/10 hover:bg-white/20'
+                    }`}
+                  >
+                    <span className="text-sm sm:text-base">Dare</span>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm sm:text-base font-medium mb-1">Category</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {(selectedType === 'truth' ? ['deep', 'funny', 'spicy'] : ['social', 'physical', 'creative']).map(
+                    (category) => (
+                      <button
+                        key={category}
+                        onClick={() => setSelectedCategory(category as Category)}
+                        className={`p-2 sm:p-3 rounded-lg flex items-center justify-center gap-2 transition-colors ${
+                          selectedCategory === category
+                            ? 'bg-purple-600 text-white'
+                            : 'bg-white/10 hover:bg-white/20'
+                        }`}
+                      >
+                        {React.createElement(getCategoryIcon(category as Category), {
+                          className: 'w-4 h-4 sm:w-5 sm:h-5'
+                        })}
+                        <span className="text-sm sm:text-base capitalize">{category}</span>
+                      </button>
+                    )
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm sm:text-base font-medium mb-1">Question</label>
+                <textarea
+                  value={newQuestion}
+                  onChange={(e) => setNewQuestion(e.target.value)}
+                  placeholder="Enter your question..."
+                  className="w-full p-3 rounded-lg bg-white/10 focus:bg-white/20 transition-colors outline-none text-sm sm:text-base"
+                  rows={3}
+                />
+              </div>
             </div>
 
-            <textarea
-              value={newQuestion}
-              onChange={(e) => setNewQuestion(e.target.value)}
-              placeholder="Enter your question..."
-              className="w-full p-4 rounded-lg bg-white/10 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400"
-              rows={3}
-            />
-
-            <div className="flex justify-end gap-4">
+            <div className="flex justify-end gap-3">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowAddQuestion(false)}
-                className="px-6 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+                className="px-4 sm:px-6 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors text-sm sm:text-base"
               >
                 Cancel
               </motion.button>
@@ -274,13 +286,13 @@ const GameBoard: React.FC<Props> = ({ players, onEndGame }) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleAddQuestion}
-                className="px-6 py-2 bg-purple-500 rounded-lg hover:bg-purple-600 transition-colors"
+                className="px-4 sm:px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-semibold shadow-lg text-sm sm:text-base"
               >
                 Add Question
               </motion.button>
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
     </motion.div>
   );

@@ -59,7 +59,7 @@ const App: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-4xl md:text-6xl font-bold text-center text-white mb-16"
         >
-          Conversation Games
+          Vibes
         </motion.h1>
 
         <div className="flex flex-col items-center space-y-8 max-w-md mx-auto mb-16">

@@ -58,7 +58,7 @@ export const ChaosMasterWheel: React.FC<ChaosMasterProps> = ({
       setLastSelectedPlayer(selectedPlayer);
       const finalIndex = players.indexOf(selectedPlayer);
       onComplete(selectedPlayer, finalIndex);
-    }, 3000);
+    }, 4000);
   }, [spinning, players, lastSelectedPlayer, onComplete]);
 
   useEffect(() => {
@@ -71,94 +71,78 @@ export const ChaosMasterWheel: React.FC<ChaosMasterProps> = ({
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
       >
-        <div className="bg-gradient-to-br from-[#4A1D6A] via-[#2E0F45] to-[#1A0527] p-8 rounded-xl shadow-2xl max-w-md w-full mx-4 relative">
-          <button
-            onClick={onBack}
-            className="absolute top-4 left-4 p-2 hover:bg-white/10 rounded-full transition-colors text-white"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-          </button>
+        <div className="bg-gray-900 rounded-xl p-6 max-w-lg w-full space-y-6 relative">
+          <div className="text-center space-y-4">
+            <h2 className="text-2xl font-bold">Chaos Master Selection</h2>
+            <p className="text-white/70">Spin the wheel to select the Chaos Master!</p>
+          </div>
 
-          <h2 className="text-2xl font-bold text-center mb-6 bg-gradient-to-r from-[#E4A1FF] to-[#FF9CEE] text-transparent bg-clip-text">
-            Selecting Chaos Master...
-          </h2>
+          <div className="relative w-full aspect-square max-w-md mx-auto">
+            {/* Pointer */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-b-[30px] border-b-white z-10" />
 
-          <div className="relative aspect-square mb-6">
-            {/* Pointer triangle */}
-            <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-b-[30px] border-b-[#E4A1FF] z-20" />
-            
+            {/* Wheel */}
             <motion.div
-              className="absolute inset-0"
-              style={{ 
+              className="w-full h-full rounded-full relative overflow-hidden"
+              style={{
                 rotate: rotationAngle,
-                transition: spinning ? 'all 3s cubic-bezier(0.2, 1, 0.3, 1)' : 'none'
+                transition: spinning ? 'all 4s cubic-bezier(0.2, 0, 0.2, 1)' : 'none'
               }}
             >
-              <svg viewBox="0 0 100 100" className="w-full h-full">
-                {players.map((player, index) => {
-                  const angle = (index * 360) / players.length;
-                  const nextAngle = ((index + 1) * 360) / players.length;
-                  
-                  // Calculate segment path
-                  const startAngle = ((angle - 90) * Math.PI) / 180; // Offset by 90 degrees
-                  const endAngle = ((nextAngle - 90) * Math.PI) / 180; // Offset by 90 degrees
-                  
-                  const x1 = 50 + 50 * Math.cos(startAngle);
-                  const y1 = 50 + 50 * Math.sin(startAngle);
-                  const x2 = 50 + 50 * Math.cos(endAngle);
-                  const y2 = 50 + 50 * Math.sin(endAngle);
-                  
-                  const largeArc = nextAngle - angle <= 180 ? 0 : 1;
-                  
-                  // Calculate text position (offset by 90 degrees)
-                  const midAngle = ((angle + nextAngle) / 2 - 90) * Math.PI / 180;
-                  const textX = 50 + 35 * Math.cos(midAngle);
-                  const textY = 50 + 35 * Math.sin(midAngle);
-                  
-                  return (
-                    <g key={index}>
-                      {/* Segment */}
-                      <path
-                        d={`M 50 50 L ${x1} ${y1} A 50 50 0 ${largeArc} 1 ${x2} ${y2} Z`}
-                        fill={COLORS[index % COLORS.length]}
-                        className="stroke-white/20 stroke-2"
-                      />
-                      {/* Player Name */}
-                      <text
-                        x={textX}
-                        y={textY}
-                        fill="white"
-                        fontSize="4"
-                        fontWeight="bold"
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                        transform={`rotate(${angle}, ${textX}, ${textY})`}
+              {players.map((player, index) => {
+                const segmentSize = 360 / players.length;
+                const rotation = index * segmentSize;
+                const color = COLORS[index % COLORS.length];
+
+                return (
+                  <div
+                    key={index}
+                    className="absolute w-full h-full origin-center"
+                    style={{
+                      transform: `rotate(${rotation}deg)`,
+                      clipPath: `polygon(0 0, 50% 0, 50% 100%, 0 100%)`
+                    }}
+                  >
+                    <div
+                      className="absolute w-full h-full"
+                      style={{ backgroundColor: color }}
+                    >
+                      <div
+                        className="absolute left-2 top-1/2 -translate-y-1/2 text-white font-semibold text-sm sm:text-base whitespace-nowrap transform -rotate-90 origin-left"
                       >
                         {player}
-                      </text>
-                    </g>
-                  );
-                })}
-                
-                {/* Center circle */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="8"
-                  fill="#1A0527"
-                  stroke="white"
-                  strokeOpacity="0.3"
-                  strokeWidth="2"
-                />
-              </svg>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </motion.div>
+          </div>
+
+          <div className="flex justify-center gap-4">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onBack}
+              disabled={spinning}
+              className="px-6 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Back
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={spinWheel}
+              disabled={spinning}
+              className="px-6 py-2 bg-purple-500 rounded-lg hover:bg-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {spinning ? 'Spinning...' : 'Spin'}
+            </motion.button>
           </div>
         </div>
       </motion.div>
